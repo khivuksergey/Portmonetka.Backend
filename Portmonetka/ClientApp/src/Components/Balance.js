@@ -2,6 +2,7 @@
 import getSymbolFromCurrency from 'currency-symbol-map';
 import Container from 'react-bootstrap/Container';
 
+//incorrect behaviour when adding or removing a wallet
 function Balance({ globalBalance }) {
     let balances = [];
     var _ = require('lodash');
@@ -28,7 +29,7 @@ function Balance({ globalBalance }) {
     return (
         <section>
             <Container>
-                <div className="balance mt-2 mt-sm-4 d-flex justify-content-center flex-wrap">
+                <div className="balance mt-4 d-flex justify-content-center flex-wrap">
                     {
                         balances.map(b =>
                             <h1 key={b.currency}>

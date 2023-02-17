@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from "react-bootstrap/Button";
 
-const AddWalletModal = ({ open, onClose, onSaved }) => {
+const AddWalletModal = ({ open, onClose, onDataChanged, getWalletBalance }) => {
     const [wallet, setWallet] = useState({
         name: "",
         initialAmount: "",
@@ -40,7 +40,11 @@ const AddWalletModal = ({ open, onClose, onSaved }) => {
         };
 
         axios.post(url, data)
-            .then(() => { onSaved(); });
+            .then(() => {
+                onDataChanged();
+                getWalletBalance({currency: wallet.currency, amount: wallet.initialAmount});
+                onClose();
+            });
     }
 
     function printStatusMessage() {
@@ -88,7 +92,7 @@ const AddWalletModal = ({ open, onClose, onSaved }) => {
                                     aria-label="Currency"
                                     value={wallet.currency} maxLength="3"
                                     onChange={e => {
-                                        setWallet({ ...wallet, currency: e.target.value })
+                                        setWallet({ ...wallet, currency: e.target.value.toUpperCase() })
                                     }}
                                     required
                                 />

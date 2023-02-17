@@ -14,7 +14,7 @@ import { BiMinus, BiPlus } from 'react-icons/bi';
 import { GoCalendar } from 'react-icons/go';
 import 'react-day-picker/dist/style.css';
 
-const TransactionModal = ({ open, onClose, onSaved, walletId }) => {
+const TransactionModal = ({ open, onClose, onDataChanged, walletId }) => {
     const [validated, setValidated] = useState(false);
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -202,7 +202,7 @@ const TransactionModal = ({ open, onClose, onSaved, walletId }) => {
         const url = "api/transaction";
         let data = transactions;
         axios.post(url, data)
-            .then(() => { onSaved(); });
+            .then(() => { onDataChanged(); });
     }
 
     if (!open) return null;

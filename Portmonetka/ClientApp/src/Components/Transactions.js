@@ -5,7 +5,7 @@ import axios from 'axios';
 import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { MdDelete } from 'react-icons/md'
 
-function Transactions({ wallet, calcBalance, isFullMode, onDataChanged }) {
+function Transactions({ wallet, calcTransactionsSum, isFullMode, onDataChanged }) {
     const [transactions, setTransactions] = useState([])
     const [categories, setCategories] = useState([])
 
@@ -35,7 +35,7 @@ function Transactions({ wallet, calcBalance, isFullMode, onDataChanged }) {
 
     const calculateBalance = () => {
         let sum = transactions.reduce((acc, val) => acc + val.Amount, 0);
-        calcBalance(sum);
+        calcTransactionsSum(sum);
     }
 
     const getCategories = async () => {
@@ -64,7 +64,7 @@ function Transactions({ wallet, calcBalance, isFullMode, onDataChanged }) {
             await axios.delete(url)
                 .then(() => {
                     getTransactions();
-                    //onDataChanged();
+                    onDataChanged();
                 })
         } catch (error) {
             console.error(error);

@@ -6,7 +6,7 @@ import WalletModal from "./WalletModal";
 import { GiCat } from 'react-icons/gi';
 import { FcMoneyTransfer } from 'react-icons/fc';
 
-function Wallet({ wallet, onDataAdded, getWalletBalance }) {
+function Wallet({ wallet, onDataChanged, getWalletBalance }) {
     const [openTransactionModal, setOpenTransactionModal] = useState(false);
     const [showWalletModal, setShowWalletModal] = useState(false);
 
@@ -35,14 +35,12 @@ function Wallet({ wallet, onDataAdded, getWalletBalance }) {
     }, [balance, wallet.Currency]);
 
 
-    const calcBalance = (value) => {
+    const calcTransactionsSum = (value) => {
         setTransactionsSum(value);
     }
 
-    const dataAdded = () => {
-        handleTransactionsModalClose();
-        handleWalletModalClose();
-        onDataAdded();
+    const dataChanged = () => {
+        onDataChanged();
     }
 
     function currencyToSign(currency) {
@@ -69,7 +67,7 @@ function Wallet({ wallet, onDataAdded, getWalletBalance }) {
                     </button>
                 </div>
 
-                <Transactions wallet={wallet} calcBalance={calcBalance} isFullMode={false} />
+                <Transactions wallet={wallet} calcTransactionsSum={calcTransactionsSum} isFullMode={false} onDataChanged={ dataChanged} />
 
             </div>
 
@@ -78,7 +76,7 @@ function Wallet({ wallet, onDataAdded, getWalletBalance }) {
                     walletId={wallet.Id}
                     open={openTransactionModal}
                     onClose={handleTransactionsModalClose}
-                    onSaved={dataAdded}
+                    onDataChanged={dataChanged}
                 />
             }
 
@@ -87,7 +85,7 @@ function Wallet({ wallet, onDataAdded, getWalletBalance }) {
                     wallet={wallet}
                     open={showWalletModal}
                     onClose={handleWalletModalClose}
-                    onSaved={dataAdded}
+                    onDataChanged={dataChanged}
                 />
             }
         </>

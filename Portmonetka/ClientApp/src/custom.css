@@ -69,7 +69,7 @@ body {
     display: flex;
     flex-direction: column;
     min-width: 300px;
-    max-width: 530px;
+    max-width: calc(50% - 10px);
     transition: 0.1s ease-in-out;
 }
 
@@ -77,6 +77,12 @@ body {
     cursor: pointer;
     transform: scale(1.02);
     background: linear-gradient(-30deg, #353535 0%, #454545 100%);
+}
+
+@media only screen and (max-width: 648px) {
+    .wallet {
+        max-width: 100%;
+    }
 }
 
 .wallet .transactions-dots {

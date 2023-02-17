@@ -33,16 +33,12 @@ function App() {
         try {
             const result = await axios.get(url)
                 .then((result) => {
-                    setWallets(result.data)
+                    setWallets(result.data);
+                    console.log('asdasd', result.data);
                 })
         } catch (error) {
             console.error(error);
         }
-    }
-
-    const onWalletAdded = () => {
-        handleAddWalletModalClose();
-        getWallets();
     }
 
     const getWalletBalance = (balance) => {
@@ -54,12 +50,15 @@ function App() {
         });
     }
 
+    const addNewWalletBalance = (balance) => {
+        setGlobalBalance([...globalBalance, { currency: balance.currency, amount: balance.amount }]);
+    }
 
     return (
         <>
             <Navbar collapseOnSelect expand="sm" variant="dark" className="prevent-select">
                 <Container>
-                    <Navbar.Brand href="#home" className="logo"><GiTakeMyMoney/>Portmonetka</Navbar.Brand>
+                    <Navbar.Brand href="#home" className="logo"><GiTakeMyMoney />Portmonetka</Navbar.Brand>
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="ms-auto">
@@ -77,7 +76,7 @@ function App() {
                     {
                         wallets && wallets.length > 0 ?
                             wallets.map((item) =>
-                                <Wallet key={item.Id} wallet={item} onDataAdded={onDataChanged} getWalletBalance={getWalletBalance} />)
+                                <Wallet key={item.Id} wallet={item} onDataChanged={onDataChanged} getWalletBalance={getWalletBalance} />)
                             : null
                     }
 
@@ -93,7 +92,7 @@ function App() {
                             <h1><FaWallet /> Add new wallet </h1>
                             : <FaWallet />
                     }
-                   
+
                 </button>
             </div>
 
@@ -101,7 +100,8 @@ function App() {
                 <AddWalletModal
                     open={showAddWalletModal}
                     onClose={handleAddWalletModalClose}
-                    onSaved={onWalletAdded}
+                    onDataChanged={onDataChanged}
+                    getWalletBalance={addNewWalletBalance}
                 />
             }
         </>

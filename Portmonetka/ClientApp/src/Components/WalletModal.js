@@ -8,46 +8,39 @@ import Col from 'react-bootstrap/Col';
 import Button from "react-bootstrap/Button";
 import Transactions from "./Transactions";
 import { MdDelete } from 'react-icons/md'
+import { GiCat } from 'react-icons/gi';
 
-const WalletModal = ({ wallet, open, onClose, onSaved }) => {
-    const [walletName, setWalletName] = useState(wallet.Name);
-    const [walletCurrency, setWalletCurrency] = useState(wallet.Currency);
-    const [walletInitialAmount, setWalletInitialAmount] = useState(wallet.InitialAmount);
+const WalletModal = ({ wallet, open, onClose, onDataChanged }) => {
+    const [walletObject, setWalletObject] = useState(wallet);
+
     const [transactionsSum, setTransactionsSum] = useState();
 
-    const handleWalletNameChange = (e) => {
-        setWalletName(e.target.value);
+    const handleWalletDataChange = (property, value) => {
+        setWalletObject({ ...walletObject, [property]: value });
     }
 
-    const handleWalletCurrencyChange = (e) => {
-        setWalletCurrency(e.target.value.toUpperCase());
-    }
-
-    const handleWalletInitialAmountChange = (e) => {
-        setWalletInitialAmount(e.target.value);
-    }
-
-    const calcBalance = (value) => {
+    const calcTransactionsSum = (value) => {
         setTransactionsSum(value);
     }
 
     const onSubmit = () => {
-        if (wallet.Name !== walletName || wallet.Currency !== walletCurrency || wallet.InitialAmount !== walletInitialAmount) {
+        if (wallet.Name !== walletObject.Name || wallet.Currency !== walletObject.Currency || wallet.InitialAmount !== walletObject.InitialAmount) {
             const url = `api/wallet/${wallet.Id}`;
             let data = {
-                "Id": wallet.Id,
-                "Name": walletName,
-                "Currency": walletCurrency,
-                "InitialAmount": walletInitialAmount,
-                "IconFileName": wallet.IconFileName
+                "Id": walletObject.Id,
+                "Name": walletObject.Name,
+                "Currency": walletObject.Currency,
+                "InitialAmount": walletObject.InitialAmount,
+                "IconFileName": walletObject.IconFileName
             };
             axios.put(url, data);
         }
-        onSaved();
+        onDataChanged();
+        onClose();
     }
 
     const onDeleteWallet = async () => {
-        if (window.confirm(`Are you sure you want to delete ${walletName} wallet?`) === true) {
+        if (window.confirm(`Are you sure you want to delete ${wallet.Name} wallet?`) === true) {
             deleteTransactionsByWallet(wallet.Id);
         }
     }
@@ -66,9 +59,17 @@ const WalletModal = ({ wallet, open, onClose, onSaved }) => {
         const url = `api/wallet/${walletId}`;
         try {
             await axios.delete(url)
-                .then(() => onSaved())
+                .then(() => onDataChanged())
         } catch (error) {
             console.error(error);
+        }
+    }
+
+    function currencyToSign(currency) {
+        if (currency.toUpperCase() === 'KUS') {
+            return <i><GiCat className="kusya" /></i>
+        } else {
+            return getSymbolFromCurrency(currency);
         }
     }
 
@@ -79,8 +80,8 @@ const WalletModal = ({ wallet, open, onClose, onSaved }) => {
 
             <Modal.Header closeButton>
                 <Modal.Title>
-                    <big style={{ marginRight: "2rem" }}>{walletName}</big>
-                    <big>{wallet.InitialAmount + transactionsSum} {getSymbolFromCurrency(walletCurrency)}</big>
+                    <big style={{ marginRight: "2rem" }}>{walletObject.Name}</big>
+                    <big>{wallet.InitialAmount + transactionsSum} {currencyToSign(walletObject.Currency)}</big>
                 </Modal.Title>
             </Modal.Header>
 
@@ -91,12 +92,13 @@ const WalletModal = ({ wallet, open, onClose, onSaved }) => {
                             <Form.Group>
                                 <Form.Label>Title</Form.Label>
                                 <Form.Control
+                                    id="Name"
                                     type="text"
                                     placeholder="Wallet Title"
                                     aria-label="Title of your wallet"
-                                    value={walletName} maxLength="255"
+                                    value={walletObject.Name} maxLength="255"
                                     onChange={e => {
-                                        handleWalletNameChange(e)
+                                        handleWalletDataChange(e.target.id, e.target.value)
                                     }}
                                     required
                                 />
@@ -106,12 +108,13 @@ const WalletModal = ({ wallet, open, onClose, onSaved }) => {
                             <Form.Group>
                                 <Form.Label>Currency</Form.Label>
                                 <Form.Control
+                                    id="Currency"
                                     type="text"
                                     placeholder="USD"
                                     aria-label="Currency"
-                                    value={walletCurrency} maxLength="3"
+                                    value={walletObject.Currency} maxLength="3"
                                     onChange={e => {
-                                        handleWalletCurrencyChange(e)
+                                        handleWalletDataChange(e.target.id, e.target.value.toUpperCase())
                                     }}
                                     required
                                 />
@@ -119,14 +122,15 @@ const WalletModal = ({ wallet, open, onClose, onSaved }) => {
                         </Col>
                         <Col xs={12} md={4}>
                             <Form.Group>
-                                <Form.Label>Balance</Form.Label>
+                                <Form.Label>Initial Balance</Form.Label>
                                 <Form.Control
+                                    id="InitialAmount"
                                     type="number"
                                     placeholder="10000"
                                     aria-label="Initial balance"
-                                    value={walletInitialAmount} min="0"
+                                    value={walletObject.InitialAmount} min="0"
                                     onChange={e => {
-                                        handleWalletInitialAmountChange(e)
+                                        handleWalletDataChange(e.target.id, e.target.value)
                                     }}
                                     required
                                 />
@@ -135,7 +139,7 @@ const WalletModal = ({ wallet, open, onClose, onSaved }) => {
                     </Row>
                 </Form>
 
-                <Transactions wallet={wallet} calcBalance={calcBalance} isFullMode={true} onDataChanged={onSaved} />
+                <Transactions wallet={wallet} calcTransactionsSum={calcTransactionsSum} isFullMode={true} onDataChanged={onDataChanged} />
 
             </Modal.Body>
 
