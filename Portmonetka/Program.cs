@@ -13,6 +13,7 @@ builder.Services.AddCors(c =>
 });
 
 builder.Services.AddDbContext<PortmonetkaDbContext>();
+builder.Services.AddDbContext<InMemoryDbContext>();
 
 builder.Services
     .AddControllersWithViews()

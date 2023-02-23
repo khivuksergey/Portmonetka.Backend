@@ -317,7 +317,7 @@ const TransactionModal = ({ open, onClose, onDataChanged, walletId }) => {
                         <div
                             tabIndex={-1}
                             style={popperDate.styles.popper}
-                            className="dialog-sheet"
+                            className="popper"
                             {...popperDate.attributes.popper}
                             ref={setPopperSelectDate}
                             role="dialog" >
@@ -344,7 +344,7 @@ const TransactionModal = ({ open, onClose, onDataChanged, walletId }) => {
                         <div
                             tabIndex={-1}
                             style={popperCategory.styles.popper}
-                            className="dialog-sheet"
+                            className="popper"
                             {...popperCategory.attributes.popper}
                             ref={setPopperAddCategory}
                             role="dialog" >
