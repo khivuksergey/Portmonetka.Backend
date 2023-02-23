@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { format, parseISO, addHours, addMinutes } from 'date-fns';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
@@ -13,6 +13,7 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Table from 'react-bootstrap/Table';
 import { FaRegBell, FaRegBellSlash } from 'react-icons/fa';
+import SearchTable from './SearchTable';
 
 function Contact() {
     const [entry, setEntry] = useState({
@@ -32,10 +33,52 @@ function Contact() {
 
     const [entries, setEntries] = useState([]);
 
+    const [data, setData] = useState([]);
+
     useEffect(() => {
-        console.log('useEffect getEntries');
         getEntries();
     }, [])
+
+    useEffect(() => {
+        setData(
+            entries.map(e => ({
+                name: e.Data.name,
+                contact: coalesce(e.Data.email, e.Data.phone, e.Data.username),
+                topic: e.Data.topic,
+                date: e.Data.date,
+                notify: e.Data.notify ? <FaRegBell /> : <FaRegBellSlash />
+            }))
+        );
+    }, [entries])
+
+    const columns = useMemo(
+        () => [
+            {
+                Header: 'Name',
+                accessor: 'name',
+
+            },
+            {
+                Header: 'Contact',
+                accessor: 'contact'
+            },
+            {
+                Header: 'Topic',
+                accessor: 'topic'
+            },
+            {
+                Header: 'Date and time',
+                accessor: 'date'
+            },
+            {
+                Header: 'Notify',
+                accessor: 'notify',
+                Cell: (props: { value: object }) => {
+                    return <div style={{ "textAlign": "center" }}>{props.value}</div>
+                }
+            },
+        ], []
+    );
 
     const template = {
         name: "",
@@ -87,7 +130,6 @@ function Contact() {
                 break;
         }
 
-        console.log('posting...', data);
         axios.post(url, data)
             .then(() => {
                 setValidated(false);
@@ -101,7 +143,7 @@ function Contact() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const form = event.currentTarget;
-        if (form.checkValidity() === false) {
+        if (form.checkValidity() === false || !isValidPhoneNumber(entry.phone)) {
             event.stopPropagation();
         } else {
             postEntry();
@@ -232,7 +274,9 @@ function Contact() {
                 </Row>
 
                 <Row className="mb-3 mt-4">
-                    <Form.Group as={Col} md="4" sm="6" className="d-flex justify-content-between align-items-center" style={{ height: "36px" }}>
+                    <Form.Group as={Col} md="4" sm="6"
+                        className="d-flex justify-content-between align-items-center"
+                        style={{ height: "36px" }}>
                         <Form.Check noValidate
                             type="switch"
                             label="Notify in..."
@@ -264,41 +308,17 @@ function Contact() {
                 <Button type="submit" variant="primary" size="lg">Submit</Button>
             </Form>
 
-            <h1 className="my-sm-5 my-3">Entries</h1>
-
+            <h1 className="mt-sm-5 mt-3">Entries</h1>
+            
             {
                 entries.length ?
-                    (<Table size="sm" striped hover variant="dark">
-                        <tbody>
-                            <tr>
-                                <th style={{ "maxWidth": "170px" }}>Name</th>
-                                <th style={{ "maxWidth": "200px" }}>Contact</th>
-                                <th>Topic</th>
-                                <th style={{ "width": "140px" }}>Date and time</th>
-                                <th style={{ "width": "60px" }}>Notify</th>
-                            </tr>
-                            {entries ?
-                                entries
-                                    .map(t =>
-                                        <tr key={t.Id}>
-                                            <td>{t.Data.name}</td>
-                                            <td>{coalesce(t.Data.email, t.Data.phone, t.Data.username)}</td>
-                                            <td>{t.Data.topic}</td>
-                                            <td>{t.Data.date}</td>
-                                            <td style={{ textAlign: "center" }}>
-                                                {t.Data.notify ? <FaRegBell /> : <FaRegBellSlash />}
-                                            </td>
-                                        </tr>
-                                    )
-                                : null
-                            }
-                        </tbody>
-                    </Table>)
+                    (
+                        <SearchTable columns={columns} data={data} />
+                    )
                     :
-                    <h4>Seems like there aren't any yet...</h4>
+                    null
             }
-
-
+            
         </Container>
     )
 }

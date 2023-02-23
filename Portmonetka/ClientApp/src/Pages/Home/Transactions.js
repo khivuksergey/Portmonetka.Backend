@@ -58,8 +58,6 @@ function Transactions({ wallet, calcTransactionsSum, isFullMode, onDataChanged }
 
     const deleteTransaction = async (id) => {
         const url = `api/transaction/delete/id/${id}`;
-        console.log(url);
-        console.log(transactions.find(t => t.id = id));
         try {
             await axios.delete(url)
                 .then(() => {

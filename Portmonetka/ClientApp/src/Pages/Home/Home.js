@@ -30,7 +30,6 @@ function Home() {
             const result = await axios.get(url)
                 .then((result) => {
                     setWallets(result.data);
-                    console.log('asdasd', result.data);
                 })
         } catch (error) {
             console.error(error);
