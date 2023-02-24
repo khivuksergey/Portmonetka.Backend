@@ -11,7 +11,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Button from "react-bootstrap/Button";
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
-import Table from 'react-bootstrap/Table';
+//import Table from 'react-bootstrap/Table';
 import { FaRegBell, FaRegBellSlash } from 'react-icons/fa';
 import SearchTable from './SearchTable';
 
@@ -73,9 +73,9 @@ function Contact() {
             {
                 Header: 'Notify',
                 accessor: 'notify',
-                Cell: (props: { value: object }) => {
-                    return <div style={{ "textAlign": "center" }}>{props.value}</div>
-                }
+                //Cell: (props: { value: object }) => {
+                //    return <div style={{ "textAlign": "center" }}>{props.value}</div>
+                //}
             },
         ], []
     );
@@ -143,7 +143,7 @@ function Contact() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const form = event.currentTarget;
-        if (form.checkValidity() === false || !isValidPhoneNumber(entry.phone)) {
+        if (form.checkValidity() === false || (contact === 'phone' && !isValidPhoneNumber(entry.phone))) {
             event.stopPropagation();
         } else {
             postEntry();
