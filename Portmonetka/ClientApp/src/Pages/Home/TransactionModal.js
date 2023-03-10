@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
-import { format, parseISO } from 'date-fns';
-import axios from 'axios';
-import FocusTrap from 'focus-trap-react';
+import { useState, useEffect } from "react";
+import { format, parseISO } from "date-fns";
+import axios from "axios";
+import FocusTrap from "focus-trap-react";
 import Modal from "react-bootstrap/Modal";
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import InputGroup from 'react-bootstrap/InputGroup';
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
-import { DayPicker } from 'react-day-picker';
-import { usePopper } from 'react-popper';
-import { BiMinus, BiPlus } from 'react-icons/bi';
-import { GoCalendar } from 'react-icons/go';
-import 'react-day-picker/dist/style.css';
+import { DayPicker } from "react-day-picker";
+import { usePopper } from "react-popper";
+import { BiMinus, BiPlus } from "react-icons/bi";
+import { GoCalendar } from "react-icons/go";
+import "react-day-picker/dist/style.css";
 
 const TransactionModal = ({ open, onClose, onDataChanged, walletId }) => {
     const [validated, setValidated] = useState(false);
@@ -45,7 +45,7 @@ const TransactionModal = ({ open, onClose, onDataChanged, walletId }) => {
     const [buttonSelectDate, setButtonSelectDate] = useState(null);//reference element
 
     const popperDate = usePopper(buttonSelectDate, popperSelectDate, {
-        placement: 'bottom-end'
+        placement: "bottom-end"
     });
 
     const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
@@ -53,7 +53,7 @@ const TransactionModal = ({ open, onClose, onDataChanged, walletId }) => {
     const [buttonAddCategory, setButtonAddCategory] = useState(null);//reference element
 
     const popperCategory = usePopper(buttonAddCategory, popperAddCategory, {
-        placement: 'bottom-end'
+        placement: "bottom-end"
     });
 
     const transactionTemplate = {
@@ -279,7 +279,7 @@ const TransactionModal = ({ open, onClose, onDataChanged, walletId }) => {
                                             placeholder={transaction.date}
                                             aria-label="Date"
                                             aria-describedby="basic-addon1"
-                                            value={format(transaction.date, 'dd.MM.y')}
+                                            value={format(transaction.date, "dd.MM.y")}
                                             onChange={(e) => handleDateChange(e, i)}
                                             required
                                         />

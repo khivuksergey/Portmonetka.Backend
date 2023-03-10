@@ -1,13 +1,15 @@
-﻿import { GiCat } from 'react-icons/gi';
-import getSymbolFromCurrency from 'currency-symbol-map';
-import Container from 'react-bootstrap/Container';
+﻿import { useContext } from "react";
+import currencyToSign from "../../Utilities/CurrencyToSignConverter";
+import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
+import Container from "react-bootstrap/Container";
 
 //incorrect behaviour when adding or removing a wallet
-function Balance({ globalBalance }) {
+function Balance() {
+    const { walletsBalance } = useContext(GlobalBalanceContext);
     let balances = [];
-    var _ = require('lodash');
+    var _ = require("lodash");
 
-    let result = _.groupBy(globalBalance, 'currency');
+    let result = _.groupBy(walletsBalance, "currency");
 
     _.forEach(result,
         (value, key) =>
@@ -17,14 +19,6 @@ function Balance({ globalBalance }) {
                 sum: value.reduce((acc, cur) => acc + cur.amount, 0)
             }]
     );
-
-    function currencyToSign(currency) {
-        if (currency.toUpperCase() === 'KUS') {
-            return <i><GiCat className="kusya"/></i>
-        } else {
-            return getSymbolFromCurrency(currency);
-        }
-    }
 
     return (
         <section>

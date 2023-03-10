@@ -1,54 +1,56 @@
-﻿import { useEffect, useState } from 'react';
-import getSymbolFromCurrency from 'currency-symbol-map';
+﻿import { useState, useEffect, useContext } from "react";
+import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import Transactions from "./Transactions";
 import TransactionModal from "./TransactionModal";
 import WalletModal from "./WalletModal";
-import { GiCat } from 'react-icons/gi';
-import { FcMoneyTransfer } from 'react-icons/fc';
+import currencyToSign from "../../Utilities/CurrencyToSignConverter";
+import { FcMoneyTransfer } from "react-icons/fc";
 
-function Wallet({ wallet, onDataChanged, getWalletBalance }) {
+function Wallet({ wallet, onDeleteWallet, onGetWallets }) {
+    const { walletsBalance, setWalletsBalance } = useContext(GlobalBalanceContext);
+    const [transactionsSum, setTransactionsSum] = useState();
+    const [balance, setBalance] = useState();
+
+    //useMemo for future, set timeout for the last value?
+    useEffect(() => {
+        const newBalance = {
+            id: wallet.Id,
+            currency: wallet.Currency,
+            amount: wallet.InitialAmount + transactionsSum
+        };
+        setWalletsBalance((prev) => {
+            if (!!prev) {
+                return [...prev.filter((o) => o.id !== newBalance.id), { ...newBalance }];
+            } else {
+                return newBalance;
+            }
+                
+        });
+        setBalance(newBalance.amount);
+        //console.log('walletsBalance: ', walletsBalance);
+        //console.log(`transactionsSum: ${transactionsSum}`);
+    }, [transactionsSum, wallet.InitialAmount, wallet.Currency]);
+
+
     const [openTransactionModal, setOpenTransactionModal] = useState(false);
     const [showWalletModal, setShowWalletModal] = useState(false);
 
     const handleTransactionsModalClose = () => setOpenTransactionModal(false);
     const handleTransactionsModalShow = (e) => {
-        if (!e) e = window.event;
+        if (!e)
+            e = window.event;
         e.stopPropagation();
         setOpenTransactionModal(true);
     }
 
     const handleWalletModalClose = () => {
+        onGetWallets();
         setShowWalletModal(false);
-
     }
     const handleWalletModalShow = () => setShowWalletModal(true);
 
-    const [transactionsSum, setTransactionsSum] = useState();
-    const [balance, setBalance] = useState();
-
-    useEffect(() => {
-        setBalance(wallet.InitialAmount + transactionsSum);
-    }, [transactionsSum, wallet.InitialAmount]);
-
-    useEffect(() => {
-        getWalletBalance({ currency: wallet.Currency, amount: balance });
-    }, [balance, wallet.Currency]);
-
-
     const calcTransactionsSum = (value) => {
         setTransactionsSum(value);
-    }
-
-    const dataChanged = () => {
-        onDataChanged();
-    }
-
-    function currencyToSign(currency) {
-        if (currency.toUpperCase() === 'KUS') {
-            return <i><GiCat className="kusya" /></i>
-        } else {
-            return getSymbolFromCurrency(currency);
-        }
     }
 
     return (
@@ -67,7 +69,7 @@ function Wallet({ wallet, onDataChanged, getWalletBalance }) {
                     </button>
                 </div>
 
-                <Transactions wallet={wallet} calcTransactionsSum={calcTransactionsSum} isFullMode={false} onDataChanged={ dataChanged} />
+                <Transactions wallet={wallet} calcTransactionsSum={calcTransactionsSum} isFullMode={false} />
 
             </div>
 
@@ -76,7 +78,6 @@ function Wallet({ wallet, onDataChanged, getWalletBalance }) {
                     walletId={wallet.Id}
                     open={openTransactionModal}
                     onClose={handleTransactionsModalClose}
-                    onDataChanged={dataChanged}
                 />
             }
 
@@ -85,7 +86,7 @@ function Wallet({ wallet, onDataChanged, getWalletBalance }) {
                     wallet={wallet}
                     open={showWalletModal}
                     onClose={handleWalletModalClose}
-                    onDataChanged={dataChanged}
+                    onDeleteWallet={onDeleteWallet}
                 />
             }
         </>

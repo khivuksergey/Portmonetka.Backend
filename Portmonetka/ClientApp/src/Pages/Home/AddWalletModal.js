@@ -1,12 +1,12 @@
-﻿import { useState } from 'react';
-import axios from 'axios';
+﻿import { useState } from "react";
 import Modal from "react-bootstrap/Modal";
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 
-const AddWalletModal = ({ open, onClose, onDataChanged, getWalletBalance }) => {
+const AddWalletModal = ({ open, onClose, handleAddWallet }) => {
+    //interface wallet
     const [wallet, setWallet] = useState({
         name: "",
         initialAmount: "",
@@ -30,21 +30,16 @@ const AddWalletModal = ({ open, onClose, onDataChanged, getWalletBalance }) => {
 
     const onSubmit = () => {
         //if (!validated)
-        //    alert('invalid input');
-        const url = "api/wallet";
-        const data = {
+        //    alert("invalid input");
+        //const url = "api/wallet";
+        const newWallet = {
             "name": wallet.name,
             "currency": wallet.currency.toUpperCase(),
             "initialAmount": wallet.initialAmount,
             "iconFileName": wallet.iconFileName
         };
-
-        axios.post(url, data)
-            .then(() => {
-                onDataChanged();
-                getWalletBalance({currency: wallet.currency, amount: wallet.initialAmount});
-                onClose();
-            });
+        handleAddWallet(newWallet);
+        onClose();
     }
 
     function printStatusMessage() {
@@ -65,7 +60,7 @@ const AddWalletModal = ({ open, onClose, onDataChanged, getWalletBalance }) => {
                 <Modal.Title><big>Add new wallet</big></Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form validated={validated} onSubmit={handleSubmit} /*noValidate*/>
+                <Form validated={validated} onSubmit={handleSubmit} noValidate>
                     <Row>
                         <Col xs={12} md={5}>
                             <Form.Group>

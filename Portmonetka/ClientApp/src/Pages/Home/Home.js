@@ -1,65 +1,50 @@
-﻿import { useState, useEffect } from 'react';
-import axios from 'axios';
-import Container from 'react-bootstrap/Container';
+﻿import { useState } from "react";
+import useWallets from "../../Hooks/useWallets";
+import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
+import Container from "react-bootstrap/Container";
 import Balance from "./Balance";
 import Wallet from "./Wallet";
 import AddWalletModal from "./AddWalletModal";
-import { FaWallet } from 'react-icons/fa';
-
+import { FaWallet } from "react-icons/fa";
 
 function Home() {
-    const [wallets, setWallets] = useState([])
+    const { wallets, getWallets, handleDeleteWallet, handleAddWallet } = useWallets();
     const [showAddWalletModal, setShowAddWalletModal] = useState(false);
-
-    const [globalBalance, setGlobalBalance] = useState([])
-
-    useEffect(() => {
-        getWallets();
-    }, [])
+    const [walletsBalance, setWalletsBalance] = useState([]);
 
     const handleAddWalletModalClose = () => setShowAddWalletModal(false);
     const handleAddWalletModalShow = () => setShowAddWalletModal(true);
 
-    const onDataChanged = () => {
-        getWallets();
-    }
-
-    const getWallets = async () => {
-        const url = "api/wallet";
-        try {
-            const result = await axios.get(url)
-                .then((result) => {
-                    setWallets(result.data);
-                })
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    const getWalletBalance = (balance) => {
-        setGlobalBalance(globalBalance => {
-            if (globalBalance.length >= wallets.length) {
-                globalBalance.splice(0, globalBalance.length - wallets.length + 1);
-            }
-            return [...globalBalance, { currency: balance.currency, amount: balance.amount }]
+    const onDeleteWallet = (id) => {
+        handleDeleteWallet(id);
+        setWalletsBalance((prev) => {
+            return prev.filter(entry => entry.id !== id);
         });
     }
 
-    const addNewWalletBalance = (balance) => {
-        setGlobalBalance([...globalBalance, { currency: balance.currency, amount: balance.amount }]);
+    const addWallet = (wallet) => {
+        handleAddWallet(wallet);
+    }
+
+    const onGetWallets = () => {
+        getWallets();
     }
 
     return (
-        <>
+        <GlobalBalanceContext.Provider value={{ walletsBalance, setWalletsBalance }}>
 
-            <Balance globalBalance={globalBalance} />
+            <Balance />
 
             <section className="wallets mt-4">
                 <Container>
                     {
                         wallets && wallets.length > 0 ?
-                            wallets.map((item) =>
-                                <Wallet key={item.Id} wallet={item} onDataChanged={onDataChanged} getWalletBalance={getWalletBalance} />)
+                            wallets.map((wallet) =>
+                                <Wallet
+                                    key={wallet.Id}
+                                    wallet={wallet}
+                                    onDeleteWallet={onDeleteWallet}
+                                    onGetWallets={onGetWallets}/>)
                             : null
                     }
 
@@ -83,11 +68,10 @@ function Home() {
                 <AddWalletModal
                     open={showAddWalletModal}
                     onClose={handleAddWalletModalClose}
-                    onDataChanged={onDataChanged}
-                    getWalletBalance={addNewWalletBalance}
+                    handleAddWallet={addWallet}
                 />
             }
-        </>
+        </GlobalBalanceContext.Provider>
     )
 }
 

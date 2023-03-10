@@ -1,19 +1,19 @@
-﻿import { useState } from 'react';
-import axios from 'axios';
-import getSymbolFromCurrency from 'currency-symbol-map';
+﻿import { useState, useContext } from "react";
+import axios from "axios";
+import currencyToSign from "../../Utilities/CurrencyToSignConverter";
+import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import Modal from "react-bootstrap/Modal";
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Transactions from "./Transactions";
-import { MdDelete } from 'react-icons/md'
-import { GiCat } from 'react-icons/gi';
+import { MdDelete } from "react-icons/md";
 
-const WalletModal = ({ wallet, open, onClose, onDataChanged }) => {
+const WalletModal = ({ wallet, open, onClose, onDeleteWallet }) => {
     const [walletObject, setWalletObject] = useState(wallet);
-
     const [transactionsSum, setTransactionsSum] = useState();
+    const { walletsBalance, setWalletsBalance } = useContext(GlobalBalanceContext);
 
     const handleWalletDataChange = (property, value) => {
         setWalletObject({ ...walletObject, [property]: value });
@@ -33,43 +33,30 @@ const WalletModal = ({ wallet, open, onClose, onDataChanged }) => {
                 "InitialAmount": walletObject.InitialAmount,
                 "IconFileName": walletObject.IconFileName
             };
-            axios.put(url, data);
+            try {
+                axios.put(url, data)
+                    .then(() => {
+                        const newBalance = {
+                            id: walletObject.Id,
+                            currency: walletObject.Currency,
+                            amount: walletObject.InitialAmount + transactionsSum
+                        };
+                        setWalletsBalance((prev) => {
+                            return [...prev.filter((o) => o.id !== newBalance.id), { ...newBalance }];
+                        });
+                        //console.log('new walletsBalance: ', [...walletsBalance.filter((o) => o.id !== newBalance.id), { ...newBalance }]);
+                    });
+            } catch (error) {
+                console.error(error);
+            }
         }
-        onDataChanged();
         onClose();
     }
 
-    const onDeleteWallet = async () => {
+    const handleDeleteWallet = async () => {
         if (window.confirm(`Are you sure you want to delete ${wallet.Name} wallet?`) === true) {
-            deleteTransactionsByWallet(wallet.Id);
-        }
-    }
-
-    const deleteTransactionsByWallet = async (walletId) => {
-        const url = `api/transaction/delete/wallet/${walletId}`;
-        try {
-            await axios.delete(url)
-                .then(() => deleteWallet(walletId))
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    const deleteWallet = async (walletId) => {
-        const url = `api/wallet/${walletId}`;
-        try {
-            await axios.delete(url)
-                .then(() => onDataChanged())
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    function currencyToSign(currency) {
-        if (currency.toUpperCase() === 'KUS') {
-            return <i><GiCat className="kusya" /></i>
-        } else {
-            return getSymbolFromCurrency(currency);
+            onDeleteWallet(wallet.Id);
+            onClose();
         }
     }
 
@@ -139,12 +126,12 @@ const WalletModal = ({ wallet, open, onClose, onDataChanged }) => {
                     </Row>
                 </Form>
 
-                <Transactions wallet={wallet} calcTransactionsSum={calcTransactionsSum} isFullMode={true} onDataChanged={onDataChanged} />
+                <Transactions wallet={wallet} calcTransactionsSum={calcTransactionsSum} isFullMode={true} />
 
             </Modal.Body>
 
             <Modal.Footer>
-                <Button className="btn btn-delete-wallet" onClick={onDeleteWallet}>
+                <Button className="btn btn-delete-wallet" onClick={handleDeleteWallet}>
                     <MdDelete size={20} />
                 </Button>
                 <Button variant="primary" onClick={onSubmit}>

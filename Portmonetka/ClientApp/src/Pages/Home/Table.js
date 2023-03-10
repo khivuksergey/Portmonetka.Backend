@@ -1,5 +1,5 @@
-﻿import {useState, useEffect } from 'react'
-import { useTable, usePagination } from 'react-table'
+﻿import {useState, useEffect } from "react"
+import { useTable, usePagination } from "react-table"
 
 
 // Create an editable cell renderer
@@ -79,7 +79,7 @@ function Table({ columns, data, updateMyData, skipPageReset }) {
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
-                                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+                                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
                             ))}
                         </tr>
                     ))}
@@ -90,7 +90,7 @@ function Table({ columns, data, updateMyData, skipPageReset }) {
                         return (
                             <tr {...row.getRowProps()}>
                                 {row.cells.map(cell => {
-                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                    return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                                 })}
                             </tr>
                         )
@@ -99,25 +99,25 @@ function Table({ columns, data, updateMyData, skipPageReset }) {
             </table>
             <div className="pagination">
                 <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-                    {'<<'}
-                </button>{' '}
+                    {"<<"}
+                </button>{" "}
                 <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-                    {'<'}
-                </button>{' '}
+                    {"<"}
+                </button>{" "}
                 <button onClick={() => nextPage()} disabled={!canNextPage}>
-                    {'>'}
-                </button>{' '}
+                    {">"}
+                </button>{" "}
                 <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-                    {'>>'}
-                </button>{' '}
+                    {">>"}
+                </button>{" "}
                 <span>
-                    Page{' '}
+                    Page{" "}
                     <strong>
                         {pageIndex + 1} of {pageOptions.length}
-                    </strong>{' '}
+                    </strong>{" "}
                 </span>
                 <span>
-                    | Go to page:{' '}
+                    | Go to page:{" "}
                     <input
                         type="number"
                         defaultValue={pageIndex + 1}
@@ -125,9 +125,9 @@ function Table({ columns, data, updateMyData, skipPageReset }) {
                             const page = e.target.value ? Number(e.target.value) - 1 : 0
                             gotoPage(page)
                         }}
-                        style={{ width: '100px' }}
+                        style={{ width: "100px" }}
                     />
-                </span>{' '}
+                </span>{" "}
                 <select
                     value={pageSize}
                     onChange={e => {

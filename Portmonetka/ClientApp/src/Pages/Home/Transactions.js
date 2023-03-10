@@ -1,71 +1,28 @@
-import { useState, useEffect } from 'react';
-import { format, parseISO } from 'date-fns';
-import { Table } from 'react-bootstrap';
-import axios from 'axios';
-import { BiDotsHorizontalRounded } from 'react-icons/bi'
-import { MdDelete } from 'react-icons/md'
+import { useEffect } from "react";
+import useTransactions from "../../Hooks/useTransactions";
+import useCategories from "../../Hooks/useCategories";
+import { format, parseISO } from "date-fns";
+import { Table } from "react-bootstrap";
+import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { MdDelete } from "react-icons/md";
 
-function Transactions({ wallet, calcTransactionsSum, isFullMode, onDataChanged }) {
-    const [transactions, setTransactions] = useState([])
-    const [categories, setCategories] = useState([])
+function Transactions({ wallet, calcTransactionsSum, isFullMode }) {
+    const { transactions, deleteTransaction } = useTransactions(wallet)
+    const categories = useCategories();
 
-    useEffect(() => {
-        getTransactions();
-    }, [wallet])
-
+    //useMemo for future
     useEffect(() => {
         calculateBalance();
     }, [transactions])
 
-
-    const getTransactions = async () => {
-        try {
-            const result = await axios.get(`api/transaction/wallet/${wallet.Id}`)
-                .then((result) => {
-                    setTransactions(result.data);
-                })
-        } catch (error) {
-            console.error(error);
-        } finally {
-            if (isFullMode) {
-                getCategories();
-            }
-        }
-    }
-
     const calculateBalance = () => {
-        let sum = transactions.reduce((acc, val) => acc + val.Amount, 0);
-        calcTransactionsSum(sum);
-    }
-
-    const getCategories = async () => {
-        const url = "api/category";
-        try {
-            const result = await axios.get(url)
-                .then((result) => {
-                    setCategories(result.data)
-                })
-        } catch (error) {
-            console.error(error);
-        }
+        let transactionsSum = transactions.reduce((sum, val) => sum + val.Amount, 0);
+        calcTransactionsSum(transactionsSum);
     }
 
     const handleDeleteTransaction = (id) => {
-        if (window.confirm('This item will be immediately deleted. Do you want to proceed?') === true) {
+        if (window.confirm("This item will be immediately deleted. Do you want to proceed?") === true) {
             deleteTransaction(id);
-        }
-    }
-
-    const deleteTransaction = async (id) => {
-        const url = `api/transaction/delete/id/${id}`;
-        try {
-            await axios.delete(url)
-                .then(() => {
-                    getTransactions();
-                    onDataChanged();
-                })
-        } catch (error) {
-            console.error(error);
         }
     }
 
