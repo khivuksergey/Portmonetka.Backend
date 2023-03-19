@@ -56,8 +56,10 @@ const useWallets = () => {
         };
 
         try {
-            axios.post(url, data);
-            getWallets();
+            await axios.post(url, data)
+                .then(() => {
+                    getWallets();
+                });
         } catch (error) {
             console.error(error);
         }

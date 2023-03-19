@@ -23,23 +23,24 @@ const WalletModal = ({ wallet, open, onClose, onDeleteWallet }) => {
         setTransactionsSum(value);
     }
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         if (wallet.Name !== walletObject.Name || wallet.Currency !== walletObject.Currency || wallet.InitialAmount !== walletObject.InitialAmount) {
             const url = `api/wallet/${wallet.Id}`;
             let data = {
                 "Id": walletObject.Id,
                 "Name": walletObject.Name,
                 "Currency": walletObject.Currency,
-                "InitialAmount": walletObject.InitialAmount,
+                "InitialAmount": Number(walletObject.InitialAmount),
                 "IconFileName": walletObject.IconFileName
             };
+            console.log(data);
             try {
                 axios.put(url, data)
                     .then(() => {
                         const newBalance = {
                             id: walletObject.Id,
                             currency: walletObject.Currency,
-                            amount: walletObject.InitialAmount + transactionsSum
+                            amount: Number(walletObject.InitialAmount) + Number(transactionsSum)
                         };
                         setWalletsBalance((prev) => {
                             return [...prev.filter((o) => o.id !== newBalance.id), { ...newBalance }];

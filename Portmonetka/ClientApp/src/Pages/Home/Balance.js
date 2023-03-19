@@ -1,4 +1,4 @@
-﻿import { useContext } from "react";
+﻿import { useContext, useEffect } from "react";
 import currencyToSign from "../../Utilities/CurrencyToSignConverter";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import Container from "react-bootstrap/Container";
@@ -6,19 +6,31 @@ import Container from "react-bootstrap/Container";
 //incorrect behaviour when adding or removing a wallet
 function Balance() {
     const { walletsBalance } = useContext(GlobalBalanceContext);
+
     let balances = [];
-    var _ = require("lodash");
 
-    let result = _.groupBy(walletsBalance, "currency");
+    const calculate = () => {
+        var _ = require("lodash");
+        let result = _.groupBy(walletsBalance, "currency");
 
-    _.forEach(result,
-        (value, key) =>
-            balances = [...balances,
-            {
-                currency: key,
-                sum: value.reduce((acc, cur) => acc + cur.amount, 0)
-            }]
-    );
+        _.forEach(result,
+            (value, key) =>
+                balances = [...balances,
+                {
+                    currency: key,
+                    sum: value.reduce((acc, cur) => acc + cur.amount, 0)
+                }]
+        );
+
+        console.log('walletsBalance in Balance: ', walletsBalance);
+    }
+
+    calculate();
+
+    //const handleRecalc = () => {
+    //    calculate();
+    //    console.log('recalc');
+    //}
 
     return (
         <section>

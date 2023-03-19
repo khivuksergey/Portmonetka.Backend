@@ -20,5 +20,10 @@ module.exports = function(app) {
     }
   });
 
-  app.use(appProxy);
+  try {
+      app.use(appProxy);
+  }
+  catch (err) {
+      console.log(err.message);
+  }
 };

@@ -13,7 +13,7 @@ builder.Services.AddCors(c =>
 });
 
 builder.Services.AddDbContext<PortmonetkaDbContext>();
-builder.Services.AddDbContext<InMemoryDbContext>();
+//builder.Services.AddDbContext<InMemoryDbContext>();
 
 builder.Services
     .AddControllersWithViews()
@@ -31,6 +31,13 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors("AllowOrigin");
+
+app.Use(async (context, next) => {
+    context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    context.Response.Headers["Pragma"] = "no-cache";
+    context.Response.Headers["Expires"] = "0";
+    await next();
+});
 
 app.MapControllerRoute(
     name: "default",

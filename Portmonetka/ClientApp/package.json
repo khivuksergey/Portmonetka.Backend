@@ -61,9 +61,7 @@
     "nan": "^2.16.0",
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.3.6",
-    "typescript": "^4.7.4",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1"
+    "typescript": "^4.7.4"
   },
   "overrides": {
     "autoprefixer": "10.4.5"
@@ -77,9 +75,7 @@
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src/",
-    "webpackbuild": "cross-env NODE_ENV=production webpack --mode production",
-    "webpackdev": "cross-env NODE_ENV=development webpack --mode development"
+    "lint": "eslint ./src/"
   },
   "eslintConfig": {
     "extends": [

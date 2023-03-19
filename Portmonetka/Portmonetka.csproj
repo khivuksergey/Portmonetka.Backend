@@ -11,6 +11,7 @@
     <SpaProxyServerUrl>http://localhost:44464</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
+    <TypeScriptJSXEmit>none</TypeScriptJSXEmit>
   </PropertyGroup>
 
   <ItemGroup>

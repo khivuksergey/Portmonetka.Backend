@@ -18,15 +18,24 @@ function Home() {
     const onDeleteWallet = (id) => {
         handleDeleteWallet(id);
         setWalletsBalance((prev) => {
+            console.log(prev.filter(entry => entry.id !== id));
             return prev.filter(entry => entry.id !== id);
         });
     }
 
     const addWallet = (wallet) => {
         handleAddWallet(wallet);
+        //const newBalance = {
+        //    id: wallet.Id,
+        //    currency: wallet.Currency,
+        //    amount: Number(wallet.InitialAmount) + Number(transactionsSum)
+        //};
+        //setWalletsBalance((prev) => {
+        //    return prev.push(newBalance);
+        //});
     }
 
-    const onGetWallets = () => {
+    const onGetWallets = async () => {
         getWallets();
     }
 
