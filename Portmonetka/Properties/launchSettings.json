@@ -1,17 +1,17 @@
-{
+﻿{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:20775",
-      "sslPort": 0
+      "applicationUrl": "http://localhost:22114",
+      "sslPort": 44351
     }
   },
   "profiles": {
     "Portmonetka": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5215",
+      "applicationUrl": "https://localhost:7195;http://localhost:5212",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"

@@ -1,10 +1,8 @@
-﻿import { Outlet, Link } from "react-router-dom";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import { GiTakeMyMoney } from "react-icons/gi";
+import { Outlet, Link } from 'react-router-dom';
+import { Container, Nav, Navbar } from 'react-bootstrap';
+import { GiTakeMyMoney } from 'react-icons/gi';
 
-function Layout() {
+export default function Layout() {
     return (
         <>
             <Navbar collapseOnSelect expand="sm" variant="dark" className="prevent-select">
@@ -26,9 +24,7 @@ function Layout() {
                 </Container>
             </Navbar>
 
-            <Outlet/>
+            <Outlet />
         </>
     )
 }
-
-export default Layout;

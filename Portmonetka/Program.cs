@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Portmonetka.Models;
@@ -13,10 +12,8 @@ builder.Services.AddCors(c =>
 });
 
 builder.Services.AddDbContext<PortmonetkaDbContext>();
-//builder.Services.AddDbContext<InMemoryDbContext>();
 
-builder.Services
-    .AddControllersWithViews()
+builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
     .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
@@ -25,19 +22,14 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseCors("AllowOrigin");
-
-app.Use(async (context, next) => {
-    context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-    context.Response.Headers["Pragma"] = "no-cache";
-    context.Response.Headers["Expires"] = "0";
-    await next();
-});
 
 app.MapControllerRoute(
     name: "default",

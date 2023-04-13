@@ -1,20 +1,25 @@
-﻿import { useContext, useEffect } from "react";
-import currencyToSign from "../../Utilities/CurrencyToSignConverter";
+import { useContext } from "react";
+import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
-import Container from "react-bootstrap/Container";
+import { IGlobalBalance } from "../../DataTypes";
+import { Container } from "react-bootstrap";
 
-//incorrect behaviour when adding or removing a wallet
-function Balance() {
-    const { walletsBalance } = useContext(GlobalBalanceContext);
+interface IBalance {
+    currency: string
+    sum: number
+}
 
-    let balances = [];
+export default function Balance() {
+    const globalBalanceContext = useContext(GlobalBalanceContext);
+
+    let balances: IBalance[] = [];
 
     const calculate = () => {
         var _ = require("lodash");
-        let result = _.groupBy(walletsBalance, "currency");
+        let result = _.groupBy(globalBalanceContext!.globalBalance, "currency");
 
         _.forEach(result,
-            (value, key) =>
+            (value: IGlobalBalance[], key: string) =>
                 balances = [...balances,
                 {
                     currency: key,
@@ -22,15 +27,10 @@ function Balance() {
                 }]
         );
 
-        console.log('walletsBalance in Balance: ', walletsBalance);
+        console.log('Global Balance in Balance.tsx: ', globalBalanceContext!.globalBalance);
     }
 
     calculate();
-
-    //const handleRecalc = () => {
-    //    calculate();
-    //    console.log('recalc');
-    //}
 
     return (
         <section>
@@ -39,7 +39,7 @@ function Balance() {
                     {
                         balances.map(b =>
                             <h1 key={b.currency}>
-                                {b.sum}{currencyToSign(b.currency)}
+                                {b.sum}{CurrencyToSign(b.currency)}
                             </h1>
                         )
                     }
@@ -49,5 +49,3 @@ function Balance() {
 
     )
 }
-
-export default Balance;
