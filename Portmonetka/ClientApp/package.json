@@ -3,29 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babel/polyfill": "^7.12.1",
-    "@popperjs/core": "^2.11.6",
+    "axios": "^1.3.4",
     "bootstrap": "^5.1.3",
     "currency-symbol-map": "^5.1.0",
     "date-fns": "^2.29.3",
-    "focus-trap-react": "^10.0.2",
+    "focus-trap-react": "^10.1.1",
     "http-proxy-middleware": "^2.0.6",
     "jquery": "^3.6.0",
-    "lodash": "^4.17.21",
-    "match-sorter": "^6.3.1",
     "merge": "^2.1.1",
-    "normalize.css": "^8.0.1",
     "oidc-client": "^1.11.5",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.7.0",
-    "react-day-picker": "^8.5.1",
+    "react-bootstrap": "^2.7.2",
+    "react-day-picker": "^8.6.0",
     "react-dom": "^18.2.0",
-    "react-phone-number-input": "^3.2.19",
+    "react-icons": "^4.8.0",
+    "react-popper": "^2.3.0",
     "react-router-bootstrap": "^0.26.1",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
-    "react-table": "^7.8.0",
-    "reactstrap": "^9.1.1",
     "rimraf": "^3.0.2",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.5.3",
@@ -42,28 +37,17 @@
     "workbox-streams": "^6.5.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.0",
+    "@types/react": "^18.0.28",
     "ajv": "^8.11.0",
-    "babel-loader": "^9.1.2",
-    "clean-webpack-plugin": "^4.0.0",
-    "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
-    "css-loader": "^6.7.3",
-    "css-minimizer-webpack-plugin": "^4.2.2",
     "eslint": "^8.18.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-flowtype": "^8.0.3",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.6.0",
     "eslint-plugin-react": "^7.30.1",
-    "html-webpack-plugin": "^5.5.0",
-    "mini-css-extract-plugin": "^2.7.2",
     "nan": "^2.16.0",
-    "style-loader": "^3.3.1",
-    "terser-webpack-plugin": "^5.3.6",
-    "typescript": "^4.7.4",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1"
+    "typescript": "^4.7.4"
   },
   "overrides": {
     "autoprefixer": "10.4.5"
@@ -73,13 +57,12 @@
     "nth-check": "^3.0.1"
   },
   "scripts": {
+    "prestart": "node aspnetcore-https && node aspnetcore-react",
     "start": "rimraf ./build && react-scripts start",
     "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src/",
-    "webpackbuild": "cross-env NODE_ENV=production webpack --mode production",
-    "webpackdev": "cross-env NODE_ENV=development webpack --mode development"
+    "lint": "eslint ./src/"
   },
   "eslintConfig": {
     "extends": [

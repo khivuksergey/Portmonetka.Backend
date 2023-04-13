@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿//using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portmonetka.Models;
@@ -42,6 +42,15 @@ namespace Portmonetka.Controllers
         public async Task<ActionResult<Wallet>> PostWallet(Wallet wallet)
         {
             //Validate
+            //if (!ModelState.IsValid)
+            //{
+
+            //    // return immediately and let 
+            //    // ASP.NET Core show the errors 
+            //    return Page();
+
+            //}
+
             _dbContext.Wallets.Add(wallet);
             await _dbContext.SaveChangesAsync();
 
@@ -78,7 +87,17 @@ namespace Portmonetka.Controllers
             if (wallet == null)
                 return NotFound();
 
-            _dbContext.Wallets.Remove(wallet);
+            if (typeof(Auditable).IsAssignableFrom(typeof(Wallet)))
+            {
+                wallet.DateDeleted = DateTimeOffset.UtcNow;
+                _dbContext.Wallets.Attach(wallet);
+                _dbContext.Entry(wallet).State = EntityState.Modified;
+            }
+            else
+            {
+                _dbContext.Wallets.Remove(wallet);
+            }
+            //_dbContext.Wallets.Remove(wallet);
             await _dbContext.SaveChangesAsync();
 
             return Ok();

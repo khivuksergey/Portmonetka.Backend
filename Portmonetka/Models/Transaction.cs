@@ -1,17 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Portmonetka.Models;
 
-public partial class Transaction
+public partial class Transaction: Auditable
 {
     public int Id { get; set; }
 
-    public string Name { get; set; } = null!;
+    [Required(ErrorMessage = "Description is required")]
+    [MinLength(1, ErrorMessage = "Description should at least be 1 symbol")]
+    [MaxLength(256, ErrorMessage = "Description should be less than 256 symbols")]
+    public string Description { get; set; } = null!;
 
+    [Required(ErrorMessage = "Amount is required")]
     public decimal Amount { get; set; }
 
-    public DateTime Date { get; set; }
+    [Required(ErrorMessage = "Date is required")]
+    public DateTimeOffset Date { get; set; }
 
     public int? CategoryId { get; set; }
 

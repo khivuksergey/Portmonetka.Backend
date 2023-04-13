@@ -8,17 +8,20 @@
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-    <SpaProxyServerUrl>http://localhost:44464</SpaProxyServerUrl>
+    <SpaProxyServerUrl>https://localhost:44423</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.2">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -26,17 +29,48 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp_react\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp_react\**" />
+    <EmbeddedResource Remove="ClientApp_react\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="ClientApp_react\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\WalletExtension.cs" />
+    <None Remove="ClientApp\src\Components\AddCategory.tsx" />
+    <None Remove="ClientApp\src\Components\Modal.tsx" />
+    <None Remove="ClientApp\src\Components\Popper.tsx" />
+    <None Remove="ClientApp\src\Components\StatusMessage.tsx" />
+    <None Remove="ClientApp\src\Components\SubmitButton.tsx" />
+    <None Remove="ClientApp\src\DataTypes.ts" />
+    <None Remove="ClientApp\src\Hooks\usePopper.ts" />
+    <None Remove="ClientApp\src\Utilities\AddWalletStatusMessage.ts" />
+    <None Remove="ClientApp\tsconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\Components\" />
+    <TypeScriptCompile Remove="ClientApp\src\Context\GlobalBalanceContext.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\Hooks\useCategory.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\Hooks\useTransaction.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\Hooks\useWallet.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\Pages\Home\AddTransactionModal.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\Pages\Home\AddWalletModal.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\Pages\Home\Balance.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\Pages\Home\Home.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\Pages\Home\Transactions.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\Pages\Home\Wallet.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\Pages\Home\WalletModal.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\Utilities\CurrencyToSignConverter.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ClientApp\tsconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

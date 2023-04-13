@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portmonetka.Models;
@@ -69,7 +69,7 @@ namespace Portmonetka.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteCategory(int id)
+        public async Task<ActionResult> DeleteCategory(int id, bool force)
         {
             if (_dbContext.Categories == null)
                 return NotFound();
@@ -78,10 +78,28 @@ namespace Portmonetka.Controllers
             if (category == null)
                 return NotFound();
 
-            _dbContext.Categories.Remove(category);
-            await _dbContext.SaveChangesAsync();
+            var hasTransactions = await (_dbContext.Transactions.AnyAsync(t => t.CategoryId == id));
+            if (!hasTransactions || force)
+            {
+                if (typeof(Auditable).IsAssignableFrom(typeof(Category)))
+                {
+                    category.DateDeleted = DateTimeOffset.UtcNow;
+                    _dbContext.Categories.Attach(category);
+                    _dbContext.Entry(category).State = EntityState.Modified;
+                }
+                else
+                {
+                    _dbContext.Categories.Remove(category);
+                }
 
-            return Ok();
+                await _dbContext.SaveChangesAsync();
+
+                return Ok();
+            }
+
+            var confirmation = JsonConvert.SerializeObject("hasTransactions");
+            return Content(confirmation);   //send confirmation to force deleting
+            
         }
     }
 }

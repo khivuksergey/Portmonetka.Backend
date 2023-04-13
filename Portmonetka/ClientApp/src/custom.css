@@ -1,4 +1,4 @@
-@import "~normalize.css";
+/*@import "~normalize.css";*/
 
 :root {
     --dark-color: #121212;
@@ -35,7 +35,7 @@ body {
 }
 
 .navbar {
-    background: var(--dark-color);
+    /*background: var(--dark-color);*/
 }
 
 .navbar .logo {

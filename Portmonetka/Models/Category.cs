@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Portmonetka.Models;
 
-public partial class Category
+public partial class Category: Auditable
 {
     public int Id { get; set; }
 
+    [Required(ErrorMessage = "Name is required")]
+    [MinLength(1, ErrorMessage = "Name length should at least be 1 symbol")]
+    [MaxLength(128, ErrorMessage = "Name length should be less than 128 symbols")]
     public string Name { get; set; } = null!;
 
     public bool? IsExpense { get; set; }
