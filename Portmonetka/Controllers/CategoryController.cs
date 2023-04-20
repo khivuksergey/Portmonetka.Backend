@@ -22,7 +22,9 @@ namespace Portmonetka.Controllers
             if (_dbContext.Categories == null)
                 return NotFound();
 
-            return await _dbContext.Categories.ToListAsync();
+            return await _dbContext.Categories
+                .Where(c => c.DateDeleted == null)
+                .ToListAsync();
         }
 
         [HttpGet("{id}")]

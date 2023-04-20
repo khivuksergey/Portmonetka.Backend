@@ -6,15 +6,17 @@ interface AddCategoryProps {
     onAddCategory: (category: ICategory) => Promise<void>
 }
 
+let categoryTemplate: ICategory = {
+    name: "",
+    isExpense: true,
+    iconFileName: ""
+}
+
 export default function AddCategory({ onAddCategory }: AddCategoryProps) {
-    const [newCategory, setNewCategory] = useState<ICategory>(
-        {
-            name: "",
-            isExpense: true,
-            iconFileName: ""
-        });
+    const [newCategory, setNewCategory] = useState<ICategory>(categoryTemplate);
 
     const handleAddCategory = () => {
+        console.log("new category: ", newCategory);
         onAddCategory(newCategory);
     }
 

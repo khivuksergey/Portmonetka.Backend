@@ -12,7 +12,7 @@ interface ModalProps {
 function Modal({ title, size, show, onClose, children, contentClassName }: ModalProps) {
     return (
         <BModal show={show} onHide={onClose} contentClassName={contentClassName} size={size} backdrop="static" /*fullscreen="md-down" centered*/>
-            <BModal.Header closeButton>
+            <BModal.Header /*closeButton*/>
                 <BModal.Title>
                     {title}
                 </BModal.Title>

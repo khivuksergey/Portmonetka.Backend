@@ -1,21 +1,27 @@
-export interface IWallet {
+interface IAuditable {
+    dateCreated?: Date
+    dateUpdated?: Date
+    dateDeleted?: Date
+}
+
+export interface IWallet extends IAuditable {
     id?: number
     name: string
     currency: string 
-    initialAmount?: number
+    initialAmount: number
     iconFileName?: string
 }
 
-export interface ICategory {
+export interface ICategory extends IAuditable {
     id?: number
     name: string
     isExpense: boolean
     iconFileName?: string
 }
 
-export interface ITransaction {
+export interface ITransaction extends IAuditable {
     id?: number
-    name: string
+    description: string
     amount: number
     date: Date
     categoryId?: number

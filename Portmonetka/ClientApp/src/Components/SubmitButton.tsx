@@ -1,7 +1,7 @@
 import { Button } from "react-bootstrap";
 
 interface SubmitButtonProps {
-    onSubmit?: () => Promise<void>
+    onSubmit?: (event: any) => void//Promise<void>
     text: string
 }
 export default function SubmitButton({ onSubmit, text }: SubmitButtonProps) {

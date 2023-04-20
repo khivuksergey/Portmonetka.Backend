@@ -1,4 +1,4 @@
-﻿//using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portmonetka.Models;
@@ -22,7 +22,9 @@ namespace Portmonetka.Controllers
             if (_dbContext.Wallets == null)
                 return NotFound();
 
-            return await _dbContext.Wallets.ToListAsync();
+            return await _dbContext.Wallets
+                .Where(w => w.DateDeleted == null)
+                .ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -78,14 +80,20 @@ namespace Portmonetka.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteWallet(int id)
+        public async Task<ActionResult> DeleteWallet(int id, bool force)
         {
             if (_dbContext.Wallets == null)
                 return NotFound();
 
-            var wallet = await (_dbContext.Wallets.FindAsync(id));
+            var wallet = await _dbContext.Wallets.FindAsync(id);
+
             if (wallet == null)
                 return NotFound();
+
+            if (!force)
+            {
+                //send confirmation if wallet has transactions, otherwise continue
+            }
 
             if (typeof(Auditable).IsAssignableFrom(typeof(Wallet)))
             {

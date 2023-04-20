@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
+import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import { IGlobalBalance } from "../../DataTypes";
 import { Container } from "react-bootstrap";
@@ -26,8 +27,6 @@ export default function Balance() {
                     sum: value.reduce((acc, cur) => acc + cur.amount, 0)
                 }]
         );
-
-        console.log('Global Balance in Balance.tsx: ', globalBalanceContext!.globalBalance);
     }
 
     calculate();
@@ -37,15 +36,16 @@ export default function Balance() {
             <Container>
                 <div className="balance mt-4 d-flex justify-content-center flex-wrap">
                     {
-                        balances.map(b =>
+                        balances
+                            .sort((a,b) => a.currency < b.currency ? -1 : 1)
+                            .map(b =>
                             <h1 key={b.currency}>
-                                {b.sum}{CurrencyToSign(b.currency)}
+                                {MoneyToLocaleString(b.sum)}&nbsp;{CurrencyToSign(b.currency)}
                             </h1>
                         )
                     }
                 </div>
             </Container>
         </section>
-
     )
 }

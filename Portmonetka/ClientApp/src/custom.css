@@ -1,6 +1,24 @@
 /*@import "~normalize.css";*/
 
 :root {
+    /*    --primary-color: #191919;
+    --bs-primary: #191919;*/
+    --green-main: #599e73; /*#46c263;*/
+    --green-accent: #3cab66; /*#53d769;*/ /*#3da865;*/
+    /**/
+    --grey-main: #b6b6b6;
+    --grey-accent: #c6c6c6;
+    /**/
+    --red-main: #e33437;
+    --red-accent: #fc3d39;
+    /**/
+    --focus-box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.1);
+    --focus-active-box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.2);
+    /**/
+    --color-transparent: rgba(0,0,0,0);
+    --background-disabled: rgba(0,0,0,0.1);
+    /**/
+
     --dark-color: #121212;
     --light-color: #e6e6e6;
     --light-color-accent: #f6f6f6; /* + 0x101010 */
@@ -12,7 +30,7 @@
     --background-gradient-dark: linear-gradient(0deg, var(--dark-color) 0%, var(--button-dark) 100%);
     --wallet-gradient-dark: linear-gradient(-30deg, #353535 0%, #404040 100%);
     --wallet-gradient-dark-accent: linear-gradient(-30deg, #353535 0%, #454545 100%);
-    --modal-gradient: linear-gradient(-30deg, #c6c6c6 0%, var(--light-color) 100%);
+    --modal-gradient: linear-gradient(-30deg, #d6d6d6 0%, #e6e6e6 100%);
     --popper-gradient: linear-gradient(-30deg, var(--light-color) 0%, white 100%);
 }
 
@@ -28,6 +46,114 @@ body {
     line-height: 1.5;
     color: var(--light-color);
     background: none;
+}
+
+button:focus {
+    box-shadow: var(--focus-box-shadow) !important;
+}
+
+button:focus:active {
+    box-shadow: var(--focus-active-box-shadow) !important;
+}
+
+.ok-btn {
+    background-color: var(--green-main);
+}
+
+.ok-btn:hover {
+    background-color: var(--green-accent);
+    border-color: none;
+}
+
+.ok-btn:focus {
+    background-color: var(--green-accent);
+    border-color: none;
+    box-shadow: var(--focus-box-shadow);
+}
+
+.ok-btn:active {
+    background-color: var(--green-main);
+    border-color: none;
+}
+
+.ok-btn:focus:active {
+    background-color: var(--green-main);
+    border-color: none;
+    box-shadow: var(--focus-active-box-shadow);
+}
+
+.cancel-btn {
+    background-color: #d6d6d6;
+}
+
+.cancel-btn:hover {
+    background-color: var(--grey-accent);
+    border-color: none;
+}
+
+.cancel-btn:focus {
+    background-color: var(--grey-accent);
+    border-color: none;
+    box-shadow: var(--focus-box-shadow);
+}
+
+.cancel-btn:active {
+    background-color: var(--grey-main);
+    border-color: none;
+}
+
+.cancel-btn:focus:active {
+    background-color: var(--grey-main);
+    border-color: none;
+    box-shadow: var(--focus-active-box-shadow);
+}
+
+.delete-btn {
+    background-color: #d6d6d6;
+}
+
+.delete-btn:hover {
+    background-color: var(--red-accent);
+    border-color: none;
+}
+
+.delete-btn:focus {
+    background-color: var(--red-accent);
+    border-color: none;
+    box-shadow: var(--focus-box-shadow);
+}
+
+.delete-btn:active {
+    background-color: #d6d6d6;
+    border-color: none;
+}
+
+.delete-btn:focus:active {
+    background-color: #d6d6d6;
+    border-color: none;
+    box-shadow: var(--focus-active-box-shadow);
+}
+
+input:focus, select:focus, .form-control:focus {
+    box-shadow: var(--focus-box-shadow) !important;
+    border-color: var(--color-transparent) !important;
+}
+
+select option:hover {
+    background-color: var(--grey-main) !important;
+}
+
+.tr-disabled {
+    background-color: var(--background-disabled);
+    color: darkgrey;
+}
+
+.text-disabled{
+    color: rgba(0,0,0,0.3) !important;
+}
+
+.btn-outline-light {
+    color: var(--dark-color);
 }
 
 .container {
@@ -60,7 +186,7 @@ body {
 }
 
 .balance {
-    column-gap: 2rem;
+    column-gap: 3rem;
 }
 
 .kusya {
@@ -143,7 +269,7 @@ body {
     border: none;
 }
 
-.btn-dark, .btn-primary {
+.btn-dark/*, .btn-primary*/ {
     background: var(--button-dark);
     color: var(--light-color);
     border-radius: 5px;
@@ -154,7 +280,7 @@ body {
     color: var(--light-color-accent);
 }
 
-.btn-primary:hover {
+/*.btn-primary:hover {
     color: var(--light-color-accent);
     background-color: var(--button-dark-accent);
     border-color: var(--button-dark-accent);
@@ -164,9 +290,9 @@ body {
     color: var(--light-color);
     background-color: var(--button-dark);
     border-color: var(--button-dark);
-}
+}*/
 
-.btn-delete {
+.btn-delete, .btn-restore {
     color: var(--button-dark);
     padding: 5px;
     margin: 0;
@@ -175,6 +301,10 @@ body {
 .btn-delete:hover {
     color: var(--red-color);
 }
+
+ .btn-restore:hover {
+     color: var(--green-main);
+ }
 
 .btn-delete-wallet {
     background: var(--red-color);
@@ -295,7 +425,13 @@ input[type="datetime-local"] {
     border-top: none;
 }
 
+.modal-title {
+    display: flex;
+    justify-content: space-between;
+}
+
 .modal-header {
+    display: block;
     padding-top: 0.5rem;
 }
 

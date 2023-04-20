@@ -1,10 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import { IWallet, IGlobalBalance } from "../../DataTypes";
+import useTransaction from "../../Hooks/useTransaction";
 import Transactions from "./Transactions";
 import AddTransactionModal from "./AddTransactionModal";
 import WalletModal from "./WalletModal";
 import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
+import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import { FcMoneyTransfer } from "react-icons/fc";
 
 interface WalletProps {
@@ -16,7 +18,7 @@ interface WalletProps {
 
 export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeWallet }: WalletProps) {
     const globalBalanceContext = useContext(GlobalBalanceContext);
-    const [transactionsSum, setTransactionsSum] = useState<number>(0);
+    const { transactions, transactionsSum, handleAddTransactions, handleDeleteTransactions } = useTransaction(wallet.id!);
     const [balance, setBalance] = useState<number>(0);
 
     //useMemo for future
@@ -37,11 +39,14 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
         setBalance(newBalance.amount);
     }, [transactionsSum, wallet.initialAmount, wallet.currency]);
 
-
     const [showTransactionModal, setShowTransactionModal] = useState(false);
     const [showWalletModal, setShowWalletModal] = useState(false);
 
-    const handleTransactionsModalClose = () => setShowTransactionModal(false);
+    const handleTransactionsModalClose = () => {
+        setShowTransactionModal(false);
+        onGetWallets();
+
+    }
     const handleTransactionsModalShow = (e: any) => {
         if (!e)
             e = window.event;
@@ -55,17 +60,13 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
     }
     const handleWalletModalShow = () => setShowWalletModal(true);
 
-    const calcTransactionsSum = (value: number) => {
-        setTransactionsSum(value);
-    }
 
     return (
         <>
             <div className="wallet" onClick={handleWalletModalShow}>
                 <div className="wallet-header">
                     <h4 className="text-nowrap d-inlineblock text-truncate">{wallet.name} </h4>
-                    <h4 className="text-nowrap ms-auto">{balance}&nbsp;{CurrencyToSign(wallet.currency)}</h4>
-
+                    <h4 className="text-nowrap ms-auto">{MoneyToLocaleString(balance)}&nbsp;{CurrencyToSign(wallet.currency)}</h4>
                 </div>
 
                 <div className="d-grid">
@@ -75,7 +76,7 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
                     </button>
                 </div>
 
-                <Transactions wallet={wallet} calcTransactionsSum={calcTransactionsSum} isFullMode={false} />
+                <Transactions transactions={transactions} isFullMode={false} />
 
             </div>
 
@@ -84,6 +85,7 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
                     wallet={wallet}
                     show={showTransactionModal}
                     onClose={handleTransactionsModalClose}
+                    onAddTransactions={handleAddTransactions}
                 />
                 : null
             }
@@ -95,6 +97,9 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
                     onClose={handleWalletModalClose}
                     onDeleteWallet={onDeleteWallet}
                     onChangeWallet={onChangeWallet}
+                    transactions={transactions}
+                    transactionsSum={transactionsSum}
+                    onDeleteTransactions={handleDeleteTransactions}
                 />
                 : null
             }

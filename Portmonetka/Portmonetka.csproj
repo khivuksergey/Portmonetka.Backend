@@ -14,6 +14,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
@@ -47,6 +49,7 @@
     <None Remove="ClientApp\src\DataTypes.ts" />
     <None Remove="ClientApp\src\Hooks\usePopper.ts" />
     <None Remove="ClientApp\src\Utilities\AddWalletStatusMessage.ts" />
+    <None Remove="ClientApp\src\Utilities\MoneyToLocaleString.ts" />
     <None Remove="ClientApp\tsconfig.json" />
   </ItemGroup>
 

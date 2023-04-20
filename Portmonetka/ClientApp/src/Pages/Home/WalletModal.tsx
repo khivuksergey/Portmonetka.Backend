@@ -1,10 +1,10 @@
 import { useState, useContext } from "react";
 import Transactions from "./Transactions";
-import { IWallet, IGlobalBalance } from "../../DataTypes";
+import { IWallet, ITransaction, IGlobalBalance } from "../../DataTypes";
 import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
+import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import Modal from "../../Components/Modal";
-import SubmitButton from "../../Components/SubmitButton";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import { MdDelete } from "react-icons/md";
 
@@ -14,41 +14,67 @@ interface WalletModalProps {
     onClose: () => void
     onDeleteWallet: (id: number, force: boolean) => Promise<void>
     onChangeWallet: (wallet: IWallet) => Promise<void>
+    transactions: ITransaction[]
+    transactionsSum: number
+    onDeleteTransactions: (ids: number[]) => Promise<void>
 }
 
-export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onChangeWallet }: WalletModalProps) {
-    const [walletObject, setWalletObject] = useState(wallet);
-    const [transactionsSum, setTransactionsSum] = useState(0);
-    const globalBalanceContext = useContext(GlobalBalanceContext);
+enum WalletPropsType {
+    Name,
+    Currency,
+    InitialAmount
+}
 
-    const handleWalletDataChange = (property: string, value: string) => {
-        setWalletObject({ ...walletObject, [property]: value });
+export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onChangeWallet, transactions, transactionsSum, onDeleteTransactions }: WalletModalProps) {
+    const [walletObject, setWalletObject] = useState(wallet);
+
+    const handleWalletDataChange = (field: WalletPropsType, e: React.ChangeEvent<HTMLInputElement>) => {
+        switch (field) {
+            case WalletPropsType.Name:
+                setWalletObject({ ...walletObject, name: e.target.value });
+                break;
+            case WalletPropsType.Currency:
+                setWalletObject({ ...walletObject, currency: e.target.value.toUpperCase() })
+                break;
+            case WalletPropsType.InitialAmount:
+                let initialAmount = e.target.value;
+                if (initialAmount[0] === "0" && initialAmount.length > 1)
+                    initialAmount = initialAmount.substring(1);
+                setWalletObject({ ...walletObject, initialAmount: Number(initialAmount) })
+                break;
+            default:
+                console.log("Invalid wallet property type");
+                break;
+        }
     }
 
-    const calcTransactionsSum = (value: number) => {
-        setTransactionsSum(value);
+    let transactionIdsToDelete: number[] = [];
+
+    const onAddTransactionIdToDeleteList = (id: number) => {
+        transactionIdsToDelete = [...transactionIdsToDelete, id];
+    }
+
+    const onRemoveTransactionIdFromDeleteList = (id: number) => {
+        transactionIdsToDelete = transactionIdsToDelete.filter(t => t !== id);
     }
 
     const walletsAreSame = (a: IWallet, b: IWallet): boolean => {
-        return a.name === b.name ||
-            a.currency === b.currency ||
+        return a.name === b.name &&
+            a.currency === b.currency &&
             a.initialAmount === b.initialAmount
     }
 
     const onSubmit = async () => {
         if (!walletsAreSame(wallet, walletObject)) {
             console.log(walletObject);
-            onChangeWallet(walletObject)
-                .then(() => {//check for errors while changing and so on
-                        const newBalance = {
-                            id: walletObject.id,
-                            currency: walletObject.currency,
-                            amount: walletObject.initialAmount! + transactionsSum
-                        };
-                        globalBalanceContext!.setGlobalBalance((prev: IGlobalBalance[]) => {
-                            return [...prev.filter((o) => o.id !== newBalance.id), { ...newBalance }];
-                        });
-                    });;
+            onChangeWallet(walletObject);
+        }
+
+        const itemsCount = transactionIdsToDelete.length;
+
+        if (itemsCount > 0 &&
+            window.confirm(`Are you sure you want to delete ${itemsCount} item${itemsCount > 1 ? `s` : ``}?`) === true) {
+            onDeleteTransactions(transactionIdsToDelete);
         }
         onClose();
     }
@@ -60,10 +86,16 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
         }
     }
 
+    const currentWallet = {
+        name: wallet.name,
+        balance: wallet.initialAmount + transactionsSum,
+        currency: CurrencyToSign(wallet.currency)
+    }
+
     const modalTitle =
         <>
-            <big style={{ marginRight: "2rem" }}>{walletObject.name}</big>
-            <big>{wallet.initialAmount! + transactionsSum} {CurrencyToSign(walletObject.currency)}</big>
+            <big style={{ marginRight: "2rem" }}>{currentWallet.name}</big>
+            <big>{MoneyToLocaleString(currentWallet.balance)} {currentWallet.currency}</big>
         </>
 
     if (!show) return null;
@@ -76,12 +108,11 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                         <Form.Group>
                             <Form.Label>Title</Form.Label>
                             <Form.Control
-                                id="Name"
                                 type="text"
                                 placeholder="Wallet Title"
                                 value={walletObject.name} maxLength={128}
                                 onChange={e => {
-                                    handleWalletDataChange(e.target.id, e.target.value)
+                                    handleWalletDataChange(WalletPropsType.Name, e as any)
                                 }}
                                 required
                             />
@@ -91,12 +122,11 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                         <Form.Group>
                             <Form.Label>Currency</Form.Label>
                             <Form.Control
-                                id="Currency"
                                 type="text"
                                 placeholder="USD"
-                                value={walletObject.currency} maxLength={3}
+                                value={walletObject.currency} minLength={3} maxLength={3}
                                 onChange={e => {
-                                    handleWalletDataChange(e.target.id, e.target.value.toUpperCase())
+                                    handleWalletDataChange(WalletPropsType.Currency, e as any)
                                 }}
                                 required
                             />
@@ -106,12 +136,12 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                         <Form.Group>
                             <Form.Label>Initial Balance</Form.Label>
                             <Form.Control
-                                id="InitialAmount"
                                 type="number"
+                                step="any"
                                 placeholder="10000"
-                                value={walletObject.initialAmount} min={0}
+                                value={walletObject.initialAmount ?? ''} min={0}
                                 onChange={e => {
-                                    handleWalletDataChange(e.target.id, e.target.value)
+                                    handleWalletDataChange(WalletPropsType.InitialAmount, e as any)
                                 }}
                                 required
                             />
@@ -120,14 +150,25 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                 </Row>
             </Form>
 
-            <Transactions wallet={wallet} calcTransactionsSum={calcTransactionsSum} isFullMode={true} />
+            <Transactions
+                transactions={transactions}
+                onDeleteTransaction={onAddTransactionIdToDeleteList}
+                onRestoreTransaction={onRemoveTransactionIdFromDeleteList}
+                isFullMode={true} />
 
 
             <div className="modal-footer">
-                <Button className="btn btn-delete-wallet" onClick={handleDeleteWallet}>
+                <Button variant="secondary" className="delete-btn" onClick={handleDeleteWallet}>
                     <MdDelete size={20} />
                 </Button>
-                <SubmitButton onSubmit={onSubmit} text="Save"/>
+
+                <Button variant="secondary" type="reset" className="cancel-btn" onClick={onClose}>
+                    Cancel
+                </Button>
+
+                <Button variant="primary" className="ok-btn" onClick={onSubmit}>
+                    Save
+                </Button>
             </div>
         </Modal>
     )

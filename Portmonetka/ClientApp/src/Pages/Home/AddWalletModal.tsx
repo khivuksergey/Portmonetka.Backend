@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Form, Row, Col } from "react-bootstrap";
+import { Form, Row, Col, Button } from "react-bootstrap";
 import Modal from "../../Components/Modal";
-import SubmitButton from "../../Components/SubmitButton";
 import StatusMessage from "../../Components/StatusMessage";
+import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import { IWallet } from "../../DataTypes";
 
 interface AddWalletModalProps {
@@ -11,36 +11,35 @@ interface AddWalletModalProps {
     onAddWallet: (wallet: IWallet) => Promise<void>
 }
 
-enum WalletPropType {
+enum WalletPropsType {
     Name,
     Currency,
     InitialAmount
 }
 
-let newWallet: IWallet = {
-    name: "",
-    currency: "",
-    initialAmount: undefined,
-    iconFileName: ""
-}
-
 const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => {
-    const [wallet, setWallet] = useState<IWallet>(newWallet);
+    const [wallet, setWallet] = useState({
+        name: "",
+        currency: "",
+        initialAmount: "",
+        iconFileName: ""
+    });
+
     const [validated, setValidated] = useState(false);
 
-    const handleChange = (field: WalletPropType, e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (field: WalletPropsType, e: React.ChangeEvent<HTMLInputElement>) => {
         switch (field) {
-            case WalletPropType.Name:
+            case WalletPropsType.Name:
                 setWallet({ ...wallet, name: e.target.value });
                 break;
-            case WalletPropType.Currency:
+            case WalletPropsType.Currency:
                 setWallet({ ...wallet, currency: e.target.value.toUpperCase() })
                 break;
-            case WalletPropType.InitialAmount:
+            case WalletPropsType.InitialAmount:
                 let initialAmount = e.target.value;
                 if (initialAmount[0] === "0" && initialAmount.length > 1)
                     initialAmount = initialAmount.substring(1);
-                setWallet({ ...wallet, initialAmount: Number(initialAmount) })
+                setWallet({ ...wallet, initialAmount: initialAmount })
                 break;
             default:
                 console.log("Invalid wallet property type");
@@ -53,6 +52,7 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
             event.stopPropagation();
+            setValidated(false);
         } else {
             setValidated(true);
             onSubmit();
@@ -60,13 +60,13 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
     };
 
     const onSubmit = () => {
-        newWallet = {
+        let newWallet: IWallet = {
             name: wallet.name.trim(),
             currency: wallet.currency.toUpperCase(),
-            initialAmount: wallet.initialAmount,
+            initialAmount: Number(wallet.initialAmount),
             iconFileName: wallet.iconFileName
         };
-        onAddWallet(newWallet);//TO-DO
+        onAddWallet(newWallet);
         onClose();
     }
 
@@ -76,18 +76,17 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
 
     return (
         <Modal title={modalTitle} show={show} onClose={onClose} contentClassName="modal-container">
-            <Form validated={validated} onSubmit={handleSubmit} noValidate>
+            <Form validated={validated} onSubmit={handleSubmit}>
                 <Row>
                     <Col xs={12} md={5}>
                         <Form.Group>
                             <Form.Label>Title</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="Your new wallet"
-                                aria-label="Wallet name"
+                                placeholder="My wallet"
                                 value={wallet.name} maxLength={128}
                                 onChange={e => {
-                                    handleChange(WalletPropType.Name, e as any);
+                                    handleChange(WalletPropsType.Name, e as any);
                                 }}
                                 autoFocus
                                 required
@@ -100,10 +99,9 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
                             <Form.Control
                                 type="text"
                                 placeholder="USD"
-                                aria-label="Wallet currency"
-                                value={wallet.currency} maxLength={3}
+                                value={wallet.currency} minLength={3} maxLength={3}
                                 onChange={e => {
-                                    handleChange(WalletPropType.Currency, e as any);
+                                    handleChange(WalletPropsType.Currency, e as any);
                                 }}
                                 required
                             />
@@ -114,11 +112,11 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
                             <Form.Label>Balance</Form.Label>
                             <Form.Control
                                 type="number"
+                                step="any"
                                 placeholder="10000"
-                                aria-label="Initial balance"
-                                value={wallet.initialAmount} min={0}
+                                value={wallet.initialAmount ?? ''} min={0}
                                 onChange={e => {
-                                    handleChange(WalletPropType.InitialAmount, e as any);
+                                    handleChange(WalletPropsType.InitialAmount, e as any);
                                 }}
                                 required
                             />
@@ -126,10 +124,15 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
                     </Col>
                 </Row>
 
-                <StatusMessage wallet={wallet} />
+                <StatusMessage wallet={wallet as unknown as IWallet} />
 
                 <div className="modal-footer">
-                    <SubmitButton text="Add" />
+                    <Button variant="secondary" type="reset" className="cancel-btn" onClick={onClose}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" type="submit" className="ok-btn">
+                        Add
+                    </Button>
                 </div>
             </Form>
         </Modal>

@@ -9,7 +9,7 @@ public partial class Category: Auditable
     [Required(ErrorMessage = "Name is required")]
     [MinLength(1, ErrorMessage = "Name length should at least be 1 symbol")]
     [MaxLength(128, ErrorMessage = "Name length should be less than 128 symbols")]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
 
     public bool? IsExpense { get; set; }
 
