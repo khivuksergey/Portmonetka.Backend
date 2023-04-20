@@ -45,13 +45,14 @@ export default function Home() {
                 <Container>
                     {
                         wallets && wallets.length > 0 ?
-                            wallets.map((wallet) =>
-                                <Wallet
+                            wallets.map((wallet) => {
+                                return <Wallet
                                     key={wallet.id}
                                     wallet={wallet}
                                     onGetWallets={onGetWallets}
                                     onDeleteWallet={onDeleteWallet}
-                                    onChangeWallet={onChangeWallet} />)
+                                    onChangeWallet={onChangeWallet} />
+                            })                    
                             : null
                     }
 

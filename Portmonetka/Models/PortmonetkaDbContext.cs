@@ -1,16 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Portmonetka.Models;
 
 public partial class PortmonetkaDbContext : DbContext
 {
-    public PortmonetkaDbContext()
+    private readonly IMapper _mapper;
+
+    public PortmonetkaDbContext(IMapper mapper)
     {
+        _mapper = mapper;
     }
 
-    public PortmonetkaDbContext(DbContextOptions<PortmonetkaDbContext> options)
+    public PortmonetkaDbContext(DbContextOptions<PortmonetkaDbContext> options, IMapper mapper)
         : base(options)
     {
+        _mapper = mapper;
     }
 
     public virtual DbSet<Category> Categories { get; set; }
@@ -62,17 +68,24 @@ public partial class PortmonetkaDbContext : DbContext
         return base.SaveChangesAsync(cancellationToken);
     }
 
+    private ValueConverter<DateTimeOffset, DateTime> GetDateTimeOffsetConverter(IMapper mapper)
+    {
+        return new ValueConverter<DateTimeOffset, DateTime>(
+            v => mapper.Map<DateTimeOffset, DateTime>(v),
+            v => mapper.Map<DateTime, DateTimeOffset>(v));
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Categori__3214EC07F1BAEAE7");
 
+            entity.Property(e => e.DateCreated).HasConversion(GetDateTimeOffsetConverter(_mapper));
+            entity.Property(e => e.DateDeleted).HasConversion(GetDateTimeOffsetConverter(_mapper));
+            entity.Property(e => e.DateUpdated).HasConversion(GetDateTimeOffsetConverter(_mapper));
             entity.Property(e => e.IconFileName).HasMaxLength(255);
             entity.Property(e => e.Name).HasMaxLength(128);
-            entity.Property(e => e.DateCreated).HasColumnType("date");
-            entity.Property(e => e.DateUpdated).HasColumnType("date");
-            entity.Property(e => e.DateDeleted).HasColumnType("date");
         });
 
         modelBuilder.Entity<Transaction>(entity =>
@@ -80,11 +93,11 @@ public partial class PortmonetkaDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC07F242DC8C");
 
             entity.Property(e => e.Amount).HasColumnType("money");
-            entity.Property(e => e.Date).HasColumnType("date");
+            entity.Property(e => e.Date).HasConversion(GetDateTimeOffsetConverter(_mapper));
+            entity.Property(e => e.DateCreated).HasConversion(GetDateTimeOffsetConverter(_mapper));
+            entity.Property(e => e.DateDeleted).HasConversion(GetDateTimeOffsetConverter(_mapper));
+            entity.Property(e => e.DateUpdated).HasConversion(GetDateTimeOffsetConverter(_mapper));
             entity.Property(e => e.Description).HasMaxLength(256);
-            entity.Property(e => e.DateCreated).HasColumnType("date");
-            entity.Property(e => e.DateUpdated).HasColumnType("date");
-            entity.Property(e => e.DateDeleted).HasColumnType("date");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Transactions)
                 .HasForeignKey(d => d.CategoryId)
@@ -100,12 +113,12 @@ public partial class PortmonetkaDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Wallets__3214EC0702761D8A");
 
             entity.Property(e => e.Currency).HasMaxLength(3);
+            entity.Property(e => e.DateCreated).HasConversion(GetDateTimeOffsetConverter(_mapper));
+            entity.Property(e => e.DateDeleted).HasConversion(GetDateTimeOffsetConverter(_mapper));
+            entity.Property(e => e.DateUpdated).HasConversion(GetDateTimeOffsetConverter(_mapper));
             entity.Property(e => e.IconFileName).HasMaxLength(255);
             entity.Property(e => e.InitialAmount).HasColumnType("money");
             entity.Property(e => e.Name).HasMaxLength(128);
-            entity.Property(e => e.DateCreated).HasColumnType("date");
-            entity.Property(e => e.DateUpdated).HasColumnType("date");
-            entity.Property(e => e.DateDeleted).HasColumnType("date");
         });
 
         OnModelCreatingPartial(modelBuilder);

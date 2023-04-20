@@ -2,14 +2,14 @@
 
 namespace Portmonetka.Models;
 
-public partial class Transaction: Auditable
+public partial class Transaction : Auditable
 {
     public int Id { get; set; }
 
     [Required(ErrorMessage = "Description is required")]
     [MinLength(1, ErrorMessage = "Description should at least be 1 symbol")]
     [MaxLength(256, ErrorMessage = "Description should be less than 256 symbols")]
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
     [Required(ErrorMessage = "Amount is required")]
     public decimal Amount { get; set; }

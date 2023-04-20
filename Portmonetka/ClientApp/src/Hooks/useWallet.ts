@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { IWallet } from "../DataTypes";
 import axios, { AxiosError } from "axios";
+import _ from "lodash";
+import { mapKeys } from "lodash";
 
 export default function useWallet() {
     const [wallets, setWallets] = useState<IWallet[]>([]);
@@ -19,7 +21,9 @@ export default function useWallet() {
                 setLoading(true);
             await axios.get<IWallet[]>(url)
                 .then(response => {
-                    setWallets(response.data);
+                    const camelCasedData = response.data.map(item =>
+                        mapKeys(item, (value, key) => _.camelCase(key))) as unknown as IWallet[];
+                    setWallets(camelCasedData);
                     setLoading(false);
                 });
         } catch (e: unknown) {
@@ -69,7 +73,7 @@ export default function useWallet() {
     }
 
     const handleDeleteWallet = async (walletId: number, force: boolean = false) => {
-        const url = `api/wallet/${walletId}&force=${force}`;
+        const url = `api/wallet/${walletId}?force=${force}`;
         try {
             setError("");
             setLoading(true);

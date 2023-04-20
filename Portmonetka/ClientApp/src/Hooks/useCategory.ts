@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { ICategory } from "../DataTypes";
 import axios, { AxiosError } from "axios";
+import _ from "lodash";
+import { mapKeys } from "lodash";
 
 export default function useCategory() {
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -19,7 +21,9 @@ export default function useCategory() {
                 setLoading(true);
             await axios.get<ICategory[]>(url)
                 .then(response => {
-                    setCategories(response.data);
+                    const camelCasedData = response.data.map(item =>
+                        mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ICategory[];
+                    setCategories(camelCasedData);
                     setLoading(false);
                 });
         } catch (e: unknown) {
@@ -30,15 +34,16 @@ export default function useCategory() {
         }
     }
 
-    const handleAddCategory = async (category: ICategory): Promise<number | undefined> => {
+    const handleAddCategory = async (category: ICategory): Promise<number> => {
+        let result = 0;
         const url = "api/category";
         try {
             setError("");
             setLoading(true);
-            await axios.post<ICategory>(url, category)
+            await axios.post(url, category)
                 .then(response => {
                     fetchCategories();
-                    return response.data.id;
+                    result = response.data.Id;
                 });
         } catch (e: unknown) {
             setLoading(false);
@@ -46,7 +51,7 @@ export default function useCategory() {
             setError(error.message);
             console.error(error);
         }
-        return undefined;
+        return result ?? 0;
     }
 
     const handleChangeCategory = async (changedCategory: ICategory) => {
@@ -54,7 +59,7 @@ export default function useCategory() {
         try {
             setError("");
             setLoading(true);
-            await axios.put<ICategory>(url, changedCategory)
+            await axios.put(url, changedCategory)
                 .then(() => {
                     fetchCategories();
                 });

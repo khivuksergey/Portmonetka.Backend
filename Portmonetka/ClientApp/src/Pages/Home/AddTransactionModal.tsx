@@ -3,8 +3,6 @@ import { ITransaction, ICategory, IWallet } from "../../DataTypes";
 import Modal from "../../Components/Modal";
 import Popper from "../../Components/Popper";
 import AddCategory from "../../Components/AddCategory";
-import SubmitButton from "../../Components/SubmitButton";
-import useTransaction from "../../Hooks/useTransaction";
 import useCategory from "../../Hooks/useCategory";
 import usePopper from "../../Hooks/usePopper";
 import { Form, Row, Col, InputGroup, Button } from "react-bootstrap";
@@ -14,28 +12,28 @@ import "react-day-picker/dist/style.css";
 
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { GoCalendar } from "react-icons/go";
+import { RiInsertRowBottom } from "react-icons/ri";
 
 interface AddTransactionModalProps {
     show: boolean
     onClose: () => void
     wallet: IWallet
+    onAddTransactions: (transactions: ITransaction[]) => void
 }
 
 
-const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps) => {
+const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTransactionModalProps) => {
     const [validated, setValidated] = useState<boolean>(false);
 
     let transactionTemplate: ITransaction = {
-        name: "",
+        description: "",
         amount: 0,
-        date: new Date(),
+        date: new Date(new Date().getTime()),
         categoryId: 0,
         walletId: wallet.id as number
     }
 
     const [transactions, setTransactions] = useState<ITransaction[]>([transactionTemplate]);
-
-    const { handleAddTransactions } = useTransaction(wallet.id!);
 
     const { categories, handleAddCategory } = useCategory();
 
@@ -74,7 +72,7 @@ const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps
     const handleDescriptionChange = (e: any, i: number) => {
         let items = [...transactions];
         let item = { ...items[i] };
-        item.name = e.target.value;
+        item.description = e.target.value;
         items[i] = item;
         setTransactions(items);
     }
@@ -83,7 +81,7 @@ const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps
         let items = [...transactions]
         let item = { ...items[i] };
         if (!!item.categoryId) {
-            let selectedCategory = categories.find(c => c.id === item.categoryId) as ICategory;//хз
+            let selectedCategory = categories.find(c => c.id == item.categoryId) as ICategory;
             item.amount = selectedCategory.isExpense ? -Math.abs(e.target.value) : Math.abs(e.target.value);
         } else {
             item.amount = e.target.value;
@@ -98,7 +96,7 @@ const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps
         let item = { ...items[i] };
         item.categoryId = e.target.value;
         if (!!item.categoryId) {
-            let selectedCategory = categories.find(c => c.id === item.categoryId) as ICategory;
+            let selectedCategory = categories.find(c => c.id == item.categoryId) as ICategory;
             item.amount = selectedCategory.isExpense ? -Math.abs(item.amount) : Math.abs(item.amount);
         }
         items[i] = item;
@@ -130,7 +128,15 @@ const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps
     const onDateSelect = (date: Date) => {
         let items = [...transactions];
         let item = { ...items[currentIndex] };
-        item.date = date;
+        item.date = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            item.date.getHours(),
+            item.date.getMinutes(),
+            item.date.getSeconds(),
+            item.date.getMilliseconds(),
+        );
         items[currentIndex] = item;
         setTransactions(items);
         setIsPopperDateOpen(false);
@@ -152,12 +158,14 @@ const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const form = event.currentTarget;
+        //console.log("transactions to be added: ", transactions);
         if (form.checkValidity() === false) {
             setValidated(false);
             event.stopPropagation();
         } else {
             setValidated(true);
-            handleAddTransactions(transactions);
+            onAddTransactions(transactions);
+            onClose();
         }
     };
 
@@ -183,7 +191,7 @@ const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps
                                         }
                                         <Form.Control
                                             placeholder="Description"
-                                            value={transaction.name} maxLength={255}
+                                            value={transaction.description} maxLength={255}
                                             onChange={e => handleDescriptionChange(e, i)}
                                             autoFocus
                                             required
@@ -195,6 +203,7 @@ const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps
                                         <Form.Control
                                             placeholder="Amount"
                                             type="number"
+                                            step="any"
                                             value={transaction.amount}
                                             onChange={e => handleAmountChange(e, i)}
                                             required
@@ -241,7 +250,7 @@ const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps
                 }
 
                 <div className="d-grid mb-3" >
-                    <Button variant="outline-light" onClick={addRow}><BiPlus /></Button>
+                    <Button variant="outline-light" onClick={addRow}><RiInsertRowBottom size={22} /></Button>
                 </div >
 
 
@@ -261,7 +270,12 @@ const AddTransactionModal = ({ show, onClose, wallet }: AddTransactionModalProps
 
 
                 <div className="modal-footer">
-                    <SubmitButton text="Add" />
+                    <Button variant="secondary" type="reset" className="cancel-btn" onClick={onClose}>
+                        Cancel
+                    </Button>
+                    <Button variant="primary" type="submit" className="ok-btn">
+                        Add
+                    </Button>
                 </div>
             </Form>
 

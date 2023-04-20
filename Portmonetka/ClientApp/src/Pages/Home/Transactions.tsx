@@ -1,36 +1,53 @@
-import { useEffect } from "react";
-import useTransaction from "../../Hooks/useTransaction";
+import { useState } from "react";
 import useCategory from "../../Hooks/useCategory";
-import { IWallet } from "../../DataTypes";
-import { format } from "date-fns";
+import { ITransaction } from "../../DataTypes";
+import { differenceInMinutes, parseISO } from "date-fns";
+import { format, utcToZonedTime } from "date-fns-tz";
+import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import { Table } from "react-bootstrap";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdRestoreFromTrash } from "react-icons/md";
 
 interface TransactionsProps {
-    wallet: IWallet
-    calcTransactionsSum: (value: number) => void
+    transactions: ITransaction[]
+    onDeleteTransaction?: (id: number) => void
+    onRestoreTransaction?: (id: number) => void
     isFullMode: boolean
 }
 
-export default function Transactions({ wallet, calcTransactionsSum, isFullMode }: TransactionsProps) {
-    const { transactions, handleDeleteTransaction } = useTransaction(wallet.id!)
+export default function Transactions({ transactions, onDeleteTransaction, onRestoreTransaction, isFullMode }: TransactionsProps) {
     const { categories } = useCategory();
+    const [transactionsToDelete, setTransactionsToDelete] = useState<number[]>([]);
 
-    //useMemo for future
-    useEffect(() => {
-        calculateBalance();
-    }, [transactions])
+    const handleDeleteTransaction = (id: number) => {
+        if (onDeleteTransaction === undefined)
+            return;
 
-    const calculateBalance = () => {
-        let transactionsSum = transactions.reduce((sum, val) => sum + val.amount, 0);
-        calcTransactionsSum(transactionsSum);
+        onDeleteTransaction!(id);
+        setTransactionsToDelete([...transactionsToDelete, id]);
     }
 
-    const onDeleteTransaction = (id: number) => {
-        if (window.confirm("This item will be immediately deleted. Do you want to proceed?") === true) {
-            handleDeleteTransaction(id);
-        }
+    const handleRestoreTransaction = (id: number) => {
+        if (onRestoreTransaction === undefined)
+            return;
+
+        onRestoreTransaction(id);
+        setTransactionsToDelete(prev => prev.filter(t => t !== id));
+    }
+
+    const formatUtcToLocal = (utcDate: Date, formatString: string): string => {
+        const timeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const localDate = utcToZonedTime(utcDate, timeZoneName);
+        const formattedDate = format(localDate, formatString);
+        return formattedDate;
+    }
+
+    const sortDatesDesc = (a: Date, b: Date) => {
+        return differenceInMinutes(parseISO(b.toString()), parseISO(a.toString()));
+    }
+
+    const isDisabledClassName = (id: number) => {
+        return (transactionsToDelete.includes(id) ? " text-disabled" : "");
     }
 
     return (
@@ -42,13 +59,17 @@ export default function Transactions({ wallet, calcTransactionsSum, isFullMode }
                             <tbody>
                                 {
                                     transactions
-                                        .sort((a, b) => b.date.valueOf() - a.date.valueOf())
+                                        .sort((a, b) => sortDatesDesc(a.date, b.date))
                                         .slice(0, 5)
                                         .map(t =>
                                             <tr key={t.id}>
-                                                <td className="text-right no-stretch">{t.amount > 0 ? '+' + t.amount : t.amount}</td>
-                                                <td className="transaction-name d-inlineblock text-truncate">{t.name}</td>
-                                                <td className="text-right no-stretch">{format(t.date.valueOf(), 'dd.MM.y')}</td>
+                                                <td className="text-right no-stretch">
+                                                    {t.amount > 0 ?
+                                                        `+${MoneyToLocaleString(t.amount)}` :
+                                                        MoneyToLocaleString(t.amount)}
+                                                </td>
+                                                <td className="transaction-name d-inlineblock text-truncate">{t.description}</td>
+                                                <td className="text-right no-stretch">{formatUtcToLocal(t.date, 'dd.MM.yyyy')}</td>
                                             </tr>
                                         )
                                 }
@@ -63,17 +84,28 @@ export default function Transactions({ wallet, calcTransactionsSum, isFullMode }
                         <tbody>
                             {
                                 transactions
-                                    .sort((a, b) => b.date.valueOf()- a.date.valueOf())
+                                    .sort((a, b) => sortDatesDesc(a.date, b.date))
                                     .map(t =>
                                         <tr key={t.id}>
-                                            <td className="text-dark text-right no-stretch"><b>{t.amount > 0 ? '+' + t.amount : t.amount}</b></td>
-                                            <td className="text-dark transaction-name d-inlineblock text-truncate">{t.name}</td>
-                                            <td className="text-dark">{categories.length ? categories.find(c => c.id === t.categoryId)!.name : ''}</td>
-                                            <td className="text-dark text-right no-stretch">{format(t.date.valueOf(), 'dd.MM.y')}</td>
+                                            <td className={"text-dark text-right no-stretch" + isDisabledClassName(t.id!)}><b>
+                                                {t.amount > 0 ?
+                                                    `+${MoneyToLocaleString(t.amount)}` :
+                                                    MoneyToLocaleString(t.amount)}
+                                            </b></td>
+                                            <td className={"text-dark transaction-name d-inlineblock text-truncate" + isDisabledClassName(t.id!)}>{t.description}</td>
+                                            <td className={"text-dark" + isDisabledClassName(t.id!)} >{categories.length ? categories.find(c => c.id === t.categoryId)!.name : ''}</td>
+                                            <td className={"text-dark text-right no-stretch" + isDisabledClassName(t.id!)}>{formatUtcToLocal(t.date, 'dd.MM.yyyy')}</td>
                                             <td style={{ width: 0 }}>
-                                                <button className="btn btn-delete d-flex" onClick={() => onDeleteTransaction(t.id!)}>
-                                                    <MdDelete size={18} />
-                                                </button>
+                                                {
+                                                    !transactionsToDelete.includes(t.id!) ?
+                                                        <button className="btn btn-delete d-flex" onClick={() => handleDeleteTransaction(t.id!)}>
+                                                            <MdDelete size={18} />
+                                                        </button>
+                                                        :
+                                                        <button className="btn btn-restore d-flex" onClick={() => handleRestoreTransaction(t.id!)}>
+                                                            <MdRestoreFromTrash size={18} />
+                                                        </button>
+                                                }
                                             </td>
                                         </tr>
                                     )
