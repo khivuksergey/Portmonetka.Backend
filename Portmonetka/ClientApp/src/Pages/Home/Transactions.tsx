@@ -60,7 +60,7 @@ export default function Transactions({ transactions, onDeleteTransaction, onRest
                                 {
                                     transactions
                                         .sort((a, b) => sortDatesDesc(a.date, b.date))
-                                        .slice(0, 5)
+                                        .slice(0, 3)
                                         .map(t =>
                                             <tr key={t.id}>
                                                 <td className="text-right no-stretch">
@@ -75,7 +75,7 @@ export default function Transactions({ transactions, onDeleteTransaction, onRest
                                 }
                             </tbody>
                         </table>
-                        {transactions.length > 5 ? <BiDotsHorizontalRounded className="transactions-dots" /> : null}
+                        {transactions.length > 3 ? <BiDotsHorizontalRounded className="transactions-dots" /> : null}
                     </>)
 
                     :

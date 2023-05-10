@@ -1,19 +1,15 @@
 import { useContext } from "react";
-import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
-import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
-import { IGlobalBalance } from "../../DataTypes";
+import { IGlobalBalance, ICurrencyBalance } from "../../DataTypes";
+import BalanceBubble from "../../Components/BalanceBubble";
 import { Container } from "react-bootstrap";
 
-interface IBalance {
-    currency: string
-    sum: number
-}
+
 
 export default function Balance() {
     const globalBalanceContext = useContext(GlobalBalanceContext);
 
-    let balances: IBalance[] = [];
+    let balances: ICurrencyBalance[] = [];
 
     const calculate = () => {
         var _ = require("lodash");
@@ -24,7 +20,11 @@ export default function Balance() {
                 balances = [...balances,
                 {
                     currency: key,
-                    sum: value.reduce((acc, cur) => acc + cur.amount, 0)
+                    sum: value.reduce((acc, cur) => acc + cur.amount, 0),
+                    income: 1599,
+                    outcome: -1256,
+                    incomeTrend: -3.7,
+                    outcomeTrend: -2.3
                 }]
         );
     }
@@ -37,12 +37,10 @@ export default function Balance() {
                 <div className="balance mt-4 d-flex justify-content-center flex-wrap">
                     {
                         balances
-                            .sort((a,b) => a.currency < b.currency ? -1 : 1)
-                            .map(b =>
-                            <h1 key={b.currency}>
-                                {MoneyToLocaleString(b.sum)}&nbsp;{CurrencyToSign(b.currency)}
-                            </h1>
-                        )
+                            .sort((a, b) => a.currency < b.currency ? -1 : 1)
+                            .map(balance =>
+                                <BalanceBubble key={balance.currency} balance={balance} />
+                            )
                     }
                 </div>
             </Container>

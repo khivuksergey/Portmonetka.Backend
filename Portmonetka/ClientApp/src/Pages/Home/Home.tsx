@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import useWallet from "../../Hooks/useWallet";
 import { IWallet, IGlobalBalance } from "../../DataTypes";
@@ -7,11 +7,16 @@ import Wallet from "./Wallet";
 import AddWalletModal from "./AddWalletModal";
 import { Container } from "react-bootstrap";
 import { FaWallet } from "react-icons/fa";
+import WalletsAnimation from '../../walletsHover';
 
 export default function Home() {
     const { wallets, handleGetWallets, handleDeleteWallet, handleAddWallet, handleChangeWallet } = useWallet();
     const [showAddWalletModal, setShowAddWalletModal] = useState(false);
     const [globalBalance, setGlobalBalance] = useState<IGlobalBalance[]>([]);
+
+    //useEffect(() => {
+    //    //WalletsAnimation();
+    //}, [])
 
     const handleAddWalletModalClose = () => setShowAddWalletModal(false);
     const handleAddWalletModalShow = () => setShowAddWalletModal(true);
@@ -42,7 +47,7 @@ export default function Home() {
             <Balance />
 
             <section className="wallets mt-4">
-                <Container>
+                <Container id="wallets">
                     {
                         wallets && wallets.length > 0 ?
                             wallets.map((wallet) => {

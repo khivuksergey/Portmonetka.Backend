@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portmonetka.Models;
+using System.Linq;
 
 namespace Portmonetka.Controllers
 {
@@ -51,6 +52,35 @@ namespace Portmonetka.Controllers
             return await _dbContext.Transactions
                 .Where(t => t.WalletId == walletId && t.DateDeleted == null)
                 .ToListAsync();
+        }
+
+        [Route("currency/{currency}")]
+        [HttpGet("{currency}")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByCurrency(string currency)
+        {
+            if (currency == null || currency.Length != 3)
+                return NotFound();
+
+            if (_dbContext.Transactions == null)
+                return NotFound();
+
+            currency = currency.ToUpper();
+
+            var wallets = await _dbContext.Wallets
+                .Where(w => w.Currency == currency && w.DateDeleted == null)
+                .ToListAsync();
+
+            List<Transaction> transactionsResult = new();
+
+            foreach (var wallet in wallets)
+            {
+                var transactions = await _dbContext.Transactions
+                    .Where(t => t.WalletId == wallet.Id && t.DateDeleted == null)
+                    .ToListAsync();
+                transactionsResult.AddRange(transactions);
+            }
+
+            return transactionsResult;
         }
 
         [HttpPost]

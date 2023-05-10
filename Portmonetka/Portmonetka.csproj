@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\Components\AddCategory.tsx" />
+    <None Remove="ClientApp\src\Components\BalanceBubble.tsx" />
     <None Remove="ClientApp\src\Components\Modal.tsx" />
     <None Remove="ClientApp\src\Components\Popper.tsx" />
     <None Remove="ClientApp\src\Components\StatusMessage.tsx" />
@@ -66,6 +67,7 @@
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\Wallet.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\WalletModal.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Utilities\CurrencyToSignConverter.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\walletsHover.tsx" />
   </ItemGroup>
 
   <ItemGroup>
