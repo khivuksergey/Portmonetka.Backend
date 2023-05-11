@@ -8,6 +8,7 @@ import WalletModal from "./WalletModal";
 import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import { FcMoneyTransfer } from "react-icons/fc";
+import { IoIosCash } from "react-icons/io";
 
 interface WalletProps {
     wallet: IWallet
@@ -64,20 +65,21 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
     return (
         <>
             <div className="wallet" onClick={handleWalletModalShow}>
-                <div className="wallet-header">
-                    <h4 className="text-nowrap d-inlineblock text-truncate">{wallet.name} </h4>
-                    <h4 className="text-nowrap ms-auto">{MoneyToLocaleString(balance)}&nbsp;{CurrencyToSign(wallet.currency)}</h4>
+                <div className="wallet-content">
+                    <div className="wallet-header">
+                        <h4 className="text-nowrap d-inlineblock text-truncate">{wallet.name} </h4>
+                        <h4 className="text-nowrap ms-auto">{MoneyToLocaleString(balance)}&nbsp;{CurrencyToSign(wallet.currency)}</h4>
+                    </div>
+
+                    <div className="d-grid">
+                        <button className="btn btn-dark add-items-button" type="button" key={"button-" + wallet.id}
+                            onClick={(e) => handleTransactionsModalShow(e)}>
+                            <IoIosCash />
+                        </button>
+                    </div>
+
+                    <Transactions transactions={transactions} isFullMode={false} />
                 </div>
-
-                <div className="d-grid">
-                    <button className="btn btn-dark add-items-button" type="button" key={"button-" + wallet.id}
-                        onClick={(e) => handleTransactionsModalShow(e)}>
-                        <FcMoneyTransfer />
-                    </button>
-                </div>
-
-                <Transactions transactions={transactions} isFullMode={false} />
-
             </div>
 
             {showTransactionModal ?

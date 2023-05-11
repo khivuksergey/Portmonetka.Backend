@@ -1,11 +1,11 @@
 import { Outlet, Link } from 'react-router-dom';
+import NavMenu from "./NavMenu";
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import { GiTakeMyMoney } from 'react-icons/gi';
 
 export default function Layout() {
-    return (
-        <>
-            <Navbar collapseOnSelect expand="sm" variant="dark" className="prevent-select">
+    /*
+     *             <Navbar collapseOnSelect expand="sm" variant="dark" className="prevent-select">
                 <Container>
                     <Link to="/" className="logo navbar-brand">
                         <GiTakeMyMoney />Portmonetka
@@ -23,8 +23,14 @@ export default function Layout() {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
+     */
+    return (
+        <>
+            <NavMenu/>
 
-            <Outlet />
+            <div className="page-content">
+                <Outlet />
+            </div>
         </>
     )
 }

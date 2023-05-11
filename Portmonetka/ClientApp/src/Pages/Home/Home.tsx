@@ -5,8 +5,8 @@ import { IWallet, IGlobalBalance } from "../../DataTypes";
 import Balance from "./Balance";
 import Wallet from "./Wallet";
 import AddWalletModal from "./AddWalletModal";
-import { Container } from "react-bootstrap";
 import { FaWallet } from "react-icons/fa";
+import { MdAdd } from "react-icons/md";
 import WalletsAnimation from '../../walletsHover';
 
 export default function Home() {
@@ -14,9 +14,9 @@ export default function Home() {
     const [showAddWalletModal, setShowAddWalletModal] = useState(false);
     const [globalBalance, setGlobalBalance] = useState<IGlobalBalance[]>([]);
 
-    //useEffect(() => {
-    //    //WalletsAnimation();
-    //}, [])
+    useEffect(() => {
+        WalletsAnimation();
+    }, [])
 
     const handleAddWalletModalClose = () => setShowAddWalletModal(false);
     const handleAddWalletModalShow = () => setShowAddWalletModal(true);
@@ -46,8 +46,23 @@ export default function Home() {
 
             <Balance />
 
-            <section className="wallets mt-4">
-                <Container id="wallets">
+            <section>
+                <div className="d-flex gap-3">
+                    <h3>Wallets</h3>
+
+                    <button className="add-wallet"
+                        onClick={() => handleAddWalletModalShow()}>
+                        {
+                            wallets.length === 0 ?
+                                <h1><MdAdd /> Add new wallet </h1>
+                                : <><MdAdd /></>
+                        }
+
+                    </button>
+                </div>
+                
+
+                <div id="wallets" className="mt-3">
                     {
                         wallets && wallets.length > 0 ?
                             wallets.map((wallet) => {
@@ -57,25 +72,12 @@ export default function Home() {
                                     onGetWallets={onGetWallets}
                                     onDeleteWallet={onDeleteWallet}
                                     onChangeWallet={onChangeWallet} />
-                            })                    
+                            })
                             : null
                     }
 
-                </Container>
-
+                </div>
             </section>
-
-            <div className="container d-grid my-4">
-                <button className="btn btn-dark add-wallet"
-                    onClick={() => handleAddWalletModalShow()}>
-                    {
-                        wallets.length === 0 ?
-                            <h1><FaWallet /> Add new wallet </h1>
-                            : <FaWallet />
-                    }
-
-                </button>
-            </div>
 
             {showAddWalletModal ?
                 <AddWalletModal

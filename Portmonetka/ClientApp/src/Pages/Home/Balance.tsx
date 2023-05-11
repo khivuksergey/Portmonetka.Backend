@@ -32,18 +32,25 @@ export default function Balance() {
     calculate();
 
     return (
-        <section>
-            <Container>
-                <div className="balance mt-4 d-flex justify-content-center flex-wrap">
-                    {
-                        balances
-                            .sort((a, b) => a.currency < b.currency ? -1 : 1)
-                            .map(balance =>
-                                <BalanceBubble key={balance.currency} balance={balance} />
-                            )
-                    }
-                </div>
-            </Container>
+        <section className="mt-1 mb-4">
+            <h3>Balance</h3>
+
+            <div id="balances" className="mt-3">
+                {
+                    balances
+                        .sort((a, b) => a.currency < b.currency ? -1 : 1)
+                        .map(balance =>
+                            <BalanceBubble key={balance.currency} balance={balance} />
+                        )
+                }
+                {
+                    balances
+                        .sort((a, b) => a.currency < b.currency ? -1 : 1)
+                        .map(balance =>
+                            <BalanceBubble key={balance.currency} balance={balance} />
+                        )
+                }
+            </div>
         </section>
     )
 }

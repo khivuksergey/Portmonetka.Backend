@@ -49,6 +49,9 @@
     <None Remove="ClientApp\src\Components\SubmitButton.tsx" />
     <None Remove="ClientApp\src\DataTypes.ts" />
     <None Remove="ClientApp\src\Hooks\usePopper.ts" />
+    <None Remove="ClientApp\src\Pages\Home\Card.tsx" />
+    <None Remove="ClientApp\src\Pages\NavMenu.tsx" />
+    <None Remove="ClientApp\src\Pages\Wallets\WalletsPage.tsx" />
     <None Remove="ClientApp\src\Utilities\AddWalletStatusMessage.ts" />
     <None Remove="ClientApp\src\Utilities\MoneyToLocaleString.ts" />
     <None Remove="ClientApp\tsconfig.json" />
