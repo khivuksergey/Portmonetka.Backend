@@ -21,9 +21,9 @@ export default function Balance() {
                 {
                     currency: key,
                     sum: value.reduce((acc, cur) => acc + cur.amount, 0),
-                    income: 1599,
-                    outcome: -1256,
-                    incomeTrend: -3.7,
+                    income: 15399,
+                    outcome: -156.65,
+                    incomeTrend: -1.5,
                     outcomeTrend: -2.3
                 }]
         );
@@ -36,13 +36,6 @@ export default function Balance() {
             <h3>Balance</h3>
 
             <div id="balances" className="mt-3">
-                {
-                    balances
-                        .sort((a, b) => a.currency < b.currency ? -1 : 1)
-                        .map(balance =>
-                            <BalanceBubble key={balance.currency} balance={balance} />
-                        )
-                }
                 {
                     balances
                         .sort((a, b) => a.currency < b.currency ? -1 : 1)

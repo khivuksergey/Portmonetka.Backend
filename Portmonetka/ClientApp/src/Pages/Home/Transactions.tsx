@@ -55,26 +55,33 @@ export default function Transactions({ transactions, onDeleteTransaction, onRest
             {
                 !isFullMode ?
                     (<>
-                        <table className="table mb-0 prevent-select" /*size="sm"*/>
-                            <tbody>
-                                {
-                                    transactions
-                                        .sort((a, b) => sortDatesDesc(a.date, b.date))
-                                        .slice(0, 3)
-                                        .map(t =>
-                                            <tr key={t.id}>
-                                                <td className="text-right no-stretch">
-                                                    {t.amount > 0 ?
-                                                        `+${MoneyToLocaleString(t.amount)}` :
-                                                        MoneyToLocaleString(t.amount)}
-                                                </td>
-                                                <td className="transaction-name d-inlineblock text-truncate">{t.description}</td>
-                                                <td className="text-right no-stretch">{formatUtcToLocal(t.date, 'dd.MM.yyyy')}</td>
-                                            </tr>
-                                        )
-                                }
-                            </tbody>
-                        </table>
+                        {
+                            transactions.length === 0 ?
+                                <div className="mt-3 d-flex justify-content-center">
+                                    <h6>Your transactions will be displayed here</h6>
+                                </div>
+                                :
+                                <table className="table mb-0 prevent-select" /*size="sm"*/>
+                                    <tbody>
+                                        {
+                                            transactions
+                                                .sort((a, b) => sortDatesDesc(a.date, b.date))
+                                                .slice(0, 3)
+                                                .map(t =>
+                                                    <tr key={t.id}>
+                                                        <td className="text-right no-stretch">
+                                                            {t.amount > 0 ?
+                                                                `+${MoneyToLocaleString(t.amount)}` :
+                                                                MoneyToLocaleString(t.amount)}
+                                                        </td>
+                                                        <td className="transaction-name d-inlineblock text-truncate">{t.description}</td>
+                                                        <td className="text-right no-stretch">{formatUtcToLocal(t.date, 'dd.MM.yyyy')}</td>
+                                                    </tr>
+                                                )
+                                        }
+                                    </tbody>
+                                </table>
+                        }
                         {transactions.length > 3 ? <BiDotsHorizontalRounded className="transactions-dots" /> : null}
                     </>)
 

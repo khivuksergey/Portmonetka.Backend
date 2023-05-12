@@ -72,7 +72,7 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
                     </div>
 
                     <div className="d-grid">
-                        <button className="btn btn-dark add-items-button" type="button" key={"button-" + wallet.id}
+                        <button className="btn add-items-button" type="button" key={"button-" + wallet.id}
                             onClick={(e) => handleTransactionsModalShow(e)}>
                             <IoIosCash />
                         </button>

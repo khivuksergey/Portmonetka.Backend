@@ -1,8 +1,9 @@
 /*@import "~normalize.css";*/
 
 :root {
-    /*    --primary-color: #191919;
-    --bs-primary: #191919;*/
+    --primary: /*#3bac58*/ /*#ffe074*/ #fec36f;
+    --gradient-primary: linear-gradient(0deg, var(--primary) 0%, #2cbbb3 100%);
+    --main-grey: rgb(30,30,30);
     --dark-color: #121212;
     --green-main: #599e73; /*#46c263;*/
     --green-accent: #3cab66; /*#53d769;*/ /*#3da865;*/
@@ -156,10 +157,6 @@ select option:hover {
     color: rgba(0,0,0,0.3) !important;
 }
 
-.btn-outline-light {
-    color: var(--dark-color);
-}
-
 #balances {
     display: flex;
     flex-wrap: wrap;
@@ -208,7 +205,7 @@ select option:hover {
 }
 
 .balance > .balance-content {
-    background-color: rgb(30,30,30);
+    background-color: var(--main-grey);
     border-radius: inherit;
     display: flex;
     justify-content: center;
@@ -223,8 +220,9 @@ select option:hover {
 }
 
 .currencySuperEllispe {
-    /*filter: invert(92%) sepia(34%) saturate(800%) hue-rotate(20deg) brightness(90%);*/
-    filter: invert(90%);
+    /*filter: invert(94%) sepia(100%) saturate(655%) hue-rotate(320deg) brightness(97%) contrast(112%);*/
+    filter: invert(80%) sepia(53%) saturate(575%) hue-rotate(325deg) brightness(103%) contrast(99%);
+    /*filter: invert(90%);*/
 }
 
 .currency-sign-container {
@@ -260,7 +258,7 @@ select option:hover {
 }
 
 .balance-trend {
-    margin-left: 10px;
+    margin-left: 1rem;
     display: flex;
     align-items: flex-end;
 }
@@ -271,18 +269,18 @@ select option:hover {
 }
 
 .nav-menu {
-    /*background: black;*/
+    position: fixed;
+    background: var(--main-grey);
     height: 100vh;
+    width: 240px;
     padding-top: 0.5rem;
 }
 
 .page-content{
+    margin-left: 240px;
     padding: 20px;
+    padding-bottom: 0;
     width: 100%;
-}
-
-.navbar {
-    /*background: var(--dark-color);*/
 }
 
 .nav-menu .logo {
@@ -290,6 +288,7 @@ select option:hover {
     font-weight: bold;
     color: var(--light-color);
     display: flex;
+    justify-content: center;
     align-items: center;
     column-gap: 0.5rem;
     text-decoration: none;
@@ -301,10 +300,13 @@ select option:hover {
     color: var(--light-color);
     font-size: 18px;
     font-weight: bold;
+    border-radius: 10px;
+    margin: 1rem;
 }
 
 .nav-menu a.active {
-    background: var(--wallet-gradient-dark-accent);
+    color: var(--primary);
+    background: #303030;
 }
 
 .nav-link {
@@ -370,6 +372,7 @@ select option:hover {
     top: 0px;
     transition: opacity 500ms;
     width: 100%;
+    pointer-events: none;
 }
 
 .wallet::before {
@@ -383,7 +386,7 @@ select option:hover {
 }
 
 .wallet > .wallet-content {
-    background-color: rgb(30,30,30);
+    background-color: var(--main-grey);
     border-radius: inherit;
     display: flex;
     flex-direction: column;
@@ -394,11 +397,40 @@ select option:hover {
     z-index: 2;
 }
 
-@media only screen and (max-width: 643px) {
-    .wallet {
-        max-width: 100%;
+.button-add-transaction-row{
+    background: var(--color-transparent);
+    color: white;
+    border: 1px dashed white !important;
+    transition: background 0.1s ease-in-out;
+}
+
+.button-add-transaction-row:hover {
+    background: white;
+    color: #202020;
+    border: 1px solid #ced4da !important;
+}
+
+.menu-text{
+
+}
+
+@media only screen and (max-width: 1080px) {
+    .menu-text, .logo-text {
+        display: none;
+    }
+    .nav-menu .logo {
+        margin: 1.5rem;
+        margin-bottom: 1.3rem;
+    }
+    .nav-menu {
+        width: 98px;
+    }
+    .page-content {
+        margin-left: 98px;
     }
 }
+
+/*@media(max-width: 1000px)*/
 
 .wallet .transactions-dots {
     align-self: center;
@@ -492,6 +524,8 @@ select option:hover {
 }
 
 .add-items-button {
+    color: var(--light-color) !important;
+    border-radius: 5px;
     font-size: 1.5rem;
     display: flex;
     align-items: baseline;

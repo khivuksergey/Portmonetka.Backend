@@ -12,7 +12,6 @@ import "react-day-picker/dist/style.css";
 
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { GoCalendar } from "react-icons/go";
-import { RiInsertRowBottom } from "react-icons/ri";
 
 interface AddTransactionModalProps {
     show: boolean
@@ -25,9 +24,9 @@ interface AddTransactionModalProps {
 const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTransactionModalProps) => {
     const [validated, setValidated] = useState<boolean>(false);
 
-    let transactionTemplate: ITransaction = {
+    let transactionTemplate: any = {
         description: "",
-        amount: 0,
+        amount: "",
         date: new Date(new Date().getTime()),
         categoryId: 0,
         walletId: wallet.id as number
@@ -250,7 +249,9 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
                 }
 
                 <div className="d-grid mb-3" >
-                    <Button variant="outline-light" onClick={addRow}><RiInsertRowBottom size={22} /></Button>
+                    <Button className="button-add-transaction-row" onClick={addRow}>
+                        <BiPlus size={18} />
+                    </Button>
                 </div >
 
 
