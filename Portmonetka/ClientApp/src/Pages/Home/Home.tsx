@@ -60,7 +60,7 @@ export default function Home() {
 
                     </button>
                 </div>
-                
+
 
                 <div id="wallets" className="mt-3">
                     {
@@ -72,6 +72,7 @@ export default function Home() {
                                     onGetWallets={onGetWallets}
                                     onDeleteWallet={onDeleteWallet}
                                     onChangeWallet={onChangeWallet} />
+                                //return <div className="box" key={wallet.id }></div>
                             })
                             : null
                     }

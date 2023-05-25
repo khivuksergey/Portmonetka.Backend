@@ -5,7 +5,6 @@ import { differenceInMinutes, parseISO } from "date-fns";
 import { format, utcToZonedTime } from "date-fns-tz";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import { Table } from "react-bootstrap";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { MdDelete, MdRestoreFromTrash } from "react-icons/md";
 
 interface TransactionsProps {
@@ -14,6 +13,7 @@ interface TransactionsProps {
     onRestoreTransaction?: (id: number) => void
     isFullMode: boolean
 }
+
 
 export default function Transactions({ transactions, onDeleteTransaction, onRestoreTransaction, isFullMode }: TransactionsProps) {
     const { categories } = useCategory();
@@ -58,15 +58,16 @@ export default function Transactions({ transactions, onDeleteTransaction, onRest
                         {
                             transactions.length === 0 ?
                                 <div className="mt-3 d-flex justify-content-center">
-                                    <h6>Your transactions will be displayed here</h6>
+                                    <h6 style={{ height: 0 }}>Your transactions will be displayed here</h6>
                                 </div>
                                 :
-                                <table className="table mb-0 prevent-select" /*size="sm"*/>
+                                <table className="table mb-0 prevent-select"
+                                    style={{ height: 0 }}>
                                     <tbody>
                                         {
                                             transactions
                                                 .sort((a, b) => sortDatesDesc(a.date, b.date))
-                                                .slice(0, 3)
+                                                .slice(0, 4)
                                                 .map(t =>
                                                     <tr key={t.id}>
                                                         <td className="text-right no-stretch">
@@ -82,7 +83,6 @@ export default function Transactions({ transactions, onDeleteTransaction, onRest
                                     </tbody>
                                 </table>
                         }
-                        {transactions.length > 3 ? <BiDotsHorizontalRounded className="transactions-dots" /> : null}
                     </>)
 
                     :

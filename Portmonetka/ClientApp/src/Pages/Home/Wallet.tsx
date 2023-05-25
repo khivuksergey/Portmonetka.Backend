@@ -9,6 +9,7 @@ import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import { FcMoneyTransfer } from "react-icons/fc";
 import { IoIosCash } from "react-icons/io";
+import { BiDotsHorizontalRounded } from "react-icons/bi";
 
 interface WalletProps {
     wallet: IWallet
@@ -66,12 +67,20 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
         <>
             <div className="wallet" onClick={handleWalletModalShow}>
                 <div className="wallet-content">
-                    <div className="wallet-header">
-                        <h4 className="text-nowrap d-inlineblock text-truncate">{wallet.name} </h4>
-                        <h4 className="text-nowrap ms-auto">{MoneyToLocaleString(balance)}&nbsp;{CurrencyToSign(wallet.currency)}</h4>
+                    <div>
+                        <div className="wallet-header">
+                            <div className="wallet-title min-width-0">
+                                <h4 className="text-nowrap-overflow-ellipsis">{wallet.name}</h4>
+                            </div>
+                            <div className="wallet-title wallet-balance">
+                                <h4>
+                                    {MoneyToLocaleString(balance)}&nbsp;{CurrencyToSign(wallet.currency)}
+                                </h4>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="d-grid">
+                    <div className="add-transactions">
                         <button className="btn add-items-button" type="button" key={"button-" + wallet.id}
                             onClick={(e) => handleTransactionsModalShow(e)}>
                             <IoIosCash />
@@ -79,6 +88,12 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
                     </div>
 
                     <Transactions transactions={transactions} isFullMode={false} />
+
+                    {transactions.length > 4 ?
+                        <div className="transactions-dots">
+                            <BiDotsHorizontalRounded />
+                        </div>
+                        : null}
                 </div>
             </div>
 
