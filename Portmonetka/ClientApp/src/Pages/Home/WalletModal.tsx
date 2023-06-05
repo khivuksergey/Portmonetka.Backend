@@ -101,7 +101,7 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
     if (!show) return null;
 
     return (
-        <Modal title={modalTitle} show={show} onClose={onClose} contentClassName="modal-container" /*fullscreen="md-down" centered*/>
+        <Modal title={modalTitle} show={show} onClose={onClose} size="lg" contentClassName="modal-container" /*fullscreen="md-down" centered*/>
             <Form onSubmit={onSubmit} /*noValidate*/>
                 <Row>
                     <Col xs={12} md={5}>

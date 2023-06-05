@@ -2,8 +2,6 @@ import { useContext } from "react";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import { IGlobalBalance, ICurrencyBalance } from "../../DataTypes";
 import BalanceBubble from "../../Components/BalanceBubble";
-import { Container } from "react-bootstrap";
-
 
 
 export default function Balance() {
@@ -32,7 +30,7 @@ export default function Balance() {
     calculate();
 
     return (
-        <section className="mt-1 mb-4">
+        <section className="mb-4">
             <h3>Balance</h3>
 
             <div id="balances" className="mt-3">

@@ -38,6 +38,13 @@
     --wallet-gradient-dark-accent: linear-gradient(-30deg, #353535 0%, #505050 100%);
     --modal-gradient: linear-gradient(-30deg, #d6d6d6 0%, #e6e6e6 100%);
     --popper-gradient: linear-gradient(-30deg, var(--light-color) 0%, white 100%);
+
+    --animation-duration: 300ms;
+    --animation-timing-curve: ease-in-out;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 html {
@@ -53,6 +60,7 @@ body {
     color: var(--light-color);
     background: none;
     font-family: 'JetBrains Mono', monospace;
+    /*font-family: 'Space Grotesk', sans-serif;*/
 }
 
 #root {
@@ -207,6 +215,7 @@ select option:hover {
 
 .balance > .balance-content {
     background-color: var(--main-grey);
+    /*background: rgba(255,255,255,0.05);*/
     border-radius: inherit;
     display: flex;
     justify-content: center;
@@ -263,51 +272,105 @@ select option:hover {
     display: flex;
     align-items: flex-end;
 }
-
-.container {
-    /*max-width: 1100px;*/
-    margin: 0 1rem;
-}
-
-.nav-menu {
-    position: fixed;
-    /*background: var(--main-grey);*/
+/*----------------------------BEGIN HERE----------------------------*/
+.sidebar {
+    position: sticky;
+    left: 0;
+    top: 0;
     height: 100vh;
-    width: 240px;
-    padding-top: 0.5rem;
+    width: 250px;
+    margin-right: 20px;
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: width var(--animation-duration) var(--animation-timing-curve);
 }
 
-.page-content{
-    margin-left: 240px;
-    padding: 20px;
-    padding-bottom: 0;
+.sidebar .nav-link__text {
     width: 100%;
+    height: auto;
+    opacity: 1;
 }
 
-.nav-menu .logo {
+.sidebar.collapsed {
+    width: 100px;
+    margin-right: 0;
+}
+
+.sidebar.collapsed .nav-link__text,
+.sidebar.collapsed .logo__text {
+    opacity: 0;
+    width: 0;
+    transition: opacity var(--animation-duration) var(--animation-timing-curve);
+}
+
+.nav-link__icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.page-content {
+    padding: 20px 20px 20px 0;
+    width: 100%;
+    transition: margin-left var(--animation-duration) var(--animation-timing-curve);
+}
+
+.flexbox {
+    display: flex;
+    align-items: center;
+}
+
+.flexbox--content-center {
+    justify-content: center;
+}
+
+.logo {
     font-size: x-large;
     font-weight: bold;
     color: var(--light-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    column-gap: 0.5rem;
+    column-gap: 0.75rem;
     text-decoration: none;
     white-space: nowrap;
-    margin: 1rem 2rem 1.5rem 1rem;
-}
-
-.nav-menu a {
-    color: var(--light-color);
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 10px;
     margin: 1rem;
+    margin-left: calc(1rem + 14px);
 }
 
-.nav-menu a.active {
-    color: var(--primary);
-    background: #303030;
+.logo__button {
+    background: none;
+    border: none;
+    padding: 0;
+    animation: scaleAnimation 12s infinite ease-in-out;
+}
+
+@keyframes scaleAnimation {
+    0% {
+        transform: scale(1);
+    }
+
+    48% {
+        transform: scale(1);
+    }
+
+    49.4% {
+        transform: scale(1.1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    50.6% {
+        transform: scale(1.1);
+    }
+
+    52% {
+        transform: scale(1);
+    }
+
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .nav-link {
@@ -315,11 +378,27 @@ select option:hover {
     align-items: center;
     column-gap: 0.75rem;
     height: 4rem;
+    color: var(--light-color);
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 10px;
+    margin: 18px;
 }
 
-.nav-link:hover, .nav-link:focus {
-    color: var(--light-color-accent);
-    background: var(--wallet-gradient-dark);
+.nav-link.active {
+    color: var(--primary);
+    background: var(--main-grey);
+}
+
+.nav-link:hover,
+.nav-link:focus:focus-visible {
+    color: var(--primary);
+    background: rgba(255,255,255,0.1);
+}
+
+.logo__text,
+.nav-link__text {
+    transition: opacity var(--animation-duration) var(--animation-timing-curve);
 }
 
 .prevent-select {
@@ -441,8 +520,32 @@ select option:hover {
     border: 1px solid #ced4da !important;
 }
 
-.menu-text{
+.table-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+}
 
+.header-cell {
+    padding: 5px;
+}
+
+.table-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 1rem;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    /*align-items: center;*/
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+.table-cell {
+    padding: 5px;
 }
 
 /*@media only screen and (max-width: 1080px) {

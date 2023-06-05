@@ -82,6 +82,30 @@ export default function Transactions({ transactions, onDeleteTransaction, onRest
                                         }
                                     </tbody>
                                 </table>
+                                //<div className="table-container">
+                                //    <div className="table-body">
+                                //        {
+                                //            transactions
+                                //                .sort((a, b) => sortDatesDesc(a.date, b.date))
+                                //                .slice(0, 4)
+                                //                .map(t =>
+                                //                    <div className="table-row" key={t.id}>
+                                //                        <div className="table-cell text-right no-stretch">
+                                //                            {t.amount > 0 ?
+                                //                                `+${MoneyToLocaleString(t.amount)}` :
+                                //                                MoneyToLocaleString(t.amount)}
+                                //                        </div>
+                                //                        <div className="table-cell transaction-name d-inlineblock text-truncate">
+                                //                            {t.description}
+                                //                        </div>
+                                //                        <div className="table-cell text-right no-stretch">
+                                //                            {formatUtcToLocal(t.date, 'dd.MM.yyyy')}
+                                //                        </div>
+                                //                    </div>
+                                //                )
+                                //        }
+                                //    </div>
+                                //</div>
                         }
                     </>)
 

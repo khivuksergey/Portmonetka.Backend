@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ITransaction, ICategory, IWallet } from "../../DataTypes";
 import Modal from "../../Components/Modal";
 import Popper from "../../Components/Popper";
@@ -7,7 +7,7 @@ import useCategory from "../../Hooks/useCategory";
 import usePopper from "../../Hooks/usePopper";
 import { Form, Row, Col, InputGroup, Button } from "react-bootstrap";
 import { DayPicker } from "react-day-picker";
-import { format } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 import "react-day-picker/dist/style.css";
 
 import { BiMinus, BiPlus } from "react-icons/bi";
@@ -57,6 +57,8 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
     const [currentIndex, setCurrentIndex] = useState<number>(0);
 
     const addRow = () => {
+        let lastTransaction: any = transactions.slice(-1)[0];
+        transactionTemplate.date = lastTransaction.date;
         setTransactions(transactions => [...transactions, transactionTemplate]);
     };
 
@@ -102,14 +104,44 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
         setTransactions(items);
     }
 
+    //const handleDateChange = (e: any/*React.ChangeEvent<HTMLInputElement>*/, i: number) => {
+    //    //doesn't work - TODO
+    //    //let items = [...transactions];
+    //    //let item = { ...items[i] };
+    //    //item.date = format(e.target.value, 'dd.MM.y');
+    //    //items[i] = item;
+    //    //setTransactions(items);
+
+
+    //    const { value } = e.target;
+
+    //    // Create a ref to store the timeout ID
+    //    const timeoutRef = useRef<number | undefined>(undefined);
+
+    //    // Debounce delay in milliseconds
+    //    const debounceDelay = 500; // Adjust as needed
+
+    //    // Clear the previous timeout
+    //    if (timeoutRef.current) {
+    //        clearTimeout(timeoutRef.current);
+    //    }
+
+    //    // Set a new timeout to update the date after the debounce delay
+    //    timeoutRef.current = window.setTimeout(() => {
+    //        const parsedDate = parse(value, 'dd.MM.y', new Date());
+
+    //        if (isValid(parsedDate)) {
+    //            // Update the transaction's date in your state or data structure
+    //            const updatedTransactions = [...transactions];
+    //            updatedTransactions[i].date = parsedDate;
+    //            setTransactions(updatedTransactions);
+    //        }
+    //    }, debounceDelay);
+    //};
+
     const handleDateChange = (e: any, i: number) => {
-        //doesn't work - TODO
-        //let items = [...transactions];
-        //let item = { ...items[i] };
-        //item.date = format(e.target.value, 'dd.MM.y');
-        //items[i] = item;
-        //setTransactions(items);
-    };
+        console.log(e, i);
+    }
 
     // #region Poppers
     const handleDateButtonClick = (e: any, i: number) => {
@@ -179,7 +211,7 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
                     transactions.map(
                         (transaction, i) => (
                             <Row key={i}>
-                                <Col sm={12} lg={4}>
+                                <Col sm={12} lg={5}>
                                     <InputGroup className="mb-3">
                                         {
                                             transactions.length > 1 ?
@@ -228,12 +260,12 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
                                         </Button>
                                     </InputGroup>
                                 </Col>
-                                <Col sm={12} lg={3}>
+                                <Col sm={12} lg={2}>
                                     <InputGroup key={i} className="mb-3" >
 
                                         <Form.Control
-                                            placeholder={format(transaction.date, "dd.MM.y")}
-                                            value={format(transaction.date, "dd.MM.y")}
+                                            /*type="date"*/
+                                            placeholder={format(transaction.date, "dd.MM.y")}                                            value={format(transaction.date, "dd.MM.y")}                                          /*defaultValue={format(transaction.date, "dd.MM.y")}*/
                                             onChange={(e) => handleDateChange(e, i)}
                                             required
                                         />
@@ -256,7 +288,7 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
 
 
 
-                <Popper open={isPopperDateOpen} popper={popperDate} setPopperElement={setPopperDate}>
+                <Popper open={isPopperDateOpen} setOpen={setIsPopperDateOpen} popper={popperDate} setPopperElement={setPopperDate}>
                     <DayPicker
                         selected={transactions[currentIndex].date}
                         onSelect={onDateSelect as any}
@@ -265,7 +297,7 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
                         initialFocus={isPopperDateOpen} />
                 </Popper>
 
-                <Popper open={isPopperCategoryOpen} popper={popperCategory} setPopperElement={setPopperCategory}>
+                <Popper open={isPopperCategoryOpen} setOpen={setIsPopperDateOpen} popper={popperCategory} setPopperElement={setPopperCategory}>
                     <AddCategory onAddCategory={onAddCategory} />
                 </Popper>
 
