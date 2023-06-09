@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ICategory } from "../DataTypes";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, CancelTokenSource } from "axios";
 import _ from "lodash";
 import { mapKeys } from "lodash";
 
@@ -8,30 +8,52 @@ export default function useCategory() {
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [dataFetched, setDataFetched] = useState<boolean>(false);
+    let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
-        fetchCategories();
-    }, [])
+        if (!dataFetched)
+            fetchCategories();
+
+        return () => {
+            if (cancelTokenSource) {
+                cancelTokenSource.cancel("Component unmounted");
+            }
+        }
+    }, [dataFetched])
 
     const fetchCategories = async () => {
         const url = "api/category";
         try {
             setError("");
-            if (!loading)
+
+            if (!loading) {
                 setLoading(true);
-            await axios.get<ICategory[]>(url)
+            }
+
+            cancelTokenSource = axios.CancelToken.source();
+
+            await axios.get<ICategory[]>(url, {cancelToken: cancelTokenSource.token})
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ICategory[];
                     setCategories(camelCasedData);
+                    setDataFetched(true);
                     setLoading(false);
                 });
         } catch (e: unknown) {
             setLoading(false);
+            if (axios.isCancel(e)) {
+                //console.log("Request canceled: ", e.message);
+            }
             const error = e as AxiosError;
             setError(error.message);
-            console.error(error);
+            //console.error(error);
         }
+    }
+
+    const refreshCategories = () => {
+        setDataFetched(false);
     }
 
     const handleAddCategory = async (category: ICategory): Promise<number> => {
@@ -90,5 +112,14 @@ export default function useCategory() {
         }
     }
 
-    return { categories, handleAddCategory, handleChangeCategory, handleDeleteCategory, loading, error };
+    return {
+        categories,
+        handleAddCategory,
+        handleChangeCategory,
+        handleDeleteCategory,
+        refreshCategories,
+        dataFetched,
+        loading,
+        error
+    };
 }

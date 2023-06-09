@@ -10,19 +10,23 @@ import { MdAdd } from "react-icons/md";
 import WalletsAnimation from '../../walletsHover';
 
 export default function Home() {
-    const { wallets, handleGetWallets, handleDeleteWallet, handleAddWallet, handleChangeWallet } = useWallet();
+    const { wallets, refreshWallets, handleDeleteWallet, handleAddWallet, handleChangeWallet, dataFetched: walletsLoaded } = useWallet();
     const [showAddWalletModal, setShowAddWalletModal] = useState(false);
     const [globalBalance, setGlobalBalance] = useState<IGlobalBalance[]>([]);
 
     useEffect(() => {
-        WalletsAnimation();
-    }, [])
+        if (walletsLoaded) {
+            WalletsAnimation();
+        }
+    }, [walletsLoaded])
 
     const handleAddWalletModalClose = () => setShowAddWalletModal(false);
+
     const handleAddWalletModalShow = () => setShowAddWalletModal(true);
 
     const onDeleteWallet = async (id: number, force: boolean) => {
         handleDeleteWallet(id, force);
+        refreshWallets();
         setGlobalBalance((prev: any[]) => {
             console.log(prev.filter(entry => entry.id !== id));
             return prev.filter(entry => entry.id !== id);
@@ -31,54 +35,57 @@ export default function Home() {
 
     const onAddWallet = async (wallet: IWallet) => {
         handleAddWallet(wallet);
-    }
-
-    const onGetWallets = async () => {
-        handleGetWallets();
+        refreshWallets();
     }
 
     const onChangeWallet = async (wallet: IWallet) => {
         handleChangeWallet(wallet);
+        refreshWallets();
     }
 
     return (
         <GlobalBalanceContext.Provider value={{ globalBalance, setGlobalBalance }}>
+            {!walletsLoaded ?
+                <div>Loading</div>
+                :
+                <>
+                    <Balance />
 
-            <Balance />
+                    <section>
+                        <div className="d-flex gap-3">
+                            <h3>Wallets</h3>
 
-            <section>
-                <div className="d-flex gap-3">
-                    <h3>Wallets</h3>
+                            <button className="add-wallet"
+                                onClick={() => handleAddWalletModalShow()}>
+                                <MdAdd />
+                                {/*{*/}
+                                {/*    wallets.length === 0 ?*/}
+                                {/*        <h1><MdAdd /> Add new wallet </h1>*/}
+                                {/*        : <><MdAdd /></>*/}
+                                {/*}*/}
 
-                    <button className="add-wallet"
-                        onClick={() => handleAddWalletModalShow()}>
-                        {
-                            wallets.length === 0 ?
-                                <h1><MdAdd /> Add new wallet </h1>
-                                : <><MdAdd /></>
-                        }
-
-                    </button>
-                </div>
+                            </button>
+                        </div>
 
 
-                <div id="wallets" className="mt-3">
-                    {
-                        wallets && wallets.length > 0 ?
-                            wallets.map((wallet) => {
-                                return <Wallet
-                                    key={wallet.id}
-                                    wallet={wallet}
-                                    onGetWallets={onGetWallets}
-                                    onDeleteWallet={onDeleteWallet}
-                                    onChangeWallet={onChangeWallet} />
-                                //return <div className="box" key={wallet.id }></div>
-                            })
-                            : null
-                    }
+                        <div id="wallets" className="mt-3">
+                            {
+                                wallets && wallets.length > 0 ?
+                                    wallets.map((wallet) => {
+                                        return <Wallet
+                                            key={wallet.id}
+                                            wallet={wallet}
+                                            onDeleteWallet={onDeleteWallet}
+                                            onChangeWallet={onChangeWallet} />
+                                    })
+                                    : null
+                            }
 
-                </div>
-            </section>
+                        </div>
+                    </section>
+                </>            
+            }
+            
 
             {showAddWalletModal ?
                 <AddWalletModal

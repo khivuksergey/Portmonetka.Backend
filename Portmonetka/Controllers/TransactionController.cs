@@ -25,6 +25,7 @@ namespace Portmonetka.Controllers
 
             return await _dbContext.Transactions
                 .Where(t => t.DateDeleted == null)
+                .OrderByDescending(t => t.Date)
                 .ToListAsync();
         }
 
@@ -51,6 +52,20 @@ namespace Portmonetka.Controllers
 
             return await _dbContext.Transactions
                 .Where(t => t.WalletId == walletId && t.DateDeleted == null)
+                .ToListAsync();
+        }
+
+        [Route("wallet/{walletId}/latest/{count}")]
+        [HttpGet("{walletId}")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByWalletLatest(int walletId, int count)
+        {
+            if (_dbContext.Transactions == null)
+                return NotFound();
+
+            return await _dbContext.Transactions
+                .Where(t => t.WalletId == walletId && t.DateDeleted == null)
+                .OrderByDescending(t => t.Date)
+                .Take(count)
                 .ToListAsync();
         }
 

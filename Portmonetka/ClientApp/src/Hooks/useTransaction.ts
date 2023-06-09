@@ -1,23 +1,34 @@
 import { useState, useEffect } from "react";
 import { ITransaction } from "DataTypes";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, CancelTokenSource } from "axios";
 import _ from "lodash";
 import { mapKeys } from "lodash";
 
-export default function useTransaction (walletId: number) {
+export default function useTransaction(walletId: number, latestCount?: number) {
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
-
     const [transactionsSum, setTransactionsSum] = useState(0);
-
     const [loading, setLoading] = useState(false);
-
     const [error, setError] = useState("");
+    const [dataFetched, setDataFetched] = useState(false);
+    let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
-        fetchTransactions();
-    }, [])
+        if (!dataFetched) {
+            if (!!latestCount) {
+                fetchTransactionsLatest(latestCount);
+            } else {
+                fetchTransactions();
+            }
+        }
 
-    //useMemo for future
+        return () => {
+            if (cancelTokenSource) {
+                cancelTokenSource.cancel("Component unmounted");
+            }
+        }
+    }, [dataFetched])
+
+    //replace with backend service
     useEffect(() => {
         calcTransactionsSum();
     }, [transactions])
@@ -31,22 +42,65 @@ export default function useTransaction (walletId: number) {
         const url = `api/transaction/wallet/${walletId}`;
         try {
             setError("");
-            if (!loading)
+
+            if (!loading) {
                 setLoading(true);
-            await axios.get<ITransaction[]>(url)
+            }
+
+            cancelTokenSource = axios.CancelToken.source();
+
+            await axios.get<ITransaction[]>(url, { cancelToken: cancelTokenSource.token })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
                     setTransactions(camelCasedData);
+                    setDataFetched(true);
                     setLoading(false);
                 });
         } catch (e: unknown) {
             setLoading(false);
+            if (axios.isCancel(e)) {
+                //console.log("Request canceled: ", e.message);
+            }
             const error = e as AxiosError;
             setError(error.message);
-            console.error(error);
+            //console.error(error);
         }
     }
+
+    const fetchTransactionsLatest = async (count: number) => {
+        const url = `api/transaction/wallet/${walletId}/latest/${count}`;
+        try {
+            setError("");
+
+            if (!loading) {
+                setLoading(true);
+            }
+
+            cancelTokenSource = axios.CancelToken.source();
+
+            await axios.get<ITransaction[]>(url, { cancelToken: cancelTokenSource.token })
+                .then(response => {
+                    const camelCasedData = response.data.map(item =>
+                        mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
+                    setTransactions(camelCasedData);
+                    setDataFetched(true);
+                    setLoading(false);
+                });
+        } catch (e: unknown) {
+            setLoading(false);
+            if (axios.isCancel(e)) {
+                //console.log("Request canceled: ", e.message);
+            }
+            const error = e as AxiosError;
+            setError(error.message);
+            //console.error(error);
+        }
+    }
+
+    const refreshTransactions = () => {
+        setDataFetched(false);
+    };
 
     const handleAddTransactions = async (transactions: ITransaction[]) => {
         const url = "api/transaction";
@@ -54,7 +108,7 @@ export default function useTransaction (walletId: number) {
             setError("");
             setLoading(true);
             await axios.post(url, transactions)
-                .then(() => {               
+                .then(() => {
                     fetchTransactions();
                     setLoading(false);
                 });
@@ -84,7 +138,7 @@ export default function useTransaction (walletId: number) {
         }
     }
 
-    const handleDeleteTransactions = async (ids: number[]) => {
+    const handleDeleteMultipleTransactions = async (ids: number[]) => {
         const url = `api/transaction/delete`;
         try {
             setError("");
@@ -98,9 +152,19 @@ export default function useTransaction (walletId: number) {
             setLoading(false);
             const error = e as AxiosError;
             setError(error.message);
-            console.error(error);
+            //console.error(error);
         }
     }
 
-    return { transactions, transactionsSum, handleAddTransactions, handleDeleteTransaction, handleDeleteTransactions, loading, error };
+    return {
+        transactions,
+        transactionsSum,
+        handleAddTransactions,
+        handleDeleteTransaction,
+        handleDeleteMultipleTransactions,
+        refreshTransactions,
+        dataFetched,
+        loading,
+        error
+    };
 }

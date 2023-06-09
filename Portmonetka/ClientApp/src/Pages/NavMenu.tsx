@@ -8,7 +8,7 @@ import { IoIosCash } from "react-icons/io";
 export default function NavMenu() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isCollapseButtonClicked, setIsCollapseButtonClicked] = useState(false);
-    const [isSizeLessThan1024, setIsSizeLessThan1024] = useState( window.innerWidth < 1024);
+    const [isSizeLessThan1024, setIsSizeLessThan1024] = useState(window.innerWidth < 1024);
 
     useEffect(() => {
         const handleResize = () => {
@@ -36,17 +36,20 @@ export default function NavMenu() {
 
     return (
         <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
-            <div className="flexbox logo prevent-select" onClick={handleMenuLogoClick}>
-                <button className="logo__button" >
-                    <GiTwoCoins size={40} color={"var(--primary)"}                      /*fill={!isCollapseButtonClicked ? "var(--primary)" : "white"} *//>
-                </button>
+            <div className="sidebar__logo">
+                <div className="flexbox logo prevent-select" onClick={handleMenuLogoClick}>
+                    <button className="logo__button" >
+                        <GiTwoCoins size={40} color={"var(--primary)"}
+                          /*fill={!isCollapseButtonClicked ? "var(--primary)" : "white"} */ />
+                    </button>
 
-                <div className="logo__text">
-                    Portmonetka
+                    <div className="logo__text">
+                        Portmonetka
+                    </div>
                 </div>
             </div>
 
-            <section>
+            <section className="sidebar__nav-links">
                 <NavLink to="/" className="nav-link">
                     <MdSpaceDashboard size={32} className="nav-link__icon" />
                     <div className="nav-link__text">

@@ -1,7 +1,9 @@
-﻿export default function WalletsPage() {
+﻿import PageUnderConstruction from "../PageUnderConstruction";
+
+export default function WalletsPage() {
     return (
         <>
-            Wallets Page
+            <PageUnderConstruction page="Wallets"/>
         </>
     );
 }

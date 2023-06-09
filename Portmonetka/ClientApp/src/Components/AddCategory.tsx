@@ -25,6 +25,8 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
             <Row className="mb-2">
                 <Col>
                     <Form.Control
+                        className="form-control--dark"
+                        style={{ background: "#191919" }}
                         placeholder="New category"
                         aria-label="Name of category"
                         value={newCategory.name} maxLength={128}
@@ -36,8 +38,8 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
             <Row className="mb-2">
                 <Col>
                     <Form.Check
-                        type="switch"
-                        id="expense-switch"
+                        className=""
+                        type="checkbox"
                         label="This is expense"
                         checked={newCategory.isExpense}
                         onChange={e => {
@@ -47,7 +49,7 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
                 </Col>
             </Row>
             <div className="d-grid">
-                <Button className="btn-dark"
+                <Button className="btn btn-dark btn-color"
                     aria-label="Post new category"
                     onClick={handleAddCategory}>
                     Add

@@ -8,7 +8,7 @@ interface StatusMessageProps {
 
 export default function StatusMessage({ wallet }: StatusMessageProps) {
     return (
-        <p className="pt-4">
+        <p className="pt-4" style={{color: "lightgrey"} } >
             <big>{AddWalletStatusMessage(wallet)}</big>
         </p>
     )

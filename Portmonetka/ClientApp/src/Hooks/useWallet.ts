@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { IWallet } from "../DataTypes";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, CancelTokenSource } from "axios";
 import _ from "lodash";
 import { mapKeys } from "lodash";
 
@@ -8,31 +8,52 @@ export default function useWallet() {
     const [wallets, setWallets] = useState<IWallet[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [dataFetched, setDataFetched] = useState(false);
+    let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
-        fetchWallets();
-    }, [])
+        if (!dataFetched)
+            fetchWallets();
+
+        return () => {
+            if (cancelTokenSource) {
+                cancelTokenSource.cancel("Component unmounted");
+            }
+        }
+    }, [dataFetched])
 
     const fetchWallets = async () => {
         const url = "api/wallet";
         try {
             setError("");
+
             if (!loading)
                 setLoading(true);
-            await axios.get<IWallet[]>(url)
+
+            cancelTokenSource = axios.CancelToken.source();
+
+            await axios.get<IWallet[]>(url, { cancelToken: cancelTokenSource.token })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as IWallet[];
                     setWallets(camelCasedData);
+                    setDataFetched(true);
                     setLoading(false);
                 });
         } catch (e: unknown) {
             setLoading(false);
+            if (axios.isCancel(e)) {
+                //console.log("Request canceled: ", e.message);
+            }
             const error = e as AxiosError;
             setError(error.message);
-            console.error(error);
+            //console.error(error);
         }
     }
+
+    const refreshWallets = () => {
+        setDataFetched(false);
+    };
 
     const handleGetWallets = async () => {
         fetchWallets();
@@ -91,5 +112,14 @@ export default function useWallet() {
         }
     }
 
-    return { wallets, handleGetWallets, handleAddWallet, handleChangeWallet, handleDeleteWallet, loading, error };
+    return {
+        wallets,
+        handleAddWallet,
+        handleChangeWallet,
+        handleDeleteWallet,
+        refreshWallets,
+        dataFetched,
+        loading,
+        error
+    };
 }

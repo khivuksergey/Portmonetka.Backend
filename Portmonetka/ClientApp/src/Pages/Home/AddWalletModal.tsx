@@ -83,6 +83,7 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
                             <Form.Label>Title</Form.Label>
                             <Form.Control
                                 type="text"
+                                className="form-control--dark"
                                 placeholder="My wallet"
                                 value={wallet.name} maxLength={128}
                                 onChange={e => {
@@ -98,6 +99,7 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
                             <Form.Label>Currency</Form.Label>
                             <Form.Control
                                 type="text"
+                                className="form-control--dark"
                                 placeholder="USD"
                                 value={wallet.currency} minLength={3} maxLength={3}
                                 onChange={e => {
@@ -112,6 +114,7 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
                             <Form.Label>Balance</Form.Label>
                             <Form.Control
                                 type="number"
+                                className="form-control--dark"
                                 step="any"
                                 placeholder="10000"
                                 value={wallet.initialAmount ?? ''} min={0}
@@ -127,7 +130,7 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
                 <StatusMessage wallet={wallet as unknown as IWallet} />
 
                 <div className="modal-footer">
-                    <Button variant="secondary" type="reset" className="cancel-btn" onClick={onClose}>
+                    <Button /*variant="secondary" */ type="reset" className="btn-dark" onClick={onClose}>
                         Cancel
                     </Button>
                     <Button variant="primary" type="submit" className="ok-btn">

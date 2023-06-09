@@ -1,29 +1,30 @@
 import { useState, useEffect, useContext } from "react";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import { IWallet, IGlobalBalance } from "../../DataTypes";
-import useTransaction from "../../Hooks/useTransaction";
-import Transactions from "./Transactions";
+import LatestTransactionsPreview from "./LatestTransactionsPreview";
 import AddTransactionModal from "./AddTransactionModal";
 import WalletModal from "./WalletModal";
 import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
-import { FcMoneyTransfer } from "react-icons/fc";
 import { IoIosCash } from "react-icons/io";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 
 interface WalletProps {
     wallet: IWallet
     onDeleteWallet: (walletId: number, force: boolean) => Promise<void>
-    onGetWallets: () => Promise<void>
+    //refreshWallets: () => void
     onChangeWallet: (changedWallet: IWallet) => Promise<void>
 }
 
-export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeWallet }: WalletProps) {
+export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onChangeWallet }: WalletProps) {
     const globalBalanceContext = useContext(GlobalBalanceContext);
-    const { transactions, transactionsSum, handleAddTransactions, handleDeleteTransactions } = useTransaction(wallet.id!);
-    const [balance, setBalance] = useState<number>(0);
 
-    //useMemo for future
+    const [balance, setBalance] = useState<number>(0);
+    const [transactionsSum, setTransactionsSum] = useState<number>(0);
+    const [showTransactionModal, setShowTransactionModal] = useState(false);
+    const [showWalletModal, setShowWalletModal] = useState(false);
+
+    //backend service in future
     useEffect(() => {
         const newBalance = {
             id: wallet.id,
@@ -41,14 +42,10 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
         setBalance(newBalance.amount);
     }, [transactionsSum, wallet.initialAmount, wallet.currency]);
 
-    const [showTransactionModal, setShowTransactionModal] = useState(false);
-    const [showWalletModal, setShowWalletModal] = useState(false);
-
-    const handleTransactionsModalClose = () => {
-        setShowTransactionModal(false);
-        onGetWallets();
-
+    const getTransactionsSum = (sum: number) => {
+        setTransactionsSum(sum);
     }
+
     const handleTransactionsModalShow = (e: any) => {
         if (!e)
             e = window.event;
@@ -56,12 +53,11 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
         setShowTransactionModal(true);
     }
 
-    const handleWalletModalClose = () => {
-        onGetWallets();
-        setShowWalletModal(false);
-    }
+    const handleTransactionsModalClose = () => setShowTransactionModal(false);
+
     const handleWalletModalShow = () => setShowWalletModal(true);
 
+    const handleWalletModalClose = () => setShowWalletModal(false);
 
     return (
         <>
@@ -87,13 +83,13 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
                         </button>
                     </div>
 
-                    <Transactions transactions={transactions} isFullMode={false} />
+                    <LatestTransactionsPreview walletId={wallet.id!} getTransactionsSum={getTransactionsSum} />
 
-                    {transactions.length > 4 ?
-                        <div className="transactions-dots">
-                            <BiDotsHorizontalRounded />
-                        </div>
-                        : null}
+                    {/*{transactions.length > 4 ?*/}
+                    {/*    <div className="transactions-dots">*/}
+                    {/*        <BiDotsHorizontalRounded />*/}
+                    {/*    </div>*/}
+                    {/*    : null}*/}
                 </div>
             </div>
 
@@ -102,7 +98,7 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
                     wallet={wallet}
                     show={showTransactionModal}
                     onClose={handleTransactionsModalClose}
-                    onAddTransactions={handleAddTransactions}
+                    //onAddTransactions={handleAddTransactions}
                 />
                 : null
             }
@@ -114,9 +110,9 @@ export default function Wallet({ wallet, onDeleteWallet, onGetWallets, onChangeW
                     onClose={handleWalletModalClose}
                     onDeleteWallet={onDeleteWallet}
                     onChangeWallet={onChangeWallet}
-                    transactions={transactions}
-                    transactionsSum={transactionsSum}
-                    onDeleteTransactions={handleDeleteTransactions}
+                    //transactions={transactions}
+                    //transactionsSum={transactionsSum}
+                    //onDeleteTransactions={handleDeleteMultipleTransactions}
                 />
                 : null
             }

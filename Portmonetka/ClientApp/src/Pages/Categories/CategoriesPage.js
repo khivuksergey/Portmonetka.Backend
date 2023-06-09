@@ -1,7 +1,7 @@
-﻿export default function CategoriesPage() {
+﻿import PageUnderConstruction from "../PageUnderConstruction";
+
+export default function CategoriesPage() {
     return (
-        <>
-            Categories Page
-        </>
+        <PageUnderConstruction page="Categories" />
     )
 }

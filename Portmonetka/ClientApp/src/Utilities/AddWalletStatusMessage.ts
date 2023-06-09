@@ -11,7 +11,7 @@ export default function AddWalletStatusMessage(wallet: IWallet): string {
     if (!wallet.initialAmount)
         return `Your ${wallet.name} wallet isn't going to be empty, or is it?`;
     if (!getSymbolFromCurrency(wallet.currency))
-        return `Your ${wallet.name} wallet is going to have ${wallet.currency}${MoneyToLocaleString(wallet.initialAmount)} in it, right ?`;
+        return `Your ${wallet.name} wallet is going to have ${wallet.currency}${MoneyToLocaleString(wallet.initialAmount)} in it, right?`;
 
     return `Your ${wallet.name} wallet is going to have ${CurrencyToSignConverter(wallet.currency)}${MoneyToLocaleString(wallet.initialAmount)} in it, right?`;
 }

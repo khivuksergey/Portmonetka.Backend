@@ -1,40 +1,68 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Control, useFieldArray, useForm } from "react-hook-form";
 import { ITransaction, ICategory, IWallet } from "../../DataTypes";
 import Modal from "../../Components/Modal";
 import Popper from "../../Components/Popper";
 import AddCategory from "../../Components/AddCategory";
+import DayPickerWithTodayButton from "../../Components/DayPickerWithTodayButton";
+import useTransaction from "../../Hooks/useTransaction";
 import useCategory from "../../Hooks/useCategory";
 import usePopper from "../../Hooks/usePopper";
 import { Form, Row, Col, InputGroup, Button } from "react-bootstrap";
-import { DayPicker } from "react-day-picker";
-import { format, isValid, parse } from "date-fns";
+import { format, isValid, parse, parseISO } from "date-fns";
 import "react-day-picker/dist/style.css";
 
-import { BiMinus, BiPlus } from "react-icons/bi";
+import { BiPlus } from "react-icons/bi";
 import { GoCalendar } from "react-icons/go";
+import { MdPlaylistRemove } from "react-icons/md";
+import React from "react";
 
 interface AddTransactionModalProps {
     show: boolean
     onClose: () => void
     wallet: IWallet
-    onAddTransactions: (transactions: ITransaction[]) => void
+    //onAddTransactions: (transactions: ITransaction[]) => void
+}
+
+export interface IAddTransaction {
+    //id?: number
+    description: string
+    amount: string
+    date: {
+        value: Date,
+        text: string
+    }
+    categoryId?: number
+    walletId: number
 }
 
 
-const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTransactionModalProps) => {
+export default function AddTransactionModal({ show, onClose, wallet/*, onAddTransactions*/ }: AddTransactionModalProps) {
+
+    const { handleAddTransactions } = useTransaction(wallet.id!);
+
     const [validated, setValidated] = useState<boolean>(false);
 
-    let transactionTemplate: any = {
+    const selectRefs = useRef([]);
+
+    let transactionTemplate: IAddTransaction = {
         description: "",
         amount: "",
-        date: new Date(new Date().getTime()),
+        date: {
+            value: new Date(new Date().getTime()),
+            text: format(new Date(new Date().getTime()), 'dd.MM.yy')
+        },
         categoryId: 0,
         walletId: wallet.id as number
     }
 
-    const [transactions, setTransactions] = useState<ITransaction[]>([transactionTemplate]);
+    const [transactions, setTransactions] = useState<IAddTransaction[]>([transactionTemplate]);
 
-    const { categories, handleAddCategory } = useCategory();
+    const [selectedDates, setSelectedDates] = useState<string[]>(
+        [format(new Date(new Date().getTime()), 'dd.MM.yy')]
+    );
+
+    const { categories, handleAddCategory, dataFetched: categoriesLoaded } = useCategory();
 
     const [isPopperDateOpen, setIsPopperDateOpen] = useState(false);
 
@@ -43,7 +71,7 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
         setPopperElement: setPopperDate,
         referenceElement: buttonDate,
         setReferenceElement: setButtonDate
-    } = usePopper();
+    } = usePopper(setIsPopperDateOpen);
 
     const [isPopperCategoryOpen, setIsPopperCategoryOpen] = useState(false);
 
@@ -52,20 +80,58 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
         setPopperElement: setPopperCategory,
         referenceElement: buttonCategory,
         setReferenceElement: setButtonCategory
-    } = usePopper();
+    } = usePopper(setIsPopperCategoryOpen);
 
     const [currentIndex, setCurrentIndex] = useState<number>(0);
 
+    useEffect(() => {
+        selectRefs.current.forEach((selectRef) => {
+            setPlaceholderColor(selectRef);
+        });
+    }, [transactions]);
+
+    const [isTransactionCardVisible, setIsTransactionCardVisible] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsTransactionCardVisible(transactions.length > 1 && window.innerWidth < 992);
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [transactions]);
+
+    const setPlaceholderColor = (selectRef: React.MutableRefObject<HTMLSelectElement | null>) => {
+        if (!selectRef || !selectRef.current) return;
+        const selectElement = selectRef.current;
+        if (!selectElement.value) {
+            selectElement.classList.add('placeholder-selected');
+        } else {
+            selectElement.classList.remove('placeholder-selected');
+        }
+    };
+
     const addRow = () => {
-        let lastTransaction: any = transactions.slice(-1)[0];
-        transactionTemplate.date = lastTransaction.date;
-        setTransactions(transactions => [...transactions, transactionTemplate]);
+        //let lastTransaction: any = transactions.slice(-1)[0];
+        let lastSelectedDate: any = selectedDates.slice(-1)[0];
+        transactionTemplate.date = lastSelectedDate;
+        setTransactions(transactions => [...transactions, transactionTemplate]);//unnecessary new date
+        setSelectedDates(selectedDates => [...selectedDates, lastSelectedDate]);
     };
 
     const deleteRow = (index: number) => {
-        const spliced = [...transactions];
-        spliced.splice(index, 1);
-        setTransactions(spliced);
+        const splicedTransactions = [...transactions];
+        const splicedSelectedDates = [...selectedDates];
+
+        splicedTransactions.splice(index, 1);
+        splicedSelectedDates.splice(index, 1);
+
+        setTransactions(splicedTransactions);
+        setSelectedDates(splicedSelectedDates);
     }
 
     // #region Data change handlers
@@ -83,7 +149,9 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
         let item = { ...items[i] };
         if (!!item.categoryId) {
             let selectedCategory = categories.find(c => c.id == item.categoryId) as ICategory;
-            item.amount = selectedCategory.isExpense ? -Math.abs(e.target.value) : Math.abs(e.target.value);
+            item.amount = selectedCategory.isExpense ?
+                (-Math.abs(e.target.value)).toString() :
+                Math.abs(e.target.value).toString();
         } else {
             item.amount = e.target.value;
         }
@@ -98,49 +166,35 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
         item.categoryId = e.target.value;
         if (!!item.categoryId) {
             let selectedCategory = categories.find(c => c.id == item.categoryId) as ICategory;
-            item.amount = selectedCategory.isExpense ? -Math.abs(item.amount) : Math.abs(item.amount);
+
+            if (!!item.amount) {
+                item.amount = selectedCategory.isExpense ?
+                    (-Math.abs(parseInt(item.amount))).toString() :
+                    Math.abs(parseInt(item.amount)).toString();
+            }
         }
         items[i] = item;
         setTransactions(items);
     }
 
-    //const handleDateChange = (e: any/*React.ChangeEvent<HTMLInputElement>*/, i: number) => {
-    //    //doesn't work - TODO
-    //    //let items = [...transactions];
-    //    //let item = { ...items[i] };
-    //    //item.date = format(e.target.value, 'dd.MM.y');
-    //    //items[i] = item;
-    //    //setTransactions(items);
-
-
-    //    const { value } = e.target;
-
-    //    // Create a ref to store the timeout ID
-    //    const timeoutRef = useRef<number | undefined>(undefined);
-
-    //    // Debounce delay in milliseconds
-    //    const debounceDelay = 500; // Adjust as needed
-
-    //    // Clear the previous timeout
-    //    if (timeoutRef.current) {
-    //        clearTimeout(timeoutRef.current);
-    //    }
-
-    //    // Set a new timeout to update the date after the debounce delay
-    //    timeoutRef.current = window.setTimeout(() => {
-    //        const parsedDate = parse(value, 'dd.MM.y', new Date());
-
-    //        if (isValid(parsedDate)) {
-    //            // Update the transaction's date in your state or data structure
-    //            const updatedTransactions = [...transactions];
-    //            updatedTransactions[i].date = parsedDate;
-    //            setTransactions(updatedTransactions);
-    //        }
-    //    }, debounceDelay);
-    //};
-
     const handleDateChange = (e: any, i: number) => {
-        console.log(e, i);
+        console.log(e.target.value, e.target.valueAsDate);
+        //let items = [...transactions];
+        //let item = { ...items[i] };
+        let dates = [...selectedDates];
+        //let date = dates[i];
+
+        const newDate = e.target.value;// parse(e.currentTarget.value, 'y-MM-dd', new Date());
+        dates[i] = newDate;
+        setSelectedDates(dates);
+        //if (isValid(date)) {
+        //    item.date = date;
+        //    items[i] = item;
+        //    setTransactions(items);
+        //} else {
+        //    //setSelected(undefined);
+        //}
+
     }
 
     // #region Poppers
@@ -157,19 +211,23 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
     }
 
     const onDateSelect = (date: Date) => {
-        let items = [...transactions];
-        let item = { ...items[currentIndex] };
-        item.date = new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
-            item.date.getHours(),
-            item.date.getMinutes(),
-            item.date.getSeconds(),
-            item.date.getMilliseconds(),
-        );
-        items[currentIndex] = item;
-        setTransactions(items);
+        //let items = [...transactions];
+        //let item = { ...items[currentIndex] };
+        //item.date = format(new Date(
+        //    date.getFullYear(),
+        //    date.getMonth(),
+        //    date.getDate()//,
+        //    //item.date.getHours(),
+        //    //item.date.getMinutes(),
+        //    //item.date.getSeconds(),
+        //    //item.date.getMilliseconds(),
+        //), "dd.MM.yyyy");
+        //items[currentIndex] = item;
+        //setTransactions(items);
+        let dates = [...selectedDates];
+        const newDate = format(date, "dd.MM.yy");// parse(e.currentTarget.value, 'y-MM-dd', new Date());
+        dates[currentIndex] = newDate;
+        setSelectedDates(dates);
         setIsPopperDateOpen(false);
     };
 
@@ -189,13 +247,16 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const form = event.currentTarget;
-        //console.log("transactions to be added: ", transactions);
-        if (form.checkValidity() === false) {
+
+        if (form.checkValidity() === false ||
+            !selectedDates.every(d => isValid(parse(d, "dd.MM.yy", new Date())))) {
             setValidated(false);
             event.stopPropagation();
         } else {
             setValidated(true);
-            onAddTransactions(transactions);
+            console.log(transactions, selectedDates);
+            //handleAddTransactions
+            //onAddTransactions(transactions);
             onClose();
         }
     };
@@ -209,92 +270,102 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
             <Form validated={validated} onSubmit={onSubmit} /*noValidate*/>
                 {
                     transactions.map(
-                        (transaction, i) => (
-                            <Row key={i}>
-                                <Col sm={12} lg={5}>
-                                    <InputGroup className="mb-3">
-                                        {
-                                            transactions.length > 1 ?
-                                                (<Button className="btn-dark" onClick={() => deleteRow(i)}>
-                                                    <BiMinus />
-                                                </Button>)
-                                                : null
-                                        }
-                                        <Form.Control
-                                            placeholder="Description"
-                                            value={transaction.description} maxLength={255}
-                                            onChange={e => handleDescriptionChange(e, i)}
-                                            autoFocus
-                                            required
-                                        />
-                                    </InputGroup>
-                                </Col>
-                                <Col sm={12} lg={2}>
-                                    <InputGroup className="mb-3">
-                                        <Form.Control
-                                            placeholder="Amount"
-                                            type="number"
-                                            step="any"
-                                            value={transaction.amount}
-                                            onChange={e => handleAmountChange(e, i)}
-                                            required
-                                        />
-                                    </InputGroup>
-                                </Col>
-                                <Col sm={12} lg={3}>
-                                    <InputGroup className="mb-3" >
-                                        <Form.Select aria-label="Category" id="category"
-                                            value={transaction.categoryId}
-                                            onChange={(e) => handleCategoryChange(e, i)}
-                                            required>
-                                            <option value="">Category</option>
-                                            {
-                                                categories && categories.length > 0 ?
-                                                    categories.map((c) =>
-                                                        <option key={c.id} value={c.id} >{c.name}</option>
-                                                    ) : null
-                                            }
-                                        </Form.Select>
-                                        <Button className="btn-dark" onClick={(e) => handleCategoryButtonClick(e, i)}>
-                                            <BiPlus />
-                                        </Button>
-                                    </InputGroup>
-                                </Col>
-                                <Col sm={12} lg={2}>
-                                    <InputGroup key={i} className="mb-3" >
+                        (transaction, i) => {
+                            const selectRef = selectRefs.current[i] || React.createRef();
+                            selectRefs.current[i] = selectRef;
 
-                                        <Form.Control
-                                            /*type="date"*/
-                                            placeholder={format(transaction.date, "dd.MM.y")}                                            value={format(transaction.date, "dd.MM.y")}                                          /*defaultValue={format(transaction.date, "dd.MM.y")}*/
-                                            onChange={(e) => handleDateChange(e, i)}
-                                            required
-                                        />
-                                        <Button key={i} className="btn-dark"
-                                            onClick={(e) => handleDateButtonClick(e, i)}>
-                                            <GoCalendar />
-                                        </Button>
-                                    </InputGroup>
-                                </Col>
-                            </Row>
-                        )
+                            return (
+                                <Row key={i} className={isTransactionCardVisible ? "transaction-container" : ""}>
+                                    <Col sm={12} lg={5}>
+                                        <InputGroup className="mb-3">
+                                            {
+                                                transactions.length > 1 ?
+                                                    (<Button className="btn-dark button--delete" onClick={() => deleteRow(i)}>
+                                                        <MdPlaylistRemove size={20} fill="darkgrey" />
+                                                    </Button>)
+                                                    : null
+                                            }
+                                            <Form.Control
+                                                className="form-control--dark"
+                                                placeholder="Description"
+                                                value={transaction.description} maxLength={255}
+                                                onChange={e => handleDescriptionChange(e, i)}
+                                                autoFocus
+                                                required
+                                            />
+                                        </InputGroup>
+                                    </Col>
+                                    <Col sm={4} lg={2}>
+                                        <InputGroup className="mb-3">
+                                            <Form.Control
+                                                className="form-control--dark"
+                                                placeholder="Amount"
+                                                type="number"
+                                                step="any"
+                                                value={transaction.amount}
+                                                onChange={e => handleAmountChange(e, i)}
+                                                required
+                                            />
+                                        </InputGroup>
+                                    </Col>
+                                    <Col sm={4} lg={3}>
+                                        <InputGroup className="mb-3" >
+                                            <Button className="btn-dark button--add" onClick={(e) => handleCategoryButtonClick(e, i)}>
+                                                <BiPlus fill="darkgrey" />
+                                            </Button>
+                                            <Form.Select aria-label="Category" id="category"
+                                                className="form-control--dark"
+                                                ref={selectRef}
+                                                value={transaction.categoryId || ''}
+                                                onChange={(e) => handleCategoryChange(e, i)}
+                                                required>
+                                                <option value="" disabled>Category</option>
+                                                {
+                                                    categoriesLoaded ?
+                                                        categories && categories.length > 0 ?
+                                                            categories.map((c) =>
+                                                                <option key={c.id} value={c.id} >{c.name}</option>
+                                                            ) : null
+                                                        :
+                                                        <option disabled>Loading...</option>
+                                                }
+                                            </Form.Select>
+                                        </InputGroup>
+                                    </Col>
+                                    <Col sm={4} lg={2}>
+                                        <InputGroup key={i} className="mb-3" >
+                                            <Form.Control
+                                                className="form-control--dark"
+                                                /*value={format(transaction.date, 'dd.MM.yyyy')}*/
+                                                /*value={transaction.date}*/
+                                                value={selectedDates[i]}
+                                                onChange={(e) => handleDateChange(e, i)}
+                                                required />
+                                            <Button key={i} className="btn-dark"
+                                                onClick={(e) => handleDateButtonClick(e, i)}>
+                                                <GoCalendar fill="darkgrey" />
+                                            </Button>
+                                        </InputGroup>
+                                    </Col>
+                                </Row>
+                            );
+                        }
                     )
                 }
 
-                <div className="d-grid mb-3" >
-                    <Button className="button-add-transaction-row" onClick={addRow}>
-                        <BiPlus size={18} />
+                <div className="d-grid" >
+                    <Button className="button-add-transaction-row--dark" onClick={addRow}>
+                        Add transaction
                     </Button>
                 </div >
 
 
 
                 <Popper open={isPopperDateOpen} setOpen={setIsPopperDateOpen} popper={popperDate} setPopperElement={setPopperDate}>
-                    <DayPicker
-                        selected={transactions[currentIndex].date}
-                        onSelect={onDateSelect as any}
-                        mode="single"
-                        weekStartsOn={1}
-                        initialFocus={isPopperDateOpen} />
+                    <DayPickerWithTodayButton
+                        /*selected={parse(transactions[currentIndex].date, "dd.MM.yyyy", new Date())}*/
+                        selected={parse(selectedDates[currentIndex], "dd.MM.yy", new Date())}
+                        onSelect={onDateSelect as any} />
                 </Popper>
 
                 <Popper open={isPopperCategoryOpen} setOpen={setIsPopperDateOpen} popper={popperCategory} setPopperElement={setPopperCategory}>
@@ -303,7 +374,7 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
 
 
                 <div className="modal-footer">
-                    <Button variant="secondary" type="reset" className="cancel-btn" onClick={onClose}>
+                    <Button type="reset" className="btn-dark" onClick={onClose}>
                         Cancel
                     </Button>
                     <Button variant="primary" type="submit" className="ok-btn">
@@ -315,5 +386,3 @@ const AddTransactionModal = ({ show, onClose, wallet, onAddTransactions }: AddTr
         </Modal>
     )
 }
-
-export default AddTransactionModal;

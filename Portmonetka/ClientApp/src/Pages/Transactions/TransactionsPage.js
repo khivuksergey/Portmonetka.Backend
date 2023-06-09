@@ -1,7 +1,7 @@
-﻿export default function TransactionsPage() {
+﻿import PageUnderConstruction from "../PageUnderConstruction";
+
+export default function TransactionsPage() {
     return (
-        <>
-            Transactions Page
-        </>
+        <PageUnderConstruction page="Transactions"/>
     )
 }

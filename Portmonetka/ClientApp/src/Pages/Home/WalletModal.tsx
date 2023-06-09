@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import Transactions from "./Transactions";
+import TransactionsTable from "./TransactionsTable";
 import { IWallet, ITransaction, IGlobalBalance } from "../../DataTypes";
 import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
@@ -14,9 +14,9 @@ interface WalletModalProps {
     onClose: () => void
     onDeleteWallet: (id: number, force: boolean) => Promise<void>
     onChangeWallet: (wallet: IWallet) => Promise<void>
-    transactions: ITransaction[]
-    transactionsSum: number
-    onDeleteTransactions: (ids: number[]) => Promise<void>
+    //transactions: ITransaction[]
+    //transactionsSum: number
+    //onDeleteTransactions: (ids: number[]) => Promise<void>
 }
 
 enum WalletPropsType {
@@ -25,8 +25,14 @@ enum WalletPropsType {
     InitialAmount
 }
 
-export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onChangeWallet, transactions, transactionsSum, onDeleteTransactions }: WalletModalProps) {
+export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onChangeWallet/*, transactions*//*, transactionsSum*//*, onDeleteTransactions*/ }: WalletModalProps) {
     const [walletObject, setWalletObject] = useState(wallet);
+
+    const [transactionsSum, setTransactionsSum] = useState<number>(0);
+
+    const getTransactionsSum = (sum: number) => {
+        setTransactionsSum(sum);
+    }
 
     const handleWalletDataChange = (field: WalletPropsType, e: React.ChangeEvent<HTMLInputElement>) => {
         switch (field) {
@@ -48,15 +54,15 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
         }
     }
 
-    let transactionIdsToDelete: number[] = [];
+    //let transactionIdsToDelete: number[] = [];
 
-    const onAddTransactionIdToDeleteList = (id: number) => {
-        transactionIdsToDelete = [...transactionIdsToDelete, id];
-    }
+    //const onAddTransactionIdToDeleteList = (id: number) => {
+    //    transactionIdsToDelete = [...transactionIdsToDelete, id];
+    //}
 
-    const onRemoveTransactionIdFromDeleteList = (id: number) => {
-        transactionIdsToDelete = transactionIdsToDelete.filter(t => t !== id);
-    }
+    //const onRemoveTransactionIdFromDeleteList = (id: number) => {
+    //    transactionIdsToDelete = transactionIdsToDelete.filter(t => t !== id);
+    //}
 
     const walletsAreSame = (a: IWallet, b: IWallet): boolean => {
         return a.name === b.name &&
@@ -70,12 +76,12 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
             onChangeWallet(walletObject);
         }
 
-        const itemsCount = transactionIdsToDelete.length;
+        //const itemsCount = transactionIdsToDelete.length;
 
-        if (itemsCount > 0 &&
-            window.confirm(`Are you sure you want to delete ${itemsCount} item${itemsCount > 1 ? `s` : ``}?`) === true) {
-            onDeleteTransactions(transactionIdsToDelete);
-        }
+        //if (itemsCount > 0 &&
+        //    window.confirm(`Are you sure you want to delete ${itemsCount} item${itemsCount > 1 ? `s` : ``}?`) === true) {
+        //    onDeleteTransactions(transactionIdsToDelete);
+        //}
         onClose();
     }
 
@@ -104,10 +110,11 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
         <Modal title={modalTitle} show={show} onClose={onClose} size="lg" contentClassName="modal-container" /*fullscreen="md-down" centered*/>
             <Form onSubmit={onSubmit} /*noValidate*/>
                 <Row>
-                    <Col xs={12} md={5}>
+                    <Col xs={12} sm={5}>
                         <Form.Group>
                             <Form.Label>Title</Form.Label>
                             <Form.Control
+                                className="form-control--dark"
                                 type="text"
                                 placeholder="Wallet Title"
                                 value={walletObject.name} maxLength={128}
@@ -118,10 +125,11 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                             />
                         </Form.Group>
                     </Col>
-                    <Col xs={12} md={3}>
+                    <Col xs={12} sm={3}>
                         <Form.Group>
                             <Form.Label>Currency</Form.Label>
                             <Form.Control
+                                className="form-control--dark"
                                 type="text"
                                 placeholder="USD"
                                 value={walletObject.currency} minLength={3} maxLength={3}
@@ -132,10 +140,11 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                             />
                         </Form.Group>
                     </Col>
-                    <Col xs={12} md={4}>
+                    <Col xs={12} sm={4}>
                         <Form.Group>
                             <Form.Label>Initial Balance</Form.Label>
                             <Form.Control
+                                className="form-control--dark"
                                 type="number"
                                 step="any"
                                 placeholder="10000"
@@ -150,19 +159,21 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                 </Row>
             </Form>
 
-            <Transactions
-                transactions={transactions}
-                onDeleteTransaction={onAddTransactionIdToDeleteList}
-                onRestoreTransaction={onRemoveTransactionIdFromDeleteList}
-                isFullMode={true} />
+            <TransactionsTable
+                /*transactions={transactions}*/
+                /*onDeleteTransaction={onAddTransactionIdToDeleteList}*/
+                /*onRestoreTransaction={onRemoveTransactionIdFromDeleteList}*/
+                walletId={wallet.id!}
+                getTransactionsSum={getTransactionsSum}
+            />
 
 
             <div className="modal-footer">
-                <Button variant="secondary" className="delete-btn" onClick={handleDeleteWallet}>
+                <Button className="btn-dark button--delete" style={{ marginRight: "auto" }} onClick={handleDeleteWallet}>
                     <MdDelete size={20} />
                 </Button>
 
-                <Button variant="secondary" type="reset" className="cancel-btn" onClick={onClose}>
+                <Button type="reset" className="btn-dark" onClick={onClose}>
                     Cancel
                 </Button>
 
