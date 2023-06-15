@@ -35,7 +35,7 @@ export default function NavMenu() {
     };
 
     return (
-        <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+        <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
             <div className="sidebar__logo">
                 <div className="flexbox logo prevent-select" onClick={handleMenuLogoClick}>
                     <button className="logo__button" >
@@ -75,6 +75,6 @@ export default function NavMenu() {
                     </div>
                 </NavLink>
             </section>
-        </aside>
+        </div>
     )
 }

@@ -21,7 +21,7 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
     }
 
     return (
-        <Form className="p-3">
+        <div className="p-3">
             <Row className="mb-2">
                 <Col>
                     <Form.Control
@@ -55,6 +55,6 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
                     Add
                 </Button>
             </div>
-        </Form>
+        </div>
     )
 }

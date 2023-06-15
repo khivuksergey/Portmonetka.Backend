@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { Control, useFieldArray, useForm } from "react-hook-form";
-import { ITransaction, ICategory, IWallet } from "../../DataTypes";
+import React, { useState, useEffect } from "react";
+import { Formik, FieldArray, FormikErrors } from "formik";
+import * as yup from "yup";
+import { ICategory, ITransaction, IWallet } from "../../DataTypes";
 import Modal from "../../Components/Modal";
 import Popper from "../../Components/Popper";
 import AddCategory from "../../Components/AddCategory";
@@ -9,60 +10,76 @@ import useTransaction from "../../Hooks/useTransaction";
 import useCategory from "../../Hooks/useCategory";
 import usePopper from "../../Hooks/usePopper";
 import { Form, Row, Col, InputGroup, Button } from "react-bootstrap";
-import { format, isValid, parse, parseISO } from "date-fns";
 import "react-day-picker/dist/style.css";
 
 import { BiPlus } from "react-icons/bi";
 import { GoCalendar } from "react-icons/go";
 import { MdPlaylistRemove } from "react-icons/md";
-import React from "react";
 
 interface AddTransactionModalProps {
     show: boolean
-    onClose: () => void
+    onClose: (dataAdded: boolean) => void
     wallet: IWallet
-    //onAddTransactions: (transactions: ITransaction[]) => void
 }
 
-export interface IAddTransaction {
-    //id?: number
+interface IAddTransaction {
     description: string
     amount: string
-    date: {
-        value: Date,
-        text: string
-    }
-    categoryId?: number
+    categoryId: number
+    date: Date
     walletId: number
 }
 
+type valuesType = {
+    transactions: IAddTransaction[]
+}
 
-export default function AddTransactionModal({ show, onClose, wallet/*, onAddTransactions*/ }: AddTransactionModalProps) {
+
+export default function AddTransactionModal({ show, onClose, wallet }: AddTransactionModalProps) {
+
+    // #region Initializations
+
+    const validationSchema = yup.object().shape({
+        transactions: yup
+            .array().of(
+                yup.object().shape(
+                    {
+                        description: yup.string().max(255, "Maximum length is 255 characters").required("Description is required"),
+                        amount: yup.number().required("Amount is required"),
+                        categoryId: yup.number().positive().required("Category is required"),
+                        date: yup.date().required("Date is required"),
+                        walletId: yup.number().oneOf([wallet.id!]).required()
+                    }
+                )
+            )
+            .required()
+    });
+
+    const generateTransactionTemplate = (date: Date): IAddTransaction => {
+        return (
+            {
+                description: "",
+                amount: "",
+                categoryId: 0,
+                date: date,
+                walletId: wallet.id as number
+            }
+        )
+    }
+
+    const initialValues: valuesType = {
+        transactions: [generateTransactionTemplate(new Date(new Date().getTime()))]
+    }
 
     const { handleAddTransactions } = useTransaction(wallet.id!);
 
-    const [validated, setValidated] = useState<boolean>(false);
+    const { categories, handleAddCategory, dataFetched: categoriesLoaded, refreshCategories } = useCategory();
 
-    const selectRefs = useRef([]);
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-    let transactionTemplate: IAddTransaction = {
-        description: "",
-        amount: "",
-        date: {
-            value: new Date(new Date().getTime()),
-            text: format(new Date(new Date().getTime()), 'dd.MM.yy')
-        },
-        categoryId: 0,
-        walletId: wallet.id as number
-    }
+    // #endregion
 
-    const [transactions, setTransactions] = useState<IAddTransaction[]>([transactionTemplate]);
-
-    const [selectedDates, setSelectedDates] = useState<string[]>(
-        [format(new Date(new Date().getTime()), 'dd.MM.yy')]
-    );
-
-    const { categories, handleAddCategory, dataFetched: categoriesLoaded } = useCategory();
+    // #region UI functions
 
     const [isPopperDateOpen, setIsPopperDateOpen] = useState(false);
 
@@ -82,19 +99,11 @@ export default function AddTransactionModal({ show, onClose, wallet/*, onAddTran
         setReferenceElement: setButtonCategory
     } = usePopper(setIsPopperCategoryOpen);
 
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
-
-    useEffect(() => {
-        selectRefs.current.forEach((selectRef) => {
-            setPlaceholderColor(selectRef);
-        });
-    }, [transactions]);
-
-    const [isTransactionCardVisible, setIsTransactionCardVisible] = useState(false);
+    const [isTransactionContainerVisible, setIsTransactionContainerVisible] = useState(false);
 
     useEffect(() => {
         const handleResize = () => {
-            setIsTransactionCardVisible(transactions.length > 1 && window.innerWidth < 992);
+            setIsTransactionContainerVisible(window.innerWidth < 992);
         };
 
         window.addEventListener('resize', handleResize);
@@ -103,101 +112,18 @@ export default function AddTransactionModal({ show, onClose, wallet/*, onAddTran
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, [transactions]);
+    }, []);
 
-    const setPlaceholderColor = (selectRef: React.MutableRefObject<HTMLSelectElement | null>) => {
-        if (!selectRef || !selectRef.current) return;
-        const selectElement = selectRef.current;
-        if (!selectElement.value) {
-            selectElement.classList.add('placeholder-selected');
-        } else {
-            selectElement.classList.remove('placeholder-selected');
-        }
+    const handleAddRow = (push: Function, values: valuesType) => {
+        let lastTransaction: IAddTransaction = values.transactions[values.transactions.length - 1];
+        const newTransaction = generateTransactionTemplate(lastTransaction.date);
+        push(newTransaction);
     };
 
-    const addRow = () => {
-        //let lastTransaction: any = transactions.slice(-1)[0];
-        let lastSelectedDate: any = selectedDates.slice(-1)[0];
-        transactionTemplate.date = lastSelectedDate;
-        setTransactions(transactions => [...transactions, transactionTemplate]);//unnecessary new date
-        setSelectedDates(selectedDates => [...selectedDates, lastSelectedDate]);
-    };
-
-    const deleteRow = (index: number) => {
-        const splicedTransactions = [...transactions];
-        const splicedSelectedDates = [...selectedDates];
-
-        splicedTransactions.splice(index, 1);
-        splicedSelectedDates.splice(index, 1);
-
-        setTransactions(splicedTransactions);
-        setSelectedDates(splicedSelectedDates);
+    const handleDeleteRow = (remove: Function, index: number) => {
+        remove(index);
     }
 
-    // #region Data change handlers
-
-    const handleDescriptionChange = (e: any, i: number) => {
-        let items = [...transactions];
-        let item = { ...items[i] };
-        item.description = e.target.value;
-        items[i] = item;
-        setTransactions(items);
-    }
-
-    const handleAmountChange = (e: any, i: number) => {
-        let items = [...transactions]
-        let item = { ...items[i] };
-        if (!!item.categoryId) {
-            let selectedCategory = categories.find(c => c.id == item.categoryId) as ICategory;
-            item.amount = selectedCategory.isExpense ?
-                (-Math.abs(e.target.value)).toString() :
-                Math.abs(e.target.value).toString();
-        } else {
-            item.amount = e.target.value;
-        }
-        items[i] = item;
-        setTransactions(items);
-    }
-
-    const handleCategoryChange = (e: any, i: number) => {
-        setCurrentIndex(i);
-        let items = [...transactions];
-        let item = { ...items[i] };
-        item.categoryId = e.target.value;
-        if (!!item.categoryId) {
-            let selectedCategory = categories.find(c => c.id == item.categoryId) as ICategory;
-
-            if (!!item.amount) {
-                item.amount = selectedCategory.isExpense ?
-                    (-Math.abs(parseInt(item.amount))).toString() :
-                    Math.abs(parseInt(item.amount)).toString();
-            }
-        }
-        items[i] = item;
-        setTransactions(items);
-    }
-
-    const handleDateChange = (e: any, i: number) => {
-        console.log(e.target.value, e.target.valueAsDate);
-        //let items = [...transactions];
-        //let item = { ...items[i] };
-        let dates = [...selectedDates];
-        //let date = dates[i];
-
-        const newDate = e.target.value;// parse(e.currentTarget.value, 'y-MM-dd', new Date());
-        dates[i] = newDate;
-        setSelectedDates(dates);
-        //if (isValid(date)) {
-        //    item.date = date;
-        //    items[i] = item;
-        //    setTransactions(items);
-        //} else {
-        //    //setSelected(undefined);
-        //}
-
-    }
-
-    // #region Poppers
     const handleDateButtonClick = (e: any, i: number) => {
         setCurrentIndex(i);
         setButtonDate(e.target);
@@ -210,178 +136,226 @@ export default function AddTransactionModal({ show, onClose, wallet/*, onAddTran
         setIsPopperCategoryOpen(prev => !prev);
     }
 
-    const onDateSelect = (date: Date) => {
-        //let items = [...transactions];
-        //let item = { ...items[currentIndex] };
-        //item.date = format(new Date(
-        //    date.getFullYear(),
-        //    date.getMonth(),
-        //    date.getDate()//,
-        //    //item.date.getHours(),
-        //    //item.date.getMinutes(),
-        //    //item.date.getSeconds(),
-        //    //item.date.getMilliseconds(),
-        //), "dd.MM.yyyy");
-        //items[currentIndex] = item;
-        //setTransactions(items);
-        let dates = [...selectedDates];
-        const newDate = format(date, "dd.MM.yy");// parse(e.currentTarget.value, 'y-MM-dd', new Date());
-        dates[currentIndex] = newDate;
-        setSelectedDates(dates);
+    // #endregion
+
+    // #region Data change handlers
+
+    const handleAmountChange = (index: number, value: string, setFieldValue: Function, transactions: IAddTransaction[]) => {
+        const currentTransaction = transactions[index];
+        if (!!currentTransaction.categoryId) {
+            const selectedCategory = categories.find(c => c.id == currentTransaction.categoryId) as ICategory;
+            value = selectedCategory.isExpense ?
+                (-Math.abs(parseFloat(value))).toString() :
+                Math.abs(parseFloat(value)).toString();
+        }
+        setFieldValue(`transactions[${index}].amount`, value);
+    }
+
+    const handleCategoryChange = (index: number, categoryId: number, setFieldValue: Function, transactions: IAddTransaction[]) => {
+        setCurrentIndex(index);
+        setFieldValue(`transactions[${index}].categoryId`, categoryId);
+        const currentTransaction = transactions[index];
+
+        if (categoryId) {
+            const selectedCategory = categories.find(c => c.id == categoryId) as ICategory;
+
+            if (!!currentTransaction.amount) {
+                const amount = selectedCategory.isExpense ?
+                    (-Math.abs(parseInt(currentTransaction.amount))).toString() :
+                    Math.abs(parseInt(currentTransaction.amount)).toString();
+
+                setFieldValue(`transactions[${index}].amount`, amount);
+            }
+        }
+    }
+
+    const onDateSelect = (date: Date, transaction: IAddTransaction) => {
+        const now = new Date();
+        const newDate = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds(),
+            now.getMilliseconds(),
+        );
+        transaction.date = newDate;
         setIsPopperDateOpen(false);
     };
 
-    const onAddCategory = async (newCategory: ICategory) => {
+    const onAddCategory = async (newCategory: ICategory, index: number, setFieldValue: Function, transactions: IAddTransaction[]) => {
         const newCategoryId = await handleAddCategory(newCategory);
-        let items = [...transactions];
-        let item = { ...items[currentIndex] };
-        item.categoryId = newCategoryId;
-        items[currentIndex] = item;
-        setTransactions(items);
+        refreshCategories();
+        setFieldValue(`transactions[${index}].categoryId`, newCategoryId);
+        const currentTransaction = transactions[index];
+        if (!!currentTransaction.amount) {
+            const amount = newCategory.isExpense ?
+                (-Math.abs(parseInt(currentTransaction.amount))).toString() :
+                Math.abs(parseInt(currentTransaction.amount)).toString();
+
+            setFieldValue(`transactions[${index}].amount`, amount);
+        }
         setIsPopperCategoryOpen(false);
     }
-    // #endregion
 
-    // #endregion
-
-    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const form = event.currentTarget;
-
-        if (form.checkValidity() === false ||
-            !selectedDates.every(d => isValid(parse(d, "dd.MM.yy", new Date())))) {
-            setValidated(false);
-            event.stopPropagation();
-        } else {
-            setValidated(true);
-            console.log(transactions, selectedDates);
-            //handleAddTransactions
-            //onAddTransactions(transactions);
-            onClose();
-        }
+    const handleSubmit = (values: valuesType) => {
+        handleAddTransactions(values.transactions as unknown as ITransaction[])
+        onClose(true);
     };
+
+    // #endregion
 
     const modalTitle = <big>Add transactions to {wallet.name}</big>
 
     if (!show) return null;
 
     return (
-        <Modal title={modalTitle} show={show} onClose={onClose} size="xl" contentClassName="modal-container">
-            <Form validated={validated} onSubmit={onSubmit} /*noValidate*/>
-                {
-                    transactions.map(
-                        (transaction, i) => {
-                            const selectRef = selectRefs.current[i] || React.createRef();
-                            selectRefs.current[i] = selectRef;
-
-                            return (
-                                <Row key={i} className={isTransactionCardVisible ? "transaction-container" : ""}>
-                                    <Col sm={12} lg={5}>
-                                        <InputGroup className="mb-3">
-                                            {
-                                                transactions.length > 1 ?
-                                                    (<Button className="btn-dark button--delete" onClick={() => deleteRow(i)}>
-                                                        <MdPlaylistRemove size={20} fill="darkgrey" />
-                                                    </Button>)
-                                                    : null
+        <Modal title={modalTitle} show={show} onClose={() => onClose(false)} backdrop="static" size="xl" contentClassName="modal-container">
+            <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={(values) => handleSubmit(values)}
+            >
+                {({ handleSubmit, handleChange, setFieldValue, values, touched, errors }) =>
+                    <Form onSubmit={handleSubmit} noValidate>
+                        <FieldArray name="transactions">
+                            {({ push, remove }) =>
+                            (
+                                <React.Fragment>
+                                    {values.transactions && values.transactions.length > 0 &&
+                                        values.transactions.map(
+                                            (transaction, i) => {
+                                                return (
+                                                    <Row key={i} className={values.transactions.length > 1 && isTransactionContainerVisible ? "transaction-container" : ""}>
+                                                        <Col sm={12} lg={4}>
+                                                            <InputGroup className="mb-3">
+                                                                {
+                                                                    values.transactions.length > 1 ?
+                                                                        (<Button className="btn-dark button--delete" onClick={() => handleDeleteRow(remove, i)}>
+                                                                            <MdPlaylistRemove size={20} fill="darkgrey" />
+                                                                        </Button>)
+                                                                        : null
+                                                                }
+                                                                <Form.Control
+                                                                    type="text"
+                                                                    name={`transactions[${i}].description`}
+                                                                    placeholder="Description"
+                                                                    value={transaction.description}
+                                                                    onChange={handleChange}
+                                                                    className="form-control--dark"
+                                                                    isInvalid={touched.transactions?.[i]?.description &&
+                                                                        !!(errors.transactions?.[i] as FormikErrors<IAddTransaction>)?.description}
+                                                                    autoFocus
+                                                                />
+                                                            </InputGroup>
+                                                        </Col>
+                                                        <Col sm={4} lg={2}>
+                                                            <InputGroup className="mb-3">
+                                                                <Form.Control
+                                                                    type="number"
+                                                                    step="any"
+                                                                    name={`transactions[${i}].amount`}
+                                                                    placeholder="Amount"
+                                                                    value={transaction.amount}
+                                                                    onChange={(e) => handleAmountChange(i, e.target.value, setFieldValue, values.transactions)}
+                                                                    isInvalid={touched.transactions?.[i]?.amount &&
+                                                                        !!(errors.transactions?.[i] as FormikErrors<IAddTransaction>)?.amount}
+                                                                    className="form-control--dark"
+                                                                />
+                                                            </InputGroup>
+                                                        </Col>
+                                                        <Col sm={4} lg={3}>
+                                                            <InputGroup className="mb-3" >
+                                                                <Button className="btn-dark button--add" onClick={(e) => handleCategoryButtonClick(e, i)}>
+                                                                    <BiPlus fill="darkgrey" />
+                                                                </Button>
+                                                                <Form.Select
+                                                                    name={`transactions[${i}.categoryId]`}
+                                                                    value={transaction.categoryId || ''}
+                                                                    onChange={(e) => handleCategoryChange(i, parseInt(e.target.value), setFieldValue, values.transactions)}
+                                                                    isInvalid={touched.transactions?.[i]?.categoryId &&
+                                                                        !!(errors.transactions?.[i] as FormikErrors<IAddTransaction>)?.categoryId}
+                                                                    className="form-control--dark"
+                                                                    required
+                                                                >
+                                                                    <option value="" disabled hidden>Category</option>
+                                                                    {
+                                                                        categoriesLoaded ?
+                                                                            categories && categories.length > 0 ?
+                                                                                categories.map((c) =>
+                                                                                    <option key={c.id} value={c.id} >{c.name}</option>
+                                                                                ) : null
+                                                                            :
+                                                                            <option disabled>Loading...</option>
+                                                                    }
+                                                                </Form.Select>
+                                                            </InputGroup>
+                                                        </Col>
+                                                        <Col sm={4} lg={3}>
+                                                            <InputGroup key={i} className="mb-3" >
+                                                                <Form.Control
+                                                                    name={`transactions[${i}].date`}
+                                                                    value={transaction.date.toLocaleDateString()}
+                                                                    onChange={() => { }}
+                                                                    isInvalid={touched.transactions?.[i]?.date &&
+                                                                        !!(errors.transactions?.[i] as FormikErrors<IAddTransaction>)?.date}
+                                                                    className="form-control--dark"
+                                                                />
+                                                                <Button key={i} className="btn-dark"
+                                                                    onClick={(e) => handleDateButtonClick(e, i)}>
+                                                                    <GoCalendar fill="darkgrey" />
+                                                                </Button>
+                                                            </InputGroup>
+                                                        </Col>
+                                                    </Row>
+                                                );
                                             }
-                                            <Form.Control
-                                                className="form-control--dark"
-                                                placeholder="Description"
-                                                value={transaction.description} maxLength={255}
-                                                onChange={e => handleDescriptionChange(e, i)}
-                                                autoFocus
-                                                required
-                                            />
-                                        </InputGroup>
-                                    </Col>
-                                    <Col sm={4} lg={2}>
-                                        <InputGroup className="mb-3">
-                                            <Form.Control
-                                                className="form-control--dark"
-                                                placeholder="Amount"
-                                                type="number"
-                                                step="any"
-                                                value={transaction.amount}
-                                                onChange={e => handleAmountChange(e, i)}
-                                                required
-                                            />
-                                        </InputGroup>
-                                    </Col>
-                                    <Col sm={4} lg={3}>
-                                        <InputGroup className="mb-3" >
-                                            <Button className="btn-dark button--add" onClick={(e) => handleCategoryButtonClick(e, i)}>
-                                                <BiPlus fill="darkgrey" />
-                                            </Button>
-                                            <Form.Select aria-label="Category" id="category"
-                                                className="form-control--dark"
-                                                ref={selectRef}
-                                                value={transaction.categoryId || ''}
-                                                onChange={(e) => handleCategoryChange(e, i)}
-                                                required>
-                                                <option value="" disabled>Category</option>
-                                                {
-                                                    categoriesLoaded ?
-                                                        categories && categories.length > 0 ?
-                                                            categories.map((c) =>
-                                                                <option key={c.id} value={c.id} >{c.name}</option>
-                                                            ) : null
-                                                        :
-                                                        <option disabled>Loading...</option>
-                                                }
-                                            </Form.Select>
-                                        </InputGroup>
-                                    </Col>
-                                    <Col sm={4} lg={2}>
-                                        <InputGroup key={i} className="mb-3" >
-                                            <Form.Control
-                                                className="form-control--dark"
-                                                /*value={format(transaction.date, 'dd.MM.yyyy')}*/
-                                                /*value={transaction.date}*/
-                                                value={selectedDates[i]}
-                                                onChange={(e) => handleDateChange(e, i)}
-                                                required />
-                                            <Button key={i} className="btn-dark"
-                                                onClick={(e) => handleDateButtonClick(e, i)}>
-                                                <GoCalendar fill="darkgrey" />
-                                            </Button>
-                                        </InputGroup>
-                                    </Col>
-                                </Row>
-                            );
-                        }
-                    )
+                                        )
+                                    }
+
+                                    <div className="d-grid" >
+                                        <Button className="button-add-transaction-row--dark" onClick={() => handleAddRow(push, values)}>
+                                            Add transaction
+                                        </Button>
+                                    </div >
+
+                                    <Popper
+                                        open={isPopperDateOpen}
+                                        setOpen={setIsPopperDateOpen}
+                                        popper={popperDate}
+                                        setPopperElement={setPopperDate}
+                                    >
+                                        <DayPickerWithTodayButton
+                                            selected={values.transactions[currentIndex]?.date}
+                                            onSelect={(date) => onDateSelect(date!, values.transactions[currentIndex])} />
+                                    </Popper>
+
+                                    <Popper
+                                        open={isPopperCategoryOpen}
+                                        setOpen={setIsPopperDateOpen}
+                                        popper={popperCategory}
+                                        setPopperElement={setPopperCategory}
+                                    >
+                                        <AddCategory onAddCategory={(newCategory) => onAddCategory(newCategory, currentIndex, setFieldValue, values.transactions)} />
+                                    </Popper>
+
+                                </React.Fragment>
+                            )
+                            }
+                        </FieldArray>
+
+                        <div className="modal-footer">
+                            <Button type="reset" className="btn-dark" onClick={() => onClose(false)}>
+                                Cancel
+                            </Button>
+                            <Button variant="primary" type="submit" className="ok-btn">
+                                Add
+                            </Button>
+                        </div>
+                    </Form>
                 }
-
-                <div className="d-grid" >
-                    <Button className="button-add-transaction-row--dark" onClick={addRow}>
-                        Add transaction
-                    </Button>
-                </div >
-
-
-
-                <Popper open={isPopperDateOpen} setOpen={setIsPopperDateOpen} popper={popperDate} setPopperElement={setPopperDate}>
-                    <DayPickerWithTodayButton
-                        /*selected={parse(transactions[currentIndex].date, "dd.MM.yyyy", new Date())}*/
-                        selected={parse(selectedDates[currentIndex], "dd.MM.yy", new Date())}
-                        onSelect={onDateSelect as any} />
-                </Popper>
-
-                <Popper open={isPopperCategoryOpen} setOpen={setIsPopperDateOpen} popper={popperCategory} setPopperElement={setPopperCategory}>
-                    <AddCategory onAddCategory={onAddCategory} />
-                </Popper>
-
-
-                <div className="modal-footer">
-                    <Button type="reset" className="btn-dark" onClick={onClose}>
-                        Cancel
-                    </Button>
-                    <Button variant="primary" type="submit" className="ok-btn">
-                        Add
-                    </Button>
-                </div>
-            </Form>
+            </Formik>
 
         </Modal>
     )

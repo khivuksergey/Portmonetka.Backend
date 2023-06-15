@@ -1,7 +1,7 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import { IWallet, IGlobalBalance } from "../../DataTypes";
-import LatestTransactionsPreview from "./LatestTransactionsPreview";
+import LatestTransactionsPreview, { LatestTransactionsPreviewRef } from "./LatestTransactionsPreview";
 import AddTransactionModal from "./AddTransactionModal";
 import WalletModal from "./WalletModal";
 import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
@@ -23,6 +23,8 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
     const [transactionsSum, setTransactionsSum] = useState<number>(0);
     const [showTransactionModal, setShowTransactionModal] = useState(false);
     const [showWalletModal, setShowWalletModal] = useState(false);
+
+    const latestTransactionsPreviewRef = useRef<LatestTransactionsPreviewRef>();
 
     //backend service in future
     useEffect(() => {
@@ -53,7 +55,13 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
         setShowTransactionModal(true);
     }
 
-    const handleTransactionsModalClose = () => setShowTransactionModal(false);
+    const handleTransactionsModalClose = (dataAdded: boolean) => {
+        // Refresh transactions
+        if (dataAdded && latestTransactionsPreviewRef.current) {
+            latestTransactionsPreviewRef.current.refreshTransactions();
+        }
+        setShowTransactionModal(false);
+    };
 
     const handleWalletModalShow = () => setShowWalletModal(true);
 
@@ -83,13 +91,9 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
                         </button>
                     </div>
 
-                    <LatestTransactionsPreview walletId={wallet.id!} getTransactionsSum={getTransactionsSum} />
+                    <LatestTransactionsPreview walletId={wallet.id!} getTransactionsSum={getTransactionsSum} ref={latestTransactionsPreviewRef} />
 
-                    {/*{transactions.length > 4 ?*/}
-                    {/*    <div className="transactions-dots">*/}
-                    {/*        <BiDotsHorizontalRounded />*/}
-                    {/*    </div>*/}
-                    {/*    : null}*/}
+
                 </div>
             </div>
 
@@ -98,7 +102,7 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
                     wallet={wallet}
                     show={showTransactionModal}
                     onClose={handleTransactionsModalClose}
-                    //onAddTransactions={handleAddTransactions}
+                //onAddTransactions={handleAddTransactions}
                 />
                 : null
             }
@@ -110,12 +114,20 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
                     onClose={handleWalletModalClose}
                     onDeleteWallet={onDeleteWallet}
                     onChangeWallet={onChangeWallet}
-                    //transactions={transactions}
-                    //transactionsSum={transactionsSum}
-                    //onDeleteTransactions={handleDeleteMultipleTransactions}
+                //transactions={transactions}
+                //transactionsSum={transactionsSum}
+                //onDeleteTransactions={handleDeleteMultipleTransactions}
                 />
                 : null
             }
         </>
     )
 }
+
+
+/*old code*/
+/*{transactions.length > 4 ?*/ 
+/*    <div className="transactions-dots">*/
+    /*        <BiDotsHorizontalRounded />*/ 
+    /*    </div>*/ 
+    /*    : null}*/ 

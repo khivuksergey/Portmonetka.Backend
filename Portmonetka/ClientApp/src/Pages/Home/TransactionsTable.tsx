@@ -2,7 +2,7 @@
 import useTransaction from "../../Hooks/useTransaction";
 import useCategory from "../../Hooks/useCategory";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
-import { format, utcToZonedTime } from "date-fns-tz";
+import { utcToZonedTime } from "date-fns-tz";
 import { Table } from "react-bootstrap";
 import { MdDelete, MdRestoreFromTrash } from "react-icons/md";
 
@@ -38,53 +38,63 @@ export default function TransactionsTable({ walletId, getTransactionsSum }: Tran
         return (transactionsToDelete.includes(id) ? " text-disabled" : "");
     }
 
-    const formatUtcToLocal = (utcDate: Date, formatString: string): string => {
+    const UtcToLocal = (utcDate: Date): Date => {
         const timeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const localDate = utcToZonedTime(utcDate, timeZoneName);
-        const formattedDate = format(localDate, formatString);
-        return formattedDate;
+        return localDate;
     }
 
     return (
         <>
-            {
-                !transactionsLoaded ?
+            {!transactionsLoaded ?
 
-                    <div>Loading</div>
+                <div>Loading</div>
 
-                    :
+                :
 
-                    (<Table className="mt-4 table table-dark mb-0 prevent-select" size="sm" hover>
-                        <tbody>
-                            {
-                                transactions
-                                    .map(t =>
-                                        <tr key={t.id}>
-                                            <td className={"text-light text-right no-stretch" + isDisabledClassName(t.id!)}><b>
+                (<Table className="mt-4 table table-dark mb-0 prevent-select" size="sm" hover>
+                    <tbody>
+                        {
+                            transactions
+                                .map(t =>
+                                    <tr key={t.id}>
+                                        <td className={"text-light text-right no-stretch" + isDisabledClassName(t.id!)}>
+                                            <b>
                                                 {t.amount > 0 ?
                                                     `+${MoneyToLocaleString(t.amount)}` :
                                                     MoneyToLocaleString(t.amount)}
-                                            </b></td>
-                                            <td className={"text-light transaction-name d-inlineblock text-truncate" + isDisabledClassName(t.id!)}>{t.description}</td>
-                                            <td className={"text-light" + isDisabledClassName(t.id!)} >{categories.length ? categories.find(c => c.id === t.categoryId)!.name : ''}</td>
-                                            <td className={"text-light text-right no-stretch" + isDisabledClassName(t.id!)}>{formatUtcToLocal(t.date, 'dd.MM.yyyy')}</td>
-                                            <td style={{ width: 0 }}>
-                                                {
-                                                    !transactionsToDelete.includes(t.id!) ?
-                                                        <button className="btn btn-delete d-flex" onClick={() => handleDeleteTransaction(t.id!)}>
-                                                            <MdDelete size={18} />
-                                                        </button>
-                                                        :
-                                                        <button className="btn btn-restore d-flex" onClick={() => handleRestoreTransaction(t.id!)}>
-                                                            <MdRestoreFromTrash size={18} />
-                                                        </button>
-                                                }
-                                            </td>
-                                        </tr>
-                                    )
-                            }
-                        </tbody>
-                    </Table>)
+                                            </b>
+                                        </td>
+
+                                        <td className={"text-light transaction-name d-inlineblock text-truncate" + isDisabledClassName(t.id!)}>
+                                            {t.description}
+                                        </td>
+
+                                        <td className={"text-light" + isDisabledClassName(t.id!)} >
+                                            {categories.length ? categories.find(c => c.id === t.categoryId)!.name : ''}
+                                        </td>
+
+                                        <td className={"text-light text-right no-stretch" + isDisabledClassName(t.id!)}>
+                                            {UtcToLocal(t.date).toLocaleDateString()}
+                                        </td>
+
+                                        <td style={{ width: 0 }}>
+                                            {
+                                                !transactionsToDelete.includes(t.id!) ?
+                                                    <button className="btn btn-delete d-flex" onClick={() => handleDeleteTransaction(t.id!)}>
+                                                        <MdDelete size={18} />
+                                                    </button>
+                                                    :
+                                                    <button className="btn btn-restore d-flex" onClick={() => handleRestoreTransaction(t.id!)}>
+                                                        <MdRestoreFromTrash size={18} />
+                                                    </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                )
+                        }
+                    </tbody>
+                </Table>)
             }
         </>
     )

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect, useImperativeHandle } from "react";
 import useTransaction from "../../Hooks/useTransaction";
 import { format, utcToZonedTime } from "date-fns-tz";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
@@ -8,8 +8,15 @@ interface LatestTransactionsPreviewProps {
     getTransactionsSum: (sum: number) => void
 }
 
+export interface LatestTransactionsPreviewRef {
+    refreshTransactions: () => void;
+}
 
-export default function LatestTransactionsPreview({ walletId, getTransactionsSum }: LatestTransactionsPreviewProps) {
+const LatestTransactionsPreview = React.forwardRef<
+    LatestTransactionsPreviewRef | undefined,
+    LatestTransactionsPreviewProps
+>(function LatestTransactionsPreview({ walletId, getTransactionsSum }, ref) {
+
     const {
         transactions,
         transactionsSum,
@@ -20,6 +27,15 @@ export default function LatestTransactionsPreview({ walletId, getTransactionsSum
     useEffect(() => {
         returnTransactionsSum(transactionsSum);
     }, [transactionsSum]);
+
+    const triggerRefreshTransactions = () => {
+        console.log("refreshing transactions");
+        refreshTransactions();
+    }
+
+    useImperativeHandle(ref, () => ({
+        refreshTransactions: triggerRefreshTransactions
+    }));
 
     const returnTransactionsSum = (transactionsSum: number) => {
         getTransactionsSum(transactionsSum);
@@ -69,4 +85,6 @@ export default function LatestTransactionsPreview({ walletId, getTransactionsSum
             }
         </>
     )
-}
+})
+
+export default LatestTransactionsPreview;

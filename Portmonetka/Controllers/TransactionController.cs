@@ -52,6 +52,8 @@ namespace Portmonetka.Controllers
 
             return await _dbContext.Transactions
                 .Where(t => t.WalletId == walletId && t.DateDeleted == null)
+                .OrderByDescending(t => t.Date)
+                .ThenBy(t => t.DateCreated)
                 .ToListAsync();
         }
 

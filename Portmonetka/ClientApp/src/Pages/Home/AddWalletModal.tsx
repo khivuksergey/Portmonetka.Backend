@@ -130,7 +130,7 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
                 <StatusMessage wallet={wallet as unknown as IWallet} />
 
                 <div className="modal-footer">
-                    <Button /*variant="secondary" */ type="reset" className="btn-dark" onClick={onClose}>
+                    <Button type="reset" className="btn-dark" onClick={onClose}>
                         Cancel
                     </Button>
                     <Button variant="primary" type="submit" className="ok-btn">
