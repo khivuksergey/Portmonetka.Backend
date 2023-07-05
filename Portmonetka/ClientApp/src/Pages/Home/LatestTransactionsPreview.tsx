@@ -2,6 +2,7 @@ import React, { useEffect, useImperativeHandle } from "react";
 import useTransaction from "../../Hooks/useTransaction";
 import { format, utcToZonedTime } from "date-fns-tz";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
+import { Placeholder } from "react-bootstrap";
 
 interface LatestTransactionsPreviewProps {
     walletId: number
@@ -19,18 +20,19 @@ const LatestTransactionsPreview = React.forwardRef<
 
     const {
         transactions,
-        transactionsSum,
         refreshTransactions,
         dataFetched: transactionsLoaded
-    } = useTransaction(walletId, 5);
+    } = useTransaction(walletId, 8);
+
+    const { transactionsSum, refreshTransactions: refreshAllTransactions } = useTransaction(walletId);
 
     useEffect(() => {
         returnTransactionsSum(transactionsSum);
     }, [transactionsSum]);
 
     const triggerRefreshTransactions = () => {
-        console.log("refreshing transactions");
         refreshTransactions();
+        refreshAllTransactions();
     }
 
     useImperativeHandle(ref, () => ({
@@ -52,7 +54,21 @@ const LatestTransactionsPreview = React.forwardRef<
         <>
             {
                 !transactionsLoaded ?
-                    <div>Loading</div>
+                    <>
+                        <div className="mt-2">
+                            {
+                                Array.from({ length: 8 }, (_, index) => (
+                                    <div key={index} className="d-flex gap-3 mb-3">
+                                        <Placeholder bg="dark" as="div" animation="wave" style={{ height: "1.5rem", width: "8rem" }} />
+                                        <Placeholder bg="dark" as="div" animation="wave" style={{ height: "1.5rem", width: "100%" }} />
+                                        <Placeholder bg="dark" as="div" animation="wave" style={{ height: "1.5rem", width: "10rem" }} />
+                                    </div>
+                                ))
+                            }
+                        </div>
+
+                        <div className="transactions-preview-blur" />
+                    </>
                     :
                     (<>
                         {
@@ -81,6 +97,8 @@ const LatestTransactionsPreview = React.forwardRef<
                                     </tbody>
                                 </table>
                         }
+
+                        <div className="transactions-preview-blur" />
                     </>)
             }
         </>

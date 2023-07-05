@@ -43,15 +43,11 @@ namespace Portmonetka.Controllers
         [HttpPost]
         public async Task<ActionResult<Wallet>> PostWallet(Wallet wallet)
         {
+            if (wallet.Name!.ToLower() == "error")
+            {
+                return StatusCode(500, "Wallet was not created, try again");
+            }
             //Validate
-            //if (!ModelState.IsValid)
-            //{
-
-            //    // return immediately and let 
-            //    // ASP.NET Core show the errors 
-            //    return Page();
-
-            //}
 
             _dbContext.Wallets.Add(wallet);
             await _dbContext.SaveChangesAsync();

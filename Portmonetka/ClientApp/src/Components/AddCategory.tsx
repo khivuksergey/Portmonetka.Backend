@@ -22,11 +22,10 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
 
     return (
         <div className="p-3">
-            <Row className="mb-2">
+            <Row className="mb-3">
                 <Col>
                     <Form.Control
                         className="form-control--dark"
-                        style={{ background: "#191919" }}
                         placeholder="New category"
                         aria-label="Name of category"
                         value={newCategory.name} maxLength={128}
@@ -35,7 +34,7 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
                         }} required />
                 </Col>
             </Row>
-            <Row className="mb-2">
+            <Row className="mb-3">
                 <Col>
                     <Form.Check
                         className=""

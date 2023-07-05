@@ -1,12 +1,13 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import TransactionsTable from "./TransactionsTable";
-import { IWallet, ITransaction, IGlobalBalance } from "../../DataTypes";
+import { IWallet, IWalletProps } from "../../DataTypes";
 import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
-import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import Modal from "../../Components/Modal";
-import { Form, Row, Col, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { MdDelete } from "react-icons/md";
+import ModalFooter from "../../Components/ModalFooter";
+import WalletPropertiesForm from "./WalletPropertiesForm";
 
 interface WalletModalProps {
     wallet: IWallet
@@ -19,14 +20,18 @@ interface WalletModalProps {
     //onDeleteTransactions: (ids: number[]) => Promise<void>
 }
 
-enum WalletPropsType {
-    Name,
-    Currency,
-    InitialAmount
-}
+//enum WalletPropsType {
+//    Name,
+//    Currency,
+//    InitialAmount
+//}
 
 export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onChangeWallet/*, transactions*//*, transactionsSum*//*, onDeleteTransactions*/ }: WalletModalProps) {
-    const [walletObject, setWalletObject] = useState(wallet);
+    const walletObject: IWalletProps = {
+        name: wallet.name,
+        currency: wallet.currency,
+        initialAmount: wallet.initialAmount.toString()
+    };
 
     const [transactionsSum, setTransactionsSum] = useState<number>(0);
 
@@ -34,25 +39,25 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
         setTransactionsSum(sum);
     }
 
-    const handleWalletDataChange = (field: WalletPropsType, e: React.ChangeEvent<HTMLInputElement>) => {
-        switch (field) {
-            case WalletPropsType.Name:
-                setWalletObject({ ...walletObject, name: e.target.value });
-                break;
-            case WalletPropsType.Currency:
-                setWalletObject({ ...walletObject, currency: e.target.value.toUpperCase() })
-                break;
-            case WalletPropsType.InitialAmount:
-                let initialAmount = e.target.value;
-                if (initialAmount[0] === "0" && initialAmount.length > 1)
-                    initialAmount = initialAmount.substring(1);
-                setWalletObject({ ...walletObject, initialAmount: Number(initialAmount) })
-                break;
-            default:
-                console.log("Invalid wallet property type");
-                break;
-        }
-    }
+    //const handleWalletDataChange = (field: WalletPropsType, e: React.ChangeEvent<HTMLInputElement>) => {
+    //    switch (field) {
+    //        case WalletPropsType.Name:
+    //            setWalletObject({ ...walletObject, name: e.target.value });
+    //            break;
+    //        case WalletPropsType.Currency:
+    //            setWalletObject({ ...walletObject, currency: e.target.value.toUpperCase() })
+    //            break;
+    //        case WalletPropsType.InitialAmount:
+    //            let initialAmount = e.target.value;
+    //            if (initialAmount[0] === "0" && initialAmount.length > 1)
+    //                initialAmount = initialAmount.substring(1);
+    //            setWalletObject({ ...walletObject, initialAmount: Number(initialAmount) })
+    //            break;
+    //        default:
+    //            console.log("Invalid wallet property type");
+    //            break;
+    //    }
+    //}
 
     //let transactionIdsToDelete: number[] = [];
 
@@ -64,16 +69,22 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
     //    transactionIdsToDelete = transactionIdsToDelete.filter(t => t !== id);
     //}
 
-    const walletsAreSame = (a: IWallet, b: IWallet): boolean => {
-        return a.name === b.name &&
-            a.currency === b.currency &&
-            a.initialAmount === b.initialAmount
+    const walletsAreSame = (w: IWallet, p: IWalletProps): boolean => {
+        return w.name === p.name &&
+            w.currency === p.currency &&
+            w.initialAmount.toString() === p.initialAmount
     }
 
-    const onSubmit = async () => {
+    const handleSubmit = (walletObject: IWalletProps) => {
         if (!walletsAreSame(wallet, walletObject)) {
-            console.log(walletObject);
-            onChangeWallet(walletObject);
+            const changedWallet: IWallet = {
+                id: wallet.id,
+                name: walletObject.name.trim(),
+                currency: walletObject.currency.toUpperCase(),
+                initialAmount: parseFloat(walletObject.initialAmount)
+            }
+            console.log(changedWallet);
+            onChangeWallet(changedWallet);
         }
 
         //const itemsCount = transactionIdsToDelete.length;
@@ -99,88 +110,107 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
     }
 
     const modalTitle =
-        <>
-            <big style={{ marginRight: "2rem" }}>{currentWallet.name}</big>
-            <big>{MoneyToLocaleString(currentWallet.balance)} {currentWallet.currency}</big>
-        </>
+        <div className="wallet-header">
+            <div className="wallet-title min-width-0">
+                <h4 className="text-nowrap-overflow-ellipsis">{currentWallet.name}</h4>
+            </div>
+            <div className="wallet-title wallet-balance">
+                <h4>
+                    {MoneyToLocaleString(currentWallet.balance)}&nbsp;{currentWallet.currency}
+                </h4>
+            </div>
+        </div>
 
     if (!show) return null;
 
     return (
         <Modal title={modalTitle} show={show} onClose={onClose} size="lg" contentClassName="modal-container" /*fullscreen="md-down" centered*/>
-            <Form onSubmit={onSubmit} /*noValidate*/>
-                <Row>
-                    <Col xs={12} sm={5}>
-                        <Form.Group>
-                            <Form.Label>Title</Form.Label>
-                            <Form.Control
-                                className="form-control--dark"
-                                type="text"
-                                placeholder="Wallet Title"
-                                value={walletObject.name} maxLength={128}
-                                onChange={e => {
-                                    handleWalletDataChange(WalletPropsType.Name, e as any)
-                                }}
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
-                    <Col xs={12} sm={3}>
-                        <Form.Group>
-                            <Form.Label>Currency</Form.Label>
-                            <Form.Control
-                                className="form-control--dark"
-                                type="text"
-                                placeholder="USD"
-                                value={walletObject.currency} minLength={3} maxLength={3}
-                                onChange={e => {
-                                    handleWalletDataChange(WalletPropsType.Currency, e as any)
-                                }}
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
-                    <Col xs={12} sm={4}>
-                        <Form.Group>
-                            <Form.Label>Initial Balance</Form.Label>
-                            <Form.Control
-                                className="form-control--dark"
-                                type="number"
-                                step="any"
-                                placeholder="10000"
-                                value={walletObject.initialAmount ?? ''} min={0}
-                                onChange={e => {
-                                    handleWalletDataChange(WalletPropsType.InitialAmount, e as any)
-                                }}
-                                required
-                            />
-                        </Form.Group>
-                    </Col>
-                </Row>
-            </Form>
+            <WalletPropertiesForm
+                initialValues={walletObject}
+                handleSubmit={(wallet) => handleSubmit(wallet)}
+            >
+                <TransactionsTable
+                    /*transactions={transactions}*/
+                    /*onDeleteTransaction={onAddTransactionIdToDeleteList}*/
+                    /*onRestoreTransaction={onRemoveTransactionIdFromDeleteList}*/
+                    walletId={wallet.id!}
+                    getTransactionsSum={getTransactionsSum}
+                />
 
-            <TransactionsTable
-                /*transactions={transactions}*/
-                /*onDeleteTransaction={onAddTransactionIdToDeleteList}*/
-                /*onRestoreTransaction={onRemoveTransactionIdFromDeleteList}*/
-                walletId={wallet.id!}
-                getTransactionsSum={getTransactionsSum}
-            />
+                <ModalFooter onReset={onClose}>
+                    <Button className="btn-dark button--delete" style={{ marginRight: "auto" }} onClick={handleDeleteWallet}>
+                        <MdDelete size={20} />
+                    </Button>
+                </ModalFooter>
+            </WalletPropertiesForm>
 
 
-            <div className="modal-footer">
-                <Button className="btn-dark button--delete" style={{ marginRight: "auto" }} onClick={handleDeleteWallet}>
-                    <MdDelete size={20} />
-                </Button>
-
-                <Button type="reset" className="btn-dark" onClick={onClose}>
-                    Cancel
-                </Button>
-
-                <Button variant="primary" className="ok-btn" onClick={onSubmit}>
-                    Save
-                </Button>
-            </div>
         </Modal>
     )
 }
+
+//{ <Form onSubmit={onSubmit} /*noValidate>*/}
+//                <Row>
+//                    <Col xs={12} sm={5}>
+//                        <Form.Group>
+//                            <Form.Label>Title</Form.Label>
+//                            <Form.Control
+//                                className="form-control--dark"
+//                                type="text"
+//                                placeholder="Wallet Title"
+//                                value={walletObject.name} maxLength={128}
+//                                onChange={e => {
+//                                    handleWalletDataChange(WalletPropsType.Name, e as any)
+//                                }}
+//                                required
+//                            />
+//                        </Form.Group>
+//                    </Col>
+//                    <Col xs={12} sm={3}>
+//                        <Form.Group>
+//                            <Form.Label>Currency</Form.Label>
+//                            <Form.Control
+//                                className="form-control--dark"
+//                                type="text"
+//                                placeholder="USD"
+//                                value={walletObject.currency} minLength={3} maxLength={3}
+//                                onChange={e => {
+//                                    handleWalletDataChange(WalletPropsType.Currency, e as any)
+//                                }}
+//                                required
+//                            />
+//                        </Form.Group>
+//                    </Col>
+//                    <Col xs={12} sm={4}>
+//                        <Form.Group>
+//                            <Form.Label>Initial Balance</Form.Label>
+//                            <Form.Control
+//                                className="form-control--dark"
+//                                type="number"
+//                                step="any"
+//                                placeholder="10000"
+//                                value={walletObject.initialAmount ?? ''} min={0}
+//                                onChange={e => {
+//                                    handleWalletDataChange(WalletPropsType.InitialAmount, e as any)
+//                                }}
+//                                required
+//                            />
+//                        </Form.Group>
+//                    </Col>
+//                </Row>
+
+//                <TransactionsTable
+//            {        /*transactions={transactions}*/}
+//            {        /*onDeleteTransaction={onAddTransactionIdToDeleteList}*/}
+//            {        /*onRestoreTransaction={onRemoveTransactionIdFromDeleteList}*/}
+//                    walletId={wallet.id!}
+//                    getTransactionsSum={getTransactionsSum}
+//                />
+
+//                <ModalFooter onReset={onClose}>
+//                    <Button className="btn-dark button--delete" style={{ marginRight: "auto" }} onClick={handleDeleteWallet}>
+//                        <MdDelete size={20} />
+//                    </Button>
+//                </ModalFooter>
+
+//            </Form >

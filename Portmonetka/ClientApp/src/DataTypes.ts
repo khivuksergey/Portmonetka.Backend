@@ -47,3 +47,10 @@ export interface IGlobalBalanceContext {
     globalBalance: IGlobalBalance[]
     setGlobalBalance: any
 }
+
+export interface IWalletProps {
+    name: string,
+    currency: string,
+    initialAmount: string,
+    iconFileName?: string
+}

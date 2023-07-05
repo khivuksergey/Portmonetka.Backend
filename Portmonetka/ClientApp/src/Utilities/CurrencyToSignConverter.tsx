@@ -2,9 +2,15 @@
 import { GiCat } from "react-icons/gi";
 
 export default function CurrencyToSign(currency: string): React.ReactNode {
-    if (currency.toUpperCase() === "KUS") {
-        return <i><GiCat className="kusya" /></i>
-    } else {
-        return getSymbolFromCurrency(currency);
+    const incorrectValues = ["лв", ""];
+
+    switch (currency.toUpperCase()) {
+        case "KUS":
+            return <i><GiCat className="kusya" /></i>
+        case "YAS":
+            return <i><GiCat className="yasya" /></i>
+        default:
+            const symbol = getSymbolFromCurrency(currency);
+            return incorrectValues.includes(symbol ?? "") ? currency.toUpperCase() : symbol;
     }
 }

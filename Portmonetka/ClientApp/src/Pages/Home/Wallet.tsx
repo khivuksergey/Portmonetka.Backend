@@ -7,7 +7,6 @@ import WalletModal from "./WalletModal";
 import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
 import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
 import { IoIosCash } from "react-icons/io";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
 
 interface WalletProps {
     wallet: IWallet
@@ -71,7 +70,7 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
         <>
             <div className="wallet" onClick={handleWalletModalShow}>
                 <div className="wallet-content">
-                    <div>
+                    {/*<div>*/}
                         <div className="wallet-header">
                             <div className="wallet-title min-width-0">
                                 <h4 className="text-nowrap-overflow-ellipsis">{wallet.name}</h4>
@@ -82,7 +81,7 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
                                 </h4>
                             </div>
                         </div>
-                    </div>
+                    {/*</div>*/}
 
                     <div className="add-transactions">
                         <button className="btn add-items-button" type="button" key={"button-" + wallet.id}
@@ -92,7 +91,6 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
                     </div>
 
                     <LatestTransactionsPreview walletId={wallet.id!} getTransactionsSum={getTransactionsSum} ref={latestTransactionsPreviewRef} />
-
 
                 </div>
             </div>

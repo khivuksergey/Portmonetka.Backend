@@ -3,18 +3,43 @@ import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import useWallet from "../../Hooks/useWallet";
 import { IWallet, IGlobalBalance } from "../../DataTypes";
 import Balance from "./Balance";
-import Wallet from "./Wallet";
 import AddWalletModal from "./AddWalletModal";
-import { MdAdd } from "react-icons/md";
-import WalletsAnimation from '../../walletsHover';
+import WalletsAnimation from "../../walletsHover";
+import BalancePlaceholder from "./BalancePlaceholder";
+import WalletsPlaceholder from "./WalletsPlaceholder";
+import ErrorAlert from "./ErrorAlert";
+import AddFirstWallet from "./AddFirstWallet";
+import Wallets from "./Wallets";
 
 export default function Home() {
-    const { wallets/*: realWallets*/, refreshWallets, handleDeleteWallet, handleAddWallet, handleChangeWallet, dataFetched: walletsLoaded } = useWallet();
-    const [showAddWalletModal, setShowAddWalletModal] = useState(false);
+
+    // #region Initializations
+    const {
+        wallets/*: realWallets*/,
+        refreshWallets,
+        handleDeleteWallet,
+        handleAddWallet,
+        handleChangeWallet,
+        dataFetched: walletsLoaded,
+        error: walletsError
+    } = useWallet();
+
     const [globalBalance, setGlobalBalance] = useState<IGlobalBalance[]>([]);
 
     //for testing
     //const [wallets, setWallets] = useState<IWallet[]>();
+
+    // #endregion
+
+    // #region UI functions
+
+    const [showAddWalletModal, setShowAddWalletModal] = useState(false);
+
+    const [showError, setShowError] = useState(false);
+
+    useEffect(() => {
+        setShowError(!!walletsError && walletsError !== "Component unmounted");
+    }, [walletsError])
 
     useEffect(() => {
         if (walletsLoaded) {
@@ -22,94 +47,89 @@ export default function Home() {
         }
     }, [walletsLoaded])
 
-    const handleAddWalletModalClose = () => setShowAddWalletModal(false);
-
-    const handleAddWalletModalShow = () => setShowAddWalletModal(true);
-
-    const onDeleteWallet = async (id: number, force: boolean) => {
-        handleDeleteWallet(id, force);
-        refreshWallets();
-        setGlobalBalance((prev: any[]) => {
-            console.log(prev.filter(entry => entry.id !== id));
-            return prev.filter(entry => entry.id !== id);
-        });
+    const handleAddWalletModalClose = () => {
+        setShowAddWalletModal(false);
     }
 
+    const handleAddWalletModalShow = () => {
+        setShowAddWalletModal(true);
+    }
+
+    // #endregion
+
+    // #region Data change handlers
+
     const onAddWallet = async (wallet: IWallet) => {
-        handleAddWallet(wallet);
-        refreshWallets();
+        const walletAdded = handleAddWallet(wallet);
+        walletAdded.then((success) => {
+            if (success)
+                refreshWallets();
+        })
     }
 
     const onChangeWallet = async (wallet: IWallet) => {
-        handleChangeWallet(wallet);
-        refreshWallets();
+        const walletChanged = handleChangeWallet(wallet);
+        walletChanged.then((success) => {
+            if (success)
+                refreshWallets();
+        })
     }
+
+    const onDeleteWallet = async (id: number, force: boolean) => {
+        const walletDeleted = handleDeleteWallet(id, force);
+        walletDeleted.then((success) => {
+            console.log("walletDeleted:", walletDeleted);
+            console.log("success:", success);
+            if (success) {
+                console.log("refreshing wallets...");
+                refreshWallets();
+
+                setGlobalBalance((prev: any[]) => {
+                    console.log(prev.filter(entry => entry.id !== id));
+                    return prev.filter(entry => entry.id !== id);
+                });
+            }
+        });
+    }
+
+    // #endregion
 
     return (
         <GlobalBalanceContext.Provider value={{ globalBalance, setGlobalBalance }}>
             {!walletsLoaded ?
-                <div>Loading</div>
+                <>
+                    <BalancePlaceholder />
+                    <WalletsPlaceholder />
+                </>
                 :
                 <>
+                    <ErrorAlert showError={showError} onClose={() => setShowError(false)} error={walletsError} />
+
+                    {/*<input type="text" placeholder="Search" className="form-control--dark searchbar"/>*/}
+
                     {wallets && (wallets.length > 1) ?
                         <>
                             <Balance />
 
-                            <section>
-                                <div className="d-flex gap-3">
-                                    <h3>Wallets</h3>
-
-                                    <button className="add-wallet"
-                                        onClick={() => handleAddWalletModalShow()}
-                                    >
-                                        <MdAdd />
-                                    </button>
-                                </div>
-
-
-                                <div id="wallets" className="mt-3">
-                                    {
-                                        wallets && wallets.length > 0 ?
-                                            wallets.map((wallet) => {
-                                                return <Wallet
-                                                    key={wallet.id}
-                                                    wallet={wallet}
-                                                    onDeleteWallet={onDeleteWallet}
-                                                    onChangeWallet={onChangeWallet} />
-                                            })
-                                            : null
-                                    }
-
-                                </div>
-                            </section>
+                            <Wallets
+                                wallets={wallets}
+                                onAddWallet={handleAddWalletModalShow}
+                                onDeleteWallet={onDeleteWallet}
+                                onChangeWallet={onChangeWallet}
+                            />
                         </>
                         :
-                        <div className="d-flex flex-column align-items-center mt-5">
-                            <h1 style={{ textAlign: "center" }}>
-                                Add your first wallet
-                            </h1>
-
-                            <button className="add-wallet add-wallet--big mt-2"
-                                onClick={() => handleAddWalletModalShow()}
-                            >
-                                <MdAdd />
-                            </button>
-                        </div>
+                        <AddFirstWallet onAddWallet={handleAddWalletModalShow}/>
                     }
-
-
                 </>
             }
 
+            <AddWalletModal
+                show={showAddWalletModal}
+                onClose={handleAddWalletModalClose}
+                onAddWallet={onAddWallet}
+            />
 
-            {showAddWalletModal ?
-                <AddWalletModal
-                    show={showAddWalletModal}
-                    onClose={handleAddWalletModalClose}
-                    onAddWallet={onAddWallet}
-                />
-                : null
-            }
         </GlobalBalanceContext.Provider>
     )
 }

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { IWallet } from "../DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
-import _ from "lodash";
-import { mapKeys } from "lodash";
+import _, { mapKeys } from "lodash";
 
 export default function useWallet() {
     const [wallets, setWallets] = useState<IWallet[]>([]);
@@ -21,6 +20,10 @@ export default function useWallet() {
             }
         }
     }, [dataFetched])
+
+    const refreshWallets = () => {
+        setDataFetched(false);
+    };
 
     const fetchWallets = async () => {
         const url = "api/wallet";
@@ -51,65 +54,77 @@ export default function useWallet() {
         }
     }
 
-    const refreshWallets = () => {
-        setDataFetched(false);
-    };
-
-    const handleGetWallets = async () => {
-        fetchWallets();
-    }
-
-    const handleAddWallet = async (wallet: IWallet) => {
+    const handleAddWallet = async (wallet: IWallet): Promise<boolean> => {
         const url = "api/wallet";
-        try {
-            setError("");
-            setLoading(true);
-            await axios.post<IWallet>(url, wallet)
-                .then(() => {
-                    fetchWallets();
-                });
-        } catch (e: unknown) {
-            setLoading(false);
-            const error = e as AxiosError;
-            setError(error.message);
-            console.error(error);
-        }
+        setError("");
+        setLoading(true);
+
+        return new Promise<boolean>((resolve, reject) => {
+            axios.post<IWallet>(url, wallet)
+                .then((response) => {
+                    //console.log("handleAddWallet response: ", response);
+                    resolve(response.status === 201);
+                    //setLoading(false);
+                })
+                .catch((e: unknown) => {
+                    //setLoading(false);
+                    const error = e as AxiosError;
+                    //setError(error.message);
+                    setError(error.response?.data as string);
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoading(false);
+                })
+        })
     }
 
     const handleChangeWallet = async (changedWallet: IWallet) => {
         const url = `api/wallet/${changedWallet.id}`;
-        try {
-            setError("");
-            setLoading(true);
-            await axios.put<IWallet>(url, changedWallet)
-                .then(() => {
-                    fetchWallets();
-                });
-        } catch (e: unknown) {
-            setLoading(false);
-            const error = e as AxiosError;
-            setError(error.message);
-            console.error(error);
-        }
-    }
+        setError("");
+        setLoading(true);
 
-    const handleDeleteWallet = async (walletId: number, force: boolean = false) => {
-        const url = `api/wallet/${walletId}?force=${force}`;
-        try {
-            setError("");
-            setLoading(true);
-            await axios.delete(url)
+        return new Promise<boolean>((resolve, reject) => {
+            axios.put<IWallet>(url, changedWallet)
                 .then((response) => {
-                    console.log(response);
-                    fetchWallets();
+                    //console.log("handleChangeWallet response: ", response);
+                    resolve(response.status <= 200 && response.status < 300);
+                    //setLoading(false);
+                })
+                .catch((e: unknown) => {
+                    //setLoading(false);
+                    const error = e as AxiosError;
+                    setError(error.message);
+                    console.error(error);
+                })
+                .finally(() => {
                     setLoading(false);
                 })
-        } catch (e: unknown) {
-            setLoading(false);
-            const error = e as AxiosError;
-            setError(error.message);
-            console.error(error);
-        }
+        })
+    }
+
+    const handleDeleteWallet = async (walletId: number, force: boolean = false): Promise<boolean> => {
+        const url = `api/wallet/${walletId}?force=${force}`;
+        setError("");
+        setLoading(true);
+
+        return new Promise<boolean>((resolve, reject) => {
+            axios.delete(url)
+                .then((response) => {
+                    //console.log("handleDeleteWallet response: ", response);
+                    resolve(response.status <= 200 && response.status < 300);
+                    //setLoading(false);
+                })
+                .catch((e: unknown) => {
+                    //setLoading(false);
+                    const error = e as AxiosError;
+                    setError(error.message);
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoading(false);
+                })
+        })
     }
 
     return {

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { ITransaction } from "DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
-import _ from "lodash";
-import { mapKeys } from "lodash";
+import _, { mapKeys } from "lodash";
 
 export default function useTransaction(walletId: number, latestCount?: number) {
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
@@ -20,13 +19,12 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 fetchTransactions();
             }
         }
-
         return () => {
             if (cancelTokenSource) {
                 cancelTokenSource.cancel("Component unmounted");
             }
         }
-    }, [dataFetched])
+    }, [dataFetched, latestCount])
 
     //replace with backend service
     useEffect(() => {
@@ -38,6 +36,10 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         setTransactionsSum(transactionsSum);
     }
 
+    const refreshTransactions = () => {
+        setDataFetched(false);
+    };
+
     const fetchTransactions = async () => {
         const url = `api/transaction/wallet/${walletId}`;
         try {
@@ -48,23 +50,24 @@ export default function useTransaction(walletId: number, latestCount?: number) {
             }
 
             cancelTokenSource = axios.CancelToken.source();
-
             await axios.get<ITransaction[]>(url, { cancelToken: cancelTokenSource.token })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
                     setTransactions(camelCasedData);
                     setDataFetched(true);
-                    setLoading(false);
+                    //setLoading(false);
                 });
         } catch (e: unknown) {
-            setLoading(false);
+            //setLoading(false);
             if (axios.isCancel(e)) {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
             setError(error.message);
             //console.error(error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -78,82 +81,94 @@ export default function useTransaction(walletId: number, latestCount?: number) {
             }
 
             cancelTokenSource = axios.CancelToken.source();
-
             await axios.get<ITransaction[]>(url, { cancelToken: cancelTokenSource.token })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
                     setTransactions(camelCasedData);
                     setDataFetched(true);
-                    setLoading(false);
+                    //setLoading(false);
                 });
         } catch (e: unknown) {
-            setLoading(false);
+            //setLoading(false);
             if (axios.isCancel(e)) {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
             setError(error.message);
             //console.error(error);
+        } finally {
+            setLoading(false);
         }
     }
 
-    const refreshTransactions = () => {
-        setDataFetched(false);
-    };
-
-    const handleAddTransactions = async (transactions: ITransaction[]) => {
+    const handleAddTransactions = async (transactions: ITransaction[]): Promise<boolean> => {
         const url = "api/transaction";
-        try {
-            setError("");
-            setLoading(true);
-            await axios.post(url, transactions)
-                .then(() => {
-                    fetchTransactions();
+        setError("");
+        setLoading(true);
+
+        return new Promise<boolean>((resolve, reject) => {
+            axios.post(url, transactions)
+                .then((response) => {
+                    resolve(response.status === 201);
+                    //setLoading(false);
+                })
+                .catch((e: unknown) => {
+                    //setLoading(false);
+                    const error = e as AxiosError;
+                    setError(error.message);
+                    console.error(error);
+                })
+                .finally(() => {
                     setLoading(false);
                 });
-        } catch (e: unknown) {
-            setLoading(false);
-            const error = e as AxiosError;
-            setError(error.message);
-            console.error(error);
-        }
+        })
     }
 
-    const handleDeleteTransaction = async (id: number) => {
+    const handleDeleteTransaction = async (id: number): Promise<boolean> => {
         const url = `api/transaction/delete/id/${id}`;
-        try {
-            setError("");
-            setLoading(true);
-            await axios.delete(url)
-                .then(() => {
-                    fetchTransactions();
+        setError("");
+        setLoading(true);
+
+        return new Promise<boolean>((resolve, reject) => {
+            axios.delete(url)
+                .then((response) => {
+                    resolve(response.status <= 200 && response.status < 300);
+                    //setLoading(false);
+                })
+                .catch((e: unknown) => {
+                    //setLoading(false);
+                    const error = e as AxiosError;
+                    setError(error.message);
+                    console.error(error);
+                })
+                .finally(() => {
                     setLoading(false);
                 })
-        } catch (e: unknown) {
-            setLoading(false);
-            const error = e as AxiosError;
-            setError(error.message);
-            console.error(error);
-        }
+        })
     }
 
-    const handleDeleteMultipleTransactions = async (ids: number[]) => {
+    const handleDeleteMultipleTransactions = async (ids: number[]): Promise<boolean> => {
         const url = `api/transaction/delete`;
-        try {
-            setError("");
-            setLoading(true);
-            await axios.delete(url, { data: ids })
-                .then(() => {
-                    fetchTransactions();
+        setError("");
+        setLoading(true);
+
+        return new Promise<boolean>((resolve, reject) => {
+            axios.delete(url, { data: ids })
+                .then((response) => {
+                    resolve(response.status === 201);
+                    //setLoading(false);
+                })
+                .catch((e: unknown) => {
+                    //setLoading(false);
+                    const error = e as AxiosError;
+                    setError(error.message);
+                    //console.error(error);
+                })
+                .finally(() => {
                     setLoading(false);
                 })
-        } catch (e: unknown) {
-            setLoading(false);
-            const error = e as AxiosError;
-            setError(error.message);
-            //console.error(error);
-        }
+        })
     }
 
     return {

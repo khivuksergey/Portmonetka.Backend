@@ -1,18 +1,20 @@
 ﻿import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { Offcanvas } from 'react-bootstrap';
 import { GiTwoCoins } from 'react-icons/gi';
-import { MdSpaceDashboard, MdCategory } from "react-icons/md";
-import { HiWallet } from "react-icons/hi2";
-import { IoIosCash } from "react-icons/io";
+import Sidebar from "./Sidebar";
 
 export default function NavMenu() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isCollapseButtonClicked, setIsCollapseButtonClicked] = useState(false);
     const [isSizeLessThan1024, setIsSizeLessThan1024] = useState(window.innerWidth < 1024);
+    const [isSizeLessThan810, setIsSizeLessThan810] = useState(window.innerWidth < 810);
+
+    const [isOffcanvasVisible, setIsOffcanvasVisible] = useState(false);
 
     useEffect(() => {
         const handleResize = () => {
             setIsSizeLessThan1024(window.innerWidth < 1024);
+            setIsSizeLessThan810(window.innerWidth < 810);
         };
 
         window.addEventListener("resize", handleResize);
@@ -30,51 +32,113 @@ export default function NavMenu() {
         }
     }, [isCollapseButtonClicked, isSizeLessThan1024]);
 
+    useEffect(() => {
+        if (!isCollapsed && isOffcanvasVisible && !isSizeLessThan1024) {
+            setIsOffcanvasVisible(false);
+        }
+    }, [isOffcanvasVisible, isSizeLessThan1024, isCollapsed])
+
     const handleMenuLogoClick = () => {
         setIsCollapseButtonClicked(!isCollapseButtonClicked);
     };
 
+    const handleOffcanvasOpen = () => {
+        setIsOffcanvasVisible(prev => !prev);
+    };
+
     return (
-        <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
-            <div className="sidebar__logo">
-                <div className="flexbox logo prevent-select" onClick={handleMenuLogoClick}>
-                    <button className="logo__button" >
-                        <GiTwoCoins size={40} color={"var(--primary)"}
-                          /*fill={!isCollapseButtonClicked ? "var(--primary)" : "white"} */ />
-                    </button>
+        <>
+            {!isSizeLessThan810 ?
+                <Sidebar
+                    className={`sidebar ${isCollapsed ? "collapsed" : ""}`}
+                    onClose={
+                        isSizeLessThan1024 && !isSizeLessThan810 ?
+                            handleOffcanvasOpen
+                            :
+                            handleMenuLogoClick
+                    }
+                />
+                :
+                <>
+                    <div
+                        style={{
+                            position: "sticky",
+                            left: "0",
+                            top: "0",
+                            zIndex: "6",
+                            height: "calc(64px + 0.25rem)",
+                            width: "100%",
+                            flexShrink: "0",
+                            overflow: "hidden",
+                            backgroundColor: "#101010"
+                        }}
+                    >
+                        <div className="sidebar__logo">
+                            <div className="flexbox logo prevent-select" onClick={handleOffcanvasOpen}>
+                                <button className="logo__button" >
+                                    <GiTwoCoins size={40} color={"var(--primary)"} />
+                                </button>
 
-                    <div className="logo__text">
-                        Portmonetka
+                                <div className="logo__text">
+                                    Portmonetka
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </>
+            }
 
-            <section className="sidebar__nav-links">
-                <NavLink to="/" className="nav-link">
-                    <MdSpaceDashboard size={32} className="nav-link__icon" />
-                    <div className="nav-link__text">
-                        Dashboard
-                    </div>
-                </NavLink>
-                <NavLink to="/wallets" className="nav-link">
-                    <HiWallet size={32} className="nav-link__icon" />
-                    <div className="nav-link__text">
-                        Wallets
-                    </div>
-                </NavLink>
-                <NavLink to="/transactions" className="nav-link">
-                    <IoIosCash size={32} className="nav-link__icon" />
-                    <div className="nav-link__text">
-                        Transactions
-                    </div>
-                </NavLink>
-                <NavLink to="/categories" className="nav-link">
-                    <MdCategory size={32} className="nav-link__icon" />
-                    <div className="nav-link__text">
-                        Categories
-                    </div>
-                </NavLink>
-            </section>
-        </div>
+            <Offcanvas
+                show={isOffcanvasVisible}
+                onHide={() => setIsOffcanvasVisible(false)}
+
+            >
+                <Sidebar
+                    className="sidebar"
+                    onClose={() => setIsOffcanvasVisible(false)} />
+            </Offcanvas>
+        </>
+
+        //<Sidebar
+        //    className={`sidebar ${isCollapsed ? "collapsed" : ""}`}
+        //    onClose={handleMenuLogoClick}
+        ///>
+        //<>
+        //    <div
+        //        style={{
+        //            position: "sticky",
+        //            left: "0",
+        //            top: "0",
+        //            zIndex: "6",
+        //            height: "calc(64px + 0.25rem)",
+        //            width: "100%",
+        //            flexShrink: "0",
+        //            overflow: "hidden",
+        //            backgroundColor: "#101010"
+        //        }}
+        //    >
+        //        <div className="sidebar__logo">
+        //            <div className="flexbox logo prevent-select" onClick={handleHiddenMenuOpen}>
+        //                <button className="logo__button" >
+        //                    <GiTwoCoins size={40} color={"var(--primary)"} />
+        //                </button>
+
+        //                <div className="logo__text">
+        //                    Portmonetka
+        //                </div>
+        //            </div>
+        //        </div>
+        //    </div>
+
+        //    <Offcanvas
+        //        show={isHiddenMenuVisible}
+        //        onHide={() => setIsHiddenMenuVisible(false)}
+
+        //    >
+        //        <Sidebar
+        //            className="sidebar"
+        //            onClose={() => setIsHiddenMenuVisible(false)}/>
+        //    </Offcanvas>
+        //</>
     )
 }

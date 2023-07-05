@@ -22,6 +22,10 @@ export default function useCategory() {
         }
     }, [dataFetched])
 
+    const refreshCategories = () => {
+        setDataFetched(false);
+    }
+
     const fetchCategories = async () => {
         const url = "api/category";
         try {
@@ -33,27 +37,25 @@ export default function useCategory() {
 
             cancelTokenSource = axios.CancelToken.source();
 
-            await axios.get<ICategory[]>(url, {cancelToken: cancelTokenSource.token})
+            await axios.get<ICategory[]>(url, { cancelToken: cancelTokenSource.token })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ICategory[];
                     setCategories(camelCasedData);
                     setDataFetched(true);
-                    setLoading(false);
+                    //setLoading(false);
                 });
         } catch (e: unknown) {
-            setLoading(false);
+            //setLoading(false);
             if (axios.isCancel(e)) {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
             setError(error.message);
             //console.error(error);
+        } finally {
+            setLoading(false);
         }
-    }
-
-    const refreshCategories = () => {
-        setDataFetched(false);
     }
 
     const handleAddCategory = async (category: ICategory): Promise<number> => {
@@ -68,48 +70,63 @@ export default function useCategory() {
                     result = response.data.Id;
                 });
         } catch (e: unknown) {
-            setLoading(false);
+            //setLoading(false);
             const error = e as AxiosError;
             setError(error.message);
             console.error(error);
+        } finally {
+            setLoading(false);
         }
+
         return result ?? 0;
     }
 
     const handleChangeCategory = async (changedCategory: ICategory) => {
         const url = `api/category/${changedCategory.id}`;
-        try {
-            setError("");
-            setLoading(true);
-            await axios.put(url, changedCategory)
-                .then(() => {
-                    fetchCategories();
-                });
-        } catch (e: unknown) {
-            setLoading(false);
-            const error = e as AxiosError;
-            setError(error.message);
-            console.error(error);
-        }
-    }
+        setError("");
+        setLoading(true);
 
-    const handleDeleteCategory = async (id: number, force: boolean = false) => {
-        const url = `api/category/${id}&force=${force}`;//check
-        try {
-            setError("");
-            setLoading(true);
-            await axios.delete(url)
+        return new Promise<boolean>((resolve, reject) => {
+            axios.put(url, changedCategory)
                 .then((response) => {
-                    console.log(response);
-                    fetchCategories();
+                    resolve(response.status <= 200 && response.status < 300);
+                    //setLoading(false);
+                })
+                .catch((e: unknown) => {
+                    //setLoading(false);
+                    const error = e as AxiosError;
+                    setError(error.message);
+                    console.error(error);
+                })
+                .finally(() => {
                     setLoading(false);
                 })
-        } catch (e: unknown) {
-            setLoading(false);
-            const error = e as AxiosError;
-            setError(error.message);
-            console.error(error);
-        }
+        })
+    }
+
+    const handleDeleteCategory = async (id: number, force: boolean = false): Promise<boolean> => {
+        const url = `api/category/${id}&force=${force}`;//check
+            setError("");
+            setLoading(true);
+
+        return new Promise<boolean>((resolve, reject) => {
+            axios.delete(url)
+                .then((response) => {
+                    resolve(response.status <= 200 && response.status < 300);
+                    console.log(response);
+                    //fetchCategories();
+                    //setLoading(false);
+                })
+                .catch((e: unknown) => {
+                    //setLoading(false);
+                    const error = e as AxiosError;
+                    setError(error.message);
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoading(false);
+                })
+        })
     }
 
     return {

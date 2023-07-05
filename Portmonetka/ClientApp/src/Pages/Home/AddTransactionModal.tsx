@@ -15,8 +15,9 @@ import "react-day-picker/dist/style.css";
 import { BiPlus } from "react-icons/bi";
 import { GoCalendar } from "react-icons/go";
 import { MdPlaylistRemove } from "react-icons/md";
+import ModalFooter from "../../Components/ModalFooter";
 
-interface AddTransactionModalProps {
+interface IAddTransactionModalProps {
     show: boolean
     onClose: (dataAdded: boolean) => void
     wallet: IWallet
@@ -30,12 +31,12 @@ interface IAddTransaction {
     walletId: number
 }
 
-type valuesType = {
+type addTransactionsType = {
     transactions: IAddTransaction[]
 }
 
 
-export default function AddTransactionModal({ show, onClose, wallet }: AddTransactionModalProps) {
+export default function AddTransactionModal({ show, onClose, wallet }: IAddTransactionModalProps) {
 
     // #region Initializations
 
@@ -67,7 +68,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: AddTransa
         )
     }
 
-    const initialValues: valuesType = {
+    const initialValues: addTransactionsType = {
         transactions: [generateTransactionTemplate(new Date(new Date().getTime()))]
     }
 
@@ -114,7 +115,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: AddTransa
         };
     }, []);
 
-    const handleAddRow = (push: Function, values: valuesType) => {
+    const handleAddRow = (push: Function, values: addTransactionsType) => {
         let lastTransaction: IAddTransaction = values.transactions[values.transactions.length - 1];
         const newTransaction = generateTransactionTemplate(lastTransaction.date);
         push(newTransaction);
@@ -161,8 +162,8 @@ export default function AddTransactionModal({ show, onClose, wallet }: AddTransa
 
             if (!!currentTransaction.amount) {
                 const amount = selectedCategory.isExpense ?
-                    (-Math.abs(parseInt(currentTransaction.amount))).toString() :
-                    Math.abs(parseInt(currentTransaction.amount)).toString();
+                    (-Math.abs(parseFloat(currentTransaction.amount))).toString() :
+                    Math.abs(parseFloat(currentTransaction.amount)).toString();
 
                 setFieldValue(`transactions[${index}].amount`, amount);
             }
@@ -191,22 +192,26 @@ export default function AddTransactionModal({ show, onClose, wallet }: AddTransa
         const currentTransaction = transactions[index];
         if (!!currentTransaction.amount) {
             const amount = newCategory.isExpense ?
-                (-Math.abs(parseInt(currentTransaction.amount))).toString() :
-                Math.abs(parseInt(currentTransaction.amount)).toString();
+                (-Math.abs(parseFloat(currentTransaction.amount))).toString() :
+                Math.abs(parseFloat(currentTransaction.amount)).toString();
 
             setFieldValue(`transactions[${index}].amount`, amount);
         }
         setIsPopperCategoryOpen(false);
     }
 
-    const handleSubmit = (values: valuesType) => {
-        handleAddTransactions(values.transactions as unknown as ITransaction[])
-        onClose(true);
+    const handleSubmit = (values: addTransactionsType) => {
+        const added = handleAddTransactions(values.transactions as unknown as ITransaction[]);
+        added.then((success) => {
+            onClose(success);
+        });
     };
 
     // #endregion
 
-    const modalTitle = <big>Add transactions to {wallet.name}</big>
+    const modalTitle = <div className="hyphenate min-width-0">
+        <big className="hyphenate">Add transactions to {wallet.name}</big>
+    </div>
 
     if (!show) return null;
 
@@ -218,7 +223,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: AddTransa
                 onSubmit={(values) => handleSubmit(values)}
             >
                 {({ handleSubmit, handleChange, setFieldValue, values, touched, errors }) =>
-                    <Form onSubmit={handleSubmit} noValidate>
+                    <Form onSubmit={handleSubmit} autoComplete="off" noValidate>
                         <FieldArray name="transactions">
                             {({ push, remove }) =>
                             (
@@ -345,14 +350,8 @@ export default function AddTransactionModal({ show, onClose, wallet }: AddTransa
                             }
                         </FieldArray>
 
-                        <div className="modal-footer">
-                            <Button type="reset" className="btn-dark" onClick={() => onClose(false)}>
-                                Cancel
-                            </Button>
-                            <Button variant="primary" type="submit" className="ok-btn">
-                                Add
-                            </Button>
-                        </div>
+                        <ModalFooter onReset={() => onClose(false)} submitText="Add" />
+
                     </Form>
                 }
             </Formik>
