@@ -11,6 +11,7 @@ public partial class Category: Auditable
     [MaxLength(128, ErrorMessage = "Name length should be less than 128 symbols")]
     public string? Name { get; set; }
 
+    [Required(ErrorMessage = "Category type is required (income/expense)")]
     public bool? IsExpense { get; set; }
 
     public string? IconFileName { get; set; }

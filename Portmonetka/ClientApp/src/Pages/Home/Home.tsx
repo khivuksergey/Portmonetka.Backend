@@ -3,12 +3,12 @@ import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import useWallet from "../../Hooks/useWallet";
 import { IWallet, IGlobalBalance } from "../../DataTypes";
 import Balance from "./Balance";
-import AddWalletModal from "./AddWalletModal";
-import WalletsAnimation from "../../walletsHover";
-import BalancePlaceholder from "./BalancePlaceholder";
-import WalletsPlaceholder from "./WalletsPlaceholder";
-import ErrorAlert from "./ErrorAlert";
+import AddWalletModal from "./Modals/AddWalletModal";
+import BalancePlaceholder from "./Placeholders/BalancePlaceholder";
+import WalletsPlaceholder from "./Placeholders/WalletsPlaceholder";
+import ErrorAlert from "../../Components/ErrorAlert";
 import AddFirstWallet from "./AddFirstWallet";
+import WalletsAnimation from "./WalletsAnimation";
 import Wallets from "./Wallets";
 
 export default function Home() {
@@ -75,21 +75,23 @@ export default function Home() {
         })
     }
 
-    const onDeleteWallet = async (id: number, force: boolean) => {
-        const walletDeleted = handleDeleteWallet(id, force);
-        walletDeleted.then((success) => {
-            console.log("walletDeleted:", walletDeleted);
-            console.log("success:", success);
+    const onDeleteWallet = async (id: number, force?: boolean): Promise<boolean> => {
+        try {
+            const success = await handleDeleteWallet(id, force);
+
             if (success) {
-                console.log("refreshing wallets...");
                 refreshWallets();
 
                 setGlobalBalance((prev: any[]) => {
-                    console.log(prev.filter(entry => entry.id !== id));
                     return prev.filter(entry => entry.id !== id);
                 });
             }
-        });
+
+            return success;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
     }
 
     // #endregion
@@ -104,8 +106,6 @@ export default function Home() {
                 :
                 <>
                     <ErrorAlert showError={showError} onClose={() => setShowError(false)} error={walletsError} />
-
-                    {/*<input type="text" placeholder="Search" className="form-control--dark searchbar"/>*/}
 
                     {wallets && (wallets.length > 1) ?
                         <>

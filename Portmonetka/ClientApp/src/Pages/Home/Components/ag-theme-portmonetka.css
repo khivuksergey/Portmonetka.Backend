@@ -20,7 +20,6 @@
     --ag-borders-input: 1px solid #292929;
     --ag-widget-vertical-spacing: 1rem;
     --ag-list-item-height: 2rem;
-
     /*flex-grow: 1;*/
 }
 
@@ -50,11 +49,11 @@ input[class^=ag-][type=date] {
     transition: background-color 0.2s ease-out;
 }
 
-input[class^=ag-]:hover,
-input[class^=ag-]:focus-visible {
-    background-color: #090909;
-    border: 1px solid var(--button-dark-accent);
-}
+    input[class^=ag-]:hover,
+    input[class^=ag-]:focus-visible {
+        background-color: #090909;
+        border: 1px solid var(--button-dark-accent);
+    }
 
 /*.ag-popup inputs + #101010 to background-colors*/
 
@@ -69,9 +68,22 @@ input[class^=ag-]:focus-visible {
     border: none;
 }
 
+/*.ag-root-wrapper,
+.ag-root.ag-layout-normal,
+.ag-header,
+.ag-header-viewport,
+.ag-header-cell {
+    overflow: visible;
+}*/
+
 .ag-header-cell, .ag-header-group-cell {
     padding: 0 0.75rem;
 }
+
+    .ag-header-cell[col-id="isDeleted"],
+    .ag-cell[col-id="isDeleted"] {
+        padding: 0;
+    }
 
 .ag-theme-alpine-dark .ag-header-row {
     font-weight: normal;
@@ -85,8 +97,8 @@ input[class^=ag-]:focus-visible {
 }
 
 .ag-theme-alpine-dark .ag-menu {
-    background-color: var(--ag-control-panel-background-color);
-    /*background-color: #393939;*/
+    /*background-color: var(--ag-control-panel-background-color);*/
+    background-color: #393939;
 }
 
 .ag-icon {
@@ -154,3 +166,7 @@ input[class^=ag-]:focus-visible {
         background: var(--primary);
         color: var(--dark-color);
     }
+
+.ag-overlay-no-rows-center {
+    align-self: flex-end;
+}

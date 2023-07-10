@@ -1,12 +1,12 @@
 ﻿import { IWallet } from "../../DataTypes";
-import Wallet from "./Wallet";
+import Wallet from "./Components/Wallet";
 import { MdAdd } from "react-icons/md";
 
 interface IWalletsProps {
     wallets: IWallet[]
     onAddWallet: () => void
     onChangeWallet: (wallet: IWallet) => Promise<void>
-    onDeleteWallet: (id: number, force: boolean) => Promise<void>
+    onDeleteWallet: (id: number, force?: boolean) => Promise<boolean>
 }
 
 export default function Wallets({wallets, onAddWallet, onChangeWallet, onDeleteWallet } : IWalletsProps) {

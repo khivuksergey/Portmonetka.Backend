@@ -16,7 +16,6 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
     const [newCategory, setNewCategory] = useState<ICategory>(categoryTemplate);
 
     const handleAddCategory = () => {
-        console.log("new category: ", newCategory);
         onAddCategory(newCategory);
     }
 

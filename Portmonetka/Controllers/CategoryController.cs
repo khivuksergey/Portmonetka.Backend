@@ -101,7 +101,6 @@ namespace Portmonetka.Controllers
 
             var confirmation = JsonConvert.SerializeObject("hasTransactions");
             return Content(confirmation);   //send confirmation to force deleting
-            
         }
     }
 }

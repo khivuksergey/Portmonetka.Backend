@@ -47,13 +47,15 @@
     <None Remove="ClientApp\src\Components\Modal.tsx" />
     <None Remove="ClientApp\src\Components\ModalFooter.tsx" />
     <None Remove="ClientApp\src\Components\Popper.tsx" />
-    <None Remove="ClientApp\src\Components\StatusMessage.tsx" />
     <None Remove="ClientApp\src\DataTypes.ts" />
     <None Remove="ClientApp\src\Hooks\usePopper.ts" />
     <None Remove="ClientApp\src\Pages\Home\AddFirstWallet.tsx" />
     <None Remove="ClientApp\src\Pages\Home\BalancePlaceholder.tsx" />
+    <None Remove="ClientApp\src\Pages\Home\CustomDateComponent.tsx" />
     <None Remove="ClientApp\src\Pages\Home\ErrorAlert.tsx" />
+    <None Remove="ClientApp\src\Pages\Home\Placeholders\LatestTransactionsPreviewPlaceholder.tsx" />
     <None Remove="ClientApp\src\Pages\Home\TransactionsTable.tsx" />
+    <None Remove="ClientApp\src\Pages\Home\TransactionsTablePlaceholder.tsx" />
     <None Remove="ClientApp\src\Pages\Home\WalletPropertiesForm.tsx" />
     <None Remove="ClientApp\src\Pages\Home\Wallets.tsx" />
     <None Remove="ClientApp\src\Pages\Home\WalletsPlaceholder.tsx" />
@@ -61,8 +63,8 @@
     <None Remove="ClientApp\src\Pages\PageUnderConstruction.tsx" />
     <None Remove="ClientApp\src\Pages\Sidebar.tsx" />
     <None Remove="ClientApp\src\Pages\Wallets\WalletsPage.tsx" />
-    <None Remove="ClientApp\src\Utilities\AddWalletStatusMessage.ts" />
     <None Remove="ClientApp\src\Utilities\MoneyToLocaleString.ts" />
+    <None Remove="ClientApp\src\Utilities\UtcDateToLocalString.ts" />
     <None Remove="ClientApp\tsconfig.json" />
   </ItemGroup>
 
@@ -79,7 +81,7 @@
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\Wallet.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\WalletModal.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Utilities\CurrencyToSignConverter.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\walletsHover.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\walletsAnimation.tsx" />
   </ItemGroup>
 
   <ItemGroup>

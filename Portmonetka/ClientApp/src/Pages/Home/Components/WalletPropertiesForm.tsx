@@ -1,7 +1,7 @@
 ﻿import { ReactNode } from "react";
 import { Formik, FormikErrors } from "formik";
 import * as yup from "yup";
-import { IWalletProps } from "../../DataTypes";
+import { IWalletProps } from "../../../DataTypes";
 import { Col, Form, Row } from "react-bootstrap";
 
 interface IWalletPropertiesFormProps {
@@ -45,7 +45,6 @@ export default function WalletPropertiesForm({
                                     className="form-control--dark"
                                     isInvalid={touched.name &&
                                         !!(errors as FormikErrors<IWalletProps>)?.name}
-                                /*autoFocus*/
                                 />
                                 {
                                     !(errors as FormikErrors<IWalletProps>)?.name?.includes("required") ?

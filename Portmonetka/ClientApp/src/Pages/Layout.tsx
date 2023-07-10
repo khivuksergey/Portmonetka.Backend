@@ -1,10 +1,10 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import NavMenu from "./NavMenu";
 
 export default function Layout() {
     return (
         <>
-            <NavMenu/>
+            <NavMenu />
 
             <main className="page-content">
                 <Outlet />

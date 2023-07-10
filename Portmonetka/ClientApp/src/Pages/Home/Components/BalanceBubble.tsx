@@ -1,6 +1,6 @@
-﻿import { ICurrencyBalance } from "../DataTypes";
-import CurrencyToSign from "../Utilities/CurrencyToSignConverter";
-import MoneyToLocaleString from "../Utilities/MoneyToLocaleString";
+﻿import { ICurrencyBalance } from "../../../DataTypes";
+import CurrencyToSign from "../../../Utilities/CurrencyToSignConverter";
+import MoneyToLocaleString from "../../../Utilities/MoneyToLocaleString";
 import { MdTrendingUp, MdTrendingDown, MdTrendingFlat } from "react-icons/md";
 
 

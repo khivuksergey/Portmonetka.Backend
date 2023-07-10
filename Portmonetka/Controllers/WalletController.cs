@@ -34,6 +34,7 @@ namespace Portmonetka.Controllers
                 return NotFound();
 
             var wallet = await _dbContext.Wallets.FindAsync(id);
+
             if (wallet == null)
                 return NotFound();
 
@@ -43,40 +44,51 @@ namespace Portmonetka.Controllers
         [HttpPost]
         public async Task<ActionResult<Wallet>> PostWallet(Wallet wallet)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //For testing
             if (wallet.Name!.ToLower() == "error")
             {
                 return StatusCode(500, "Wallet was not created, try again");
             }
-            //Validate
 
-            _dbContext.Wallets.Add(wallet);
-            await _dbContext.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetWallet), new { id = wallet.Id }, wallet);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult> PutWallet(int id, Wallet wallet)
-        {
-            //Validate
-            if (id != wallet.Id)
-                return BadRequest();
-
-            _dbContext.Entry(wallet).State = EntityState.Modified;
-            try
+            if (wallet.Id == 0)
             {
+                _dbContext.Wallets.Add(wallet);
                 await _dbContext.SaveChangesAsync();
-            }
-            catch(DbUpdateConcurrencyException)
-            {
-                throw;
-            }
 
-            return Ok();
+                return CreatedAtAction(nameof(GetWallet), new { id = wallet.Id }, wallet);
+            }
+            else
+            {
+                var existingWallet = await _dbContext.Wallets.FindAsync(wallet.Id);
+
+                if (existingWallet == null)
+                {
+                    return BadRequest($"Wallet with id = {wallet.Id} was not found");
+                }
+
+                _dbContext.Entry(existingWallet).CurrentValues.SetValues(wallet);
+
+                try
+                {
+                    await _dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+
+                return Ok();
+            }
+            
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteWallet(int id, bool force)
+        public async Task<ActionResult> DeleteWallet(int id, [FromQuery] bool force = false)
         {
             if (_dbContext.Wallets == null)
                 return NotFound();
@@ -88,7 +100,12 @@ namespace Portmonetka.Controllers
 
             if (!force)
             {
-                //send confirmation if wallet has transactions, otherwise continue
+                var hasTransactions = await _dbContext.Transactions.AnyAsync(t => t.WalletId == id);
+
+                if (hasTransactions)
+                {
+                    return Ok(new { ConfirmationRequired = true });
+                }
             }
 
             if (typeof(Auditable).IsAssignableFrom(typeof(Wallet)))
@@ -101,7 +118,7 @@ namespace Portmonetka.Controllers
             {
                 _dbContext.Wallets.Remove(wallet);
             }
-            //_dbContext.Wallets.Remove(wallet);
+
             await _dbContext.SaveChangesAsync();
 
             return Ok();

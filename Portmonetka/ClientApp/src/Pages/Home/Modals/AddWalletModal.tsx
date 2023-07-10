@@ -1,12 +1,7 @@
-//import { useState } from "react";
-//import { Formik, FormikErrors } from "formik";
-//import * as yup from "yup";
-//import { Form, Row, Col } from "react-bootstrap";
-import Modal from "../../Components/Modal";
-import StatusMessage from "../../Components/StatusMessage";
-import { IWallet, IWalletProps } from "../../DataTypes";
-import ModalFooter from "../../Components/ModalFooter";
-import WalletPropertiesForm from "./WalletPropertiesForm";
+import { IWallet, IWalletProps } from "../../../DataTypes";
+import Modal from "../../../Components/Modal";
+import ModalFooter from "../../../Components/ModalFooter";
+import WalletPropertiesForm from "../Components/WalletPropertiesForm";
 
 interface AddWalletModalProps {
     show: boolean
@@ -14,25 +9,9 @@ interface AddWalletModalProps {
     onAddWallet: (wallet: IWallet) => Promise<void>
 }
 
-//interface IAddWallet {
-//    name: string,
-//    currency: string,
-//    initialAmount: string,
-//    iconFileName: string
-//}
-
 const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => {
 
     // #region Initializations
-
-    //const validationSchema = yup.object().shape(
-    //    {
-    //        name: yup.string().max(128, "Maximum 128 characters").required("Name is required"),
-    //        currency: yup.string().length(3, "e.g. USD").required("Currency is required"),
-    //        initialAmount: yup.number().min(0, "Minimum 0").required("Initial amount is required"),
-    //        iconFileName: yup.string()//.required("Icon is required")
-    //    }
-    //);
 
     const wallet: IWalletProps = {
         name: "",
@@ -46,6 +25,7 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
 
     const handleSubmit = (wallet: IWalletProps) => {
         const newWallet: IWallet = {
+            id: 0,
             name: wallet.name.trim(),
             currency: wallet.currency.toUpperCase(),
             initialAmount: Number(wallet.initialAmount),
@@ -67,7 +47,6 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
                 initialValues={wallet}
                 handleSubmit={(wallet) => handleSubmit(wallet)}
             >
-                {/*<StatusMessage wallet={wallet} />*/}
                 <ModalFooter onReset={onClose} submitText="Add" />
             </WalletPropertiesForm>
         </Modal>

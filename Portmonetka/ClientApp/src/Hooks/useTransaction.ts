@@ -56,23 +56,20 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
                     setTransactions(camelCasedData);
                     setDataFetched(true);
-                    //setLoading(false);
                 });
         } catch (e: unknown) {
-            //setLoading(false);
             if (axios.isCancel(e)) {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
             setError(error.message);
-            //console.error(error);
         } finally {
             setLoading(false);
         }
     }
 
     const fetchTransactionsLatest = async (count: number) => {
-        const url = `api/transaction/wallet/${walletId}/latest/${count}`;
+        const url = `api/transaction/wallet/${walletId}?latest=${count}`;
         try {
             setError("");
 
@@ -87,16 +84,13 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
                     setTransactions(camelCasedData);
                     setDataFetched(true);
-                    //setLoading(false);
                 });
         } catch (e: unknown) {
-            //setLoading(false);
             if (axios.isCancel(e)) {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
             setError(error.message);
-            //console.error(error);
         } finally {
             setLoading(false);
         }
@@ -111,10 +105,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
             axios.post(url, transactions)
                 .then((response) => {
                     resolve(response.status === 201);
-                    //setLoading(false);
                 })
                 .catch((e: unknown) => {
-                    //setLoading(false);
                     const error = e as AxiosError;
                     setError(error.message);
                     console.error(error);
@@ -125,22 +117,20 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         })
     }
 
-    const handleDeleteTransaction = async (id: number): Promise<boolean> => {
-        const url = `api/transaction/delete/id/${id}`;
+    const handleChangeTransactions = async (transactions: ITransaction[]): Promise<boolean> => {
+        const url = `api/transaction/`;
         setError("");
         setLoading(true);
 
         return new Promise<boolean>((resolve, reject) => {
-            axios.delete(url)
+            axios.post(url, transactions)
                 .then((response) => {
-                    resolve(response.status <= 200 && response.status < 300);
-                    //setLoading(false);
+                    resolve(response.status >= 200 && response.status < 300);
                 })
                 .catch((e: unknown) => {
-                    //setLoading(false);
                     const error = e as AxiosError;
                     setError(error.message);
-                    console.error(error);
+                    //console.error(error);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -148,22 +138,19 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         })
     }
 
-    const handleDeleteMultipleTransactions = async (ids: number[]): Promise<boolean> => {
-        const url = `api/transaction/delete`;
+    const handleDeleteTransactions = async (ids: number[]): Promise<boolean> => {
+        const url = `api/transaction/`;
         setError("");
         setLoading(true);
 
         return new Promise<boolean>((resolve, reject) => {
             axios.delete(url, { data: ids })
                 .then((response) => {
-                    resolve(response.status === 201);
-                    //setLoading(false);
+                    resolve(response.status >= 200 && response.status < 300);
                 })
                 .catch((e: unknown) => {
-                    //setLoading(false);
                     const error = e as AxiosError;
                     setError(error.message);
-                    //console.error(error);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -175,8 +162,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         transactions,
         transactionsSum,
         handleAddTransactions,
-        handleDeleteTransaction,
-        handleDeleteMultipleTransactions,
+        handleChangeTransactions,
+        handleDeleteTransactions,
         refreshTransactions,
         dataFetched,
         loading,

@@ -830,12 +830,12 @@ input::-webkit-input-placeholder {
         width: 90%;
     }
 
-    .wallet > .wallet-content {
-        padding: calc(5px + 5vw);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+        .wallet > .wallet-content {
+            padding: calc(5px + 5vw);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
     .add-transactions > button {
         height: calc(0.75rem + 7vw);
@@ -903,10 +903,10 @@ input::-webkit-input-placeholder {
         flex-direction: column;
     }
 
-    .wallets-header > .add-wallet {
-        width: 100%;
-        align-self: center;
-    }
+        .wallets-header > .add-wallet {
+            width: 100%;
+            align-self: center;
+        }
 }
 
 /*@media screen and (max-width: 450px) {
@@ -1008,6 +1008,10 @@ input::-webkit-input-placeholder {
     min-width: 0;
 }
 
+.min-width-200 {
+    min-width: 200px;
+}
+
 .wallet-balance {
     flex-grow: 0;
     flex-shrink: 0;
@@ -1097,8 +1101,12 @@ input::-webkit-input-placeholder {
 
 .btn-delete, .btn-restore {
     color: var(--button-dark);
-    padding: 5px;
     margin: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: visible;
 }
 
     .btn-delete:hover {
@@ -1109,9 +1117,9 @@ input::-webkit-input-placeholder {
     background: var(--darkred-main);
 }
 
-.button--add:hover {
+/*.button--add:hover {
     background: var(--darkgreen-main);
-}
+}*/
 
 .placeholder-selected {
     color: var(--placeholder-gray);
@@ -1286,7 +1294,6 @@ input[type="datetime-local"] {
 
 .transactions-table-container {
     width: 100%;
-    height: 29rem;
 }
 
 /*override bootstrap values*/

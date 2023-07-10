@@ -1,8 +1,8 @@
 import React, { useEffect, useImperativeHandle } from "react";
-import useTransaction from "../../Hooks/useTransaction";
+import LatestTransactionsPreviewPlaceholder from "../Placeholders/LatestTransactionsPreviewPlaceholder";
+import useTransaction from "../../../Hooks/useTransaction";
+import MoneyToLocaleString from "../../../Utilities/MoneyToLocaleString";
 import { format, utcToZonedTime } from "date-fns-tz";
-import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
-import { Placeholder } from "react-bootstrap";
 
 interface LatestTransactionsPreviewProps {
     walletId: number
@@ -54,21 +54,7 @@ const LatestTransactionsPreview = React.forwardRef<
         <>
             {
                 !transactionsLoaded ?
-                    <>
-                        <div className="mt-2">
-                            {
-                                Array.from({ length: 8 }, (_, index) => (
-                                    <div key={index} className="d-flex gap-3 mb-3">
-                                        <Placeholder bg="dark" as="div" animation="wave" style={{ height: "1.5rem", width: "8rem" }} />
-                                        <Placeholder bg="dark" as="div" animation="wave" style={{ height: "1.5rem", width: "100%" }} />
-                                        <Placeholder bg="dark" as="div" animation="wave" style={{ height: "1.5rem", width: "10rem" }} />
-                                    </div>
-                                ))
-                            }
-                        </div>
-
-                        <div className="transactions-preview-blur" />
-                    </>
+                    <LatestTransactionsPreviewPlaceholder />
                     :
                     (<>
                         {

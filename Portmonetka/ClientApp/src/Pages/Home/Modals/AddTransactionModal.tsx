@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Formik, FieldArray, FormikErrors } from "formik";
 import * as yup from "yup";
-import { ICategory, ITransaction, IWallet } from "../../DataTypes";
-import Modal from "../../Components/Modal";
-import Popper from "../../Components/Popper";
-import AddCategory from "../../Components/AddCategory";
-import DayPickerWithTodayButton from "../../Components/DayPickerWithTodayButton";
-import useTransaction from "../../Hooks/useTransaction";
-import useCategory from "../../Hooks/useCategory";
-import usePopper from "../../Hooks/usePopper";
+import { ICategory, ITransaction, IWallet } from "../../../DataTypes";
+import Modal from "../../../Components/Modal";
+import ModalFooter from "../../../Components/ModalFooter";
+import Popper from "../../../Components/Popper";
+import AddCategory from "../../../Components/AddCategory";
+import DayPickerWithTodayButton from "../../../Components/DayPickerWithTodayButton";
+import useTransaction from "../../../Hooks/useTransaction";
+import useCategory from "../../../Hooks/useCategory";
+import usePopper from "../../../Hooks/usePopper";
 import { Form, Row, Col, InputGroup, Button } from "react-bootstrap";
 import "react-day-picker/dist/style.css";
 
 import { BiPlus } from "react-icons/bi";
 import { GoCalendar } from "react-icons/go";
 import { MdPlaylistRemove } from "react-icons/md";
-import ModalFooter from "../../Components/ModalFooter";
 
 interface IAddTransactionModalProps {
     show: boolean
@@ -216,7 +216,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
     if (!show) return null;
 
     return (
-        <Modal title={modalTitle} show={show} onClose={() => onClose(false)} backdrop="static" size="xl" contentClassName="modal-container">
+        <Modal title={modalTitle} show={show} onClose={() => onClose(false)} backdrop="static" size="xl" contentClassName="modal-container min-width-200">
             <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
@@ -272,7 +272,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                         </Col>
                                                         <Col sm={4} lg={3}>
                                                             <InputGroup className="mb-3" >
-                                                                <Button className="btn-dark button--add" onClick={(e) => handleCategoryButtonClick(e, i)}>
+                                                                <Button className="btn-dark" onClick={(e) => handleCategoryButtonClick(e, i)}>
                                                                     <BiPlus fill="darkgrey" />
                                                                 </Button>
                                                                 <Form.Select
@@ -320,7 +320,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                     }
 
                                     <div className="d-grid" >
-                                        <Button className="button-add-transaction-row--dark" onClick={() => handleAddRow(push, values)}>
+                                        <Button className="button-add-transaction-row--dark hyphenate" onClick={() => handleAddRow(push, values)}>
                                             Add transaction
                                         </Button>
                                     </div >

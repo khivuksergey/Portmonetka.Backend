@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portmonetka.Models;
-using System.Linq;
 
 namespace Portmonetka.Controllers
 {
@@ -16,8 +15,9 @@ namespace Portmonetka.Controllers
             _dbContext = dbContext;
         }
 
-        [Route("all")]
-        [HttpGet]
+        #region GET
+
+        [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
         {
             if (_dbContext.Transactions == null)
@@ -29,7 +29,6 @@ namespace Portmonetka.Controllers
                 .ToListAsync();
         }
 
-        [Route("id/{id}")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Transaction>> GetTransaction(int id)
         {
@@ -37,43 +36,39 @@ namespace Portmonetka.Controllers
                 return NotFound();
 
             var transaction = await _dbContext.Transactions.FindAsync(id);
+
             if (transaction == null)
                 return NotFound();
 
             return transaction;
         }
 
-        [Route("wallet/{walletId}")]
-        [HttpGet("{walletId}")]
-        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByWallet(int walletId)
+        [HttpGet("wallet/{walletId}")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByWallet(int walletId, [FromQuery(Name = "latest")] int? count)
         {
             if (_dbContext.Transactions == null)
                 return NotFound();
 
-            return await _dbContext.Transactions
-                .Where(t => t.WalletId == walletId && t.DateDeleted == null)
-                .OrderByDescending(t => t.Date)
-                .ThenByDescending(t => t.DateCreated)
-                .ToListAsync();
+            if (count.HasValue)
+            {
+                return await _dbContext.Transactions
+                    .Where(t => t.WalletId == walletId && t.DateDeleted == null)
+                    .OrderByDescending(t => t.Date)
+                    .ThenByDescending(t => t.DateCreated)
+                    .Take(count.Value)
+                    .ToListAsync();
+            }
+            else
+            {
+                return await _dbContext.Transactions
+                    .Where(t => t.WalletId == walletId && t.DateDeleted == null)
+                    .OrderByDescending(t => t.Date)
+                    .ThenByDescending(t => t.DateCreated)
+                    .ToListAsync();
+            }
         }
 
-        [Route("wallet/{walletId}/latest/{count}")]
-        [HttpGet("{walletId}")]
-        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByWalletLatest(int walletId, int count)
-        {
-            if (_dbContext.Transactions == null)
-                return NotFound();
-
-            return await _dbContext.Transactions
-                .Where(t => t.WalletId == walletId && t.DateDeleted == null)
-                .OrderByDescending(t => t.Date)
-                .ThenByDescending(t => t.DateCreated)
-                .Take(count)
-                .ToListAsync();
-        }
-
-        [Route("currency/{currency}")]
-        [HttpGet("{currency}")]
+        [HttpGet("currency/{currency}")]
         public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByCurrency(string currency)
         {
             if (currency == null || currency.Length != 3)
@@ -101,68 +96,42 @@ namespace Portmonetka.Controllers
             return transactionsResult;
         }
 
+        #endregion
+
+        #region POST
+
         [HttpPost]
         public async Task<ActionResult<IEnumerable<Transaction>>> PostTransactions(IEnumerable<Transaction> transactions)
         {
-            _dbContext.Transactions.AddRange(transactions);
+            var existingTransactionIds = transactions.Where(t => t.Id != 0).Select(t => t.Id);
+
+            if (existingTransactionIds.Any())
+            {
+                var existingTransactions = await _dbContext.Transactions
+                    .Where(t => existingTransactionIds.Contains(t.Id))
+                    .ToListAsync();
+
+                foreach (var existingTransaction in existingTransactions)
+                {
+                    var updatedTransaction = transactions.First(t => t.Id == existingTransaction.Id);
+                    _dbContext.Entry(existingTransaction).CurrentValues.SetValues(updatedTransaction);
+                }
+            }
+
+            var newTransactions = transactions.Where(t => t.Id == 0);
+            await _dbContext.Transactions.AddRangeAsync(newTransactions);
+
             await _dbContext.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetTransactions), transactions.Select(t => new { id = t.Id }), transactions);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> PutTransaction(int id, Transaction transaction)
-        {
-            //Validate
-            if (id != transaction.Id)
-                return BadRequest();
+        #endregion
 
-            _dbContext.Entry(transaction).State = EntityState.Modified;
-            try
-            {
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
+        #region DELETE
 
-            return Ok();
-        }
-
-        [Route("delete/id/{id}")]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteTransaction(int id)
-        {
-            if (_dbContext.Transactions == null)
-                return NotFound();
-
-            var transaction = await _dbContext.Transactions.FindAsync(id);
-
-            if (transaction == null)
-                return NotFound();
-
-            if (typeof(Auditable).IsAssignableFrom(typeof(Transaction)))
-            {
-                transaction.DateDeleted = DateTimeOffset.UtcNow;
-                _dbContext.Transactions.Attach(transaction);
-                _dbContext.Entry(transaction).State = EntityState.Modified;
-            }
-            else
-            {
-                _dbContext.Transactions.Remove(transaction);
-            }
-
-            //_dbContext.Transactions.Remove(transaction);
-
-            await _dbContext.SaveChangesAsync();
-
-            return Ok();
-        }
-
-        [Route("delete")]
         [HttpDelete]
-        public async Task<ActionResult> DeleteTransactiosn(IEnumerable<int> ids)
+        public async Task<ActionResult> DeleteTransactions(IEnumerable<int> ids)
         {
             if (_dbContext.Transactions == null)
                 return NotFound();
@@ -172,7 +141,7 @@ namespace Portmonetka.Controllers
             if (transactionsToDelete == null)
                 return NotFound();
 
-            foreach ( var transaction in transactionsToDelete)
+            foreach (var transaction in transactionsToDelete)
             {
                 if (typeof(Auditable).IsAssignableFrom(typeof(Transaction)))
                 {
@@ -191,22 +160,35 @@ namespace Portmonetka.Controllers
             return Ok();
         }
 
-        [Route("delete/wallet/{walletId}")]
-        [HttpDelete("{walletId}")]
+        [HttpDelete("wallet/{walletId}")]
         public async Task<ActionResult> DeleteTransactionsByWallet(int walletId)
         {
             if (_dbContext.Transactions == null)
                 return NotFound();
 
-            var transactions = _dbContext.Transactions
-                .Where(t => t.WalletId == walletId);
+            var transactionsToDelete = _dbContext.Transactions
+                .Where(t => t.WalletId == walletId && t.DateDeleted == null);
 
-            if (transactions != null)
-                _dbContext.Transactions.RemoveRange(transactions);
+
+            foreach (var transaction in transactionsToDelete)
+            {
+                if (typeof(Auditable).IsAssignableFrom(typeof(Transaction)))
+                {
+                    transaction.DateDeleted = DateTimeOffset.UtcNow;
+                    _dbContext.Transactions.Attach(transaction);
+                    _dbContext.Entry(transaction).State = EntityState.Modified;
+                }
+                else
+                {
+                    _dbContext.Transactions.Remove(transaction);
+                }
+            }
 
             await _dbContext.SaveChangesAsync();
 
             return Ok();
         }
+
+        #endregion
     }
 }

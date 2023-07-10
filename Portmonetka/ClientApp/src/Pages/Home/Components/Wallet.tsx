@@ -1,21 +1,20 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
-import { IWallet, IGlobalBalance } from "../../DataTypes";
+import GlobalBalanceContext from "../../../Context/GlobalBalanceContext";
+import { IWallet, IGlobalBalance } from "../../../DataTypes";
 import LatestTransactionsPreview, { LatestTransactionsPreviewRef } from "./LatestTransactionsPreview";
-import AddTransactionModal from "./AddTransactionModal";
-import WalletModal from "./WalletModal";
-import CurrencyToSign from "../../Utilities/CurrencyToSignConverter";
-import MoneyToLocaleString from "../../Utilities/MoneyToLocaleString";
+import AddTransactionModal from "../Modals/AddTransactionModal";
+import WalletModal from "../Modals/WalletModal";
+import CurrencyToSign from "../../../Utilities/CurrencyToSignConverter";
+import MoneyToLocaleString from "../../../Utilities/MoneyToLocaleString";
 import { IoIosCash } from "react-icons/io";
 
 interface WalletProps {
     wallet: IWallet
-    onDeleteWallet: (walletId: number, force: boolean) => Promise<void>
-    //refreshWallets: () => void
+    onDeleteWallet: (walletId: number, force?: boolean) => Promise<boolean>
     onChangeWallet: (changedWallet: IWallet) => Promise<void>
 }
 
-export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onChangeWallet }: WalletProps) {
+export default function Wallet({ wallet, onDeleteWallet, onChangeWallet }: WalletProps) {
     const globalBalanceContext = useContext(GlobalBalanceContext);
 
     const [balance, setBalance] = useState<number>(0);
@@ -55,7 +54,6 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
     }
 
     const handleTransactionsModalClose = (dataAdded: boolean) => {
-        // Refresh transactions
         if (dataAdded && latestTransactionsPreviewRef.current) {
             latestTransactionsPreviewRef.current.refreshTransactions();
         }
@@ -64,13 +62,17 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
 
     const handleWalletModalShow = () => setShowWalletModal(true);
 
-    const handleWalletModalClose = () => setShowWalletModal(false);
+    const handleWalletModalClose = (dataChanged?: boolean) => {
+        if (dataChanged && latestTransactionsPreviewRef.current) {
+            latestTransactionsPreviewRef.current.refreshTransactions();
+        }
+        setShowWalletModal(false);
+    }
 
     return (
         <>
             <div className="wallet" onClick={handleWalletModalShow}>
                 <div className="wallet-content">
-                    {/*<div>*/}
                         <div className="wallet-header">
                             <div className="wallet-title min-width-0">
                                 <h4 className="text-nowrap-overflow-ellipsis">{wallet.name}</h4>
@@ -81,7 +83,6 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
                                 </h4>
                             </div>
                         </div>
-                    {/*</div>*/}
 
                     <div className="add-transactions">
                         <button className="btn add-items-button" type="button" key={"button-" + wallet.id}
@@ -100,7 +101,6 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
                     wallet={wallet}
                     show={showTransactionModal}
                     onClose={handleTransactionsModalClose}
-                //onAddTransactions={handleAddTransactions}
                 />
                 : null
             }
@@ -112,20 +112,9 @@ export default function Wallet({ wallet, onDeleteWallet, /*refreshWallets,*/ onC
                     onClose={handleWalletModalClose}
                     onDeleteWallet={onDeleteWallet}
                     onChangeWallet={onChangeWallet}
-                //transactions={transactions}
-                //transactionsSum={transactionsSum}
-                //onDeleteTransactions={handleDeleteMultipleTransactions}
                 />
                 : null
             }
         </>
     )
 }
-
-
-/*old code*/
-/*{transactions.length > 4 ?*/ 
-/*    <div className="transactions-dots">*/
-    /*        <BiDotsHorizontalRounded />*/ 
-    /*    </div>*/ 
-    /*    : null}*/ 

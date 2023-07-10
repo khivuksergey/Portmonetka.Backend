@@ -98,47 +98,5 @@ export default function NavMenu() {
                     onClose={() => setIsOffcanvasVisible(false)} />
             </Offcanvas>
         </>
-
-        //<Sidebar
-        //    className={`sidebar ${isCollapsed ? "collapsed" : ""}`}
-        //    onClose={handleMenuLogoClick}
-        ///>
-        //<>
-        //    <div
-        //        style={{
-        //            position: "sticky",
-        //            left: "0",
-        //            top: "0",
-        //            zIndex: "6",
-        //            height: "calc(64px + 0.25rem)",
-        //            width: "100%",
-        //            flexShrink: "0",
-        //            overflow: "hidden",
-        //            backgroundColor: "#101010"
-        //        }}
-        //    >
-        //        <div className="sidebar__logo">
-        //            <div className="flexbox logo prevent-select" onClick={handleHiddenMenuOpen}>
-        //                <button className="logo__button" >
-        //                    <GiTwoCoins size={40} color={"var(--primary)"} />
-        //                </button>
-
-        //                <div className="logo__text">
-        //                    Portmonetka
-        //                </div>
-        //            </div>
-        //        </div>
-        //    </div>
-
-        //    <Offcanvas
-        //        show={isHiddenMenuVisible}
-        //        onHide={() => setIsHiddenMenuVisible(false)}
-
-        //    >
-        //        <Sidebar
-        //            className="sidebar"
-        //            onClose={() => setIsHiddenMenuVisible(false)}/>
-        //    </Offcanvas>
-        //</>
     )
 }
