@@ -1,7 +1,7 @@
 ﻿import { ReactNode } from "react";
 import { Formik, FormikErrors } from "formik";
 import * as yup from "yup";
-import { IWalletProps } from "../../../DataTypes";
+import { IWalletProps } from "../../../Common/DataTypes";
 import { Col, Form, Row } from "react-bootstrap";
 
 interface IWalletPropertiesFormProps {
@@ -18,7 +18,7 @@ export default function WalletPropertiesForm({
     const validationSchema = yup.object().shape(
         {
             name: yup.string().max(128, "Maximum 128 characters").required("Name is required"),
-            currency: yup.string().matches(/^[A-Za-z]{3}$/, 'e.g. USD').required("Currency is required"),
+            currency: yup.string().matches(/^[A-Za-z]{3}$/, "e.g. USD").required("Currency is required"),
             initialAmount: yup.number().min(0, "Minimum 0").required("Initial amount is required"),
             iconFileName: yup.string()//.required("Icon is required")
         }
@@ -94,7 +94,7 @@ export default function WalletPropertiesForm({
                                     step="any"
                                     name={`initialAmount`}
                                     placeholder="10000"
-                                    value={wallet.initialAmount ?? ''}
+                                    value={wallet.initialAmount ?? ""}
                                     onChange={handleChange}
                                     className="form-control--dark"
                                     isInvalid={touched.initialAmount &&

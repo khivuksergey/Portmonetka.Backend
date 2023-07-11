@@ -1,7 +1,7 @@
 import React, { useEffect, useImperativeHandle } from "react";
-import LatestTransactionsPreviewPlaceholder from "../Placeholders/LatestTransactionsPreviewPlaceholder";
-import useTransaction from "../../../Hooks/useTransaction";
-import MoneyToLocaleString from "../../../Utilities/MoneyToLocaleString";
+import { LatestTransactionsPreviewPlaceholder } from "../Placeholders";
+import { useTransaction } from "../../../Hooks";
+import { MoneyToLocaleString } from "../../../Utilities";
 import { format, utcToZonedTime } from "date-fns-tz";
 
 interface LatestTransactionsPreviewProps {
@@ -22,7 +22,7 @@ const LatestTransactionsPreview = React.forwardRef<
         transactions,
         refreshTransactions,
         dataFetched: transactionsLoaded
-    } = useTransaction(walletId, 8);
+    } = useTransaction(walletId, 6);
 
     const { transactionsSum, refreshTransactions: refreshAllTransactions } = useTransaction(walletId);
 
@@ -60,11 +60,10 @@ const LatestTransactionsPreview = React.forwardRef<
                         {
                             transactions.length === 0 ?
                                 <div className="mt-3 d-flex justify-content-center">
-                                    <h6 style={{ height: 0 }}>Your transactions will be displayed here</h6>
+                                    <h6 style={{ textAlign: "center" }}>Your transactions will be displayed here</h6>
                                 </div>
                                 :
-                                <table className="table mb-0 prevent-select"
-                                    style={{ height: 0 }}>
+                                <table className="table mb-0 prevent-select">
                                     <tbody>
                                         {
                                             transactions
@@ -75,8 +74,8 @@ const LatestTransactionsPreview = React.forwardRef<
                                                                 `+${MoneyToLocaleString(t.amount)}` :
                                                                 MoneyToLocaleString(t.amount)}
                                                         </td>
-                                                        <td className="transaction-name d-inlineblock text-truncate">{t.description}</td>
-                                                        <td className="text-right no-stretch">{formatUtcToLocal(t.date, 'dd.MM.yyyy')}</td>
+                                                        <td className="d-inlineblock max-width-100 text-truncate">{t.description}</td>
+                                                        <td className="text-right no-stretch">{formatUtcToLocal(t.date, "dd.MM.yyyy")}</td>
                                                     </tr>
                                                 )
                                         }

@@ -5,7 +5,6 @@ import { addMonths, isSameMonth } from "date-fns";
 interface DayPickerWithTodayButtonProps {
     selected: Date | undefined
     onSelect: SelectSingleEventHandler | undefined
-
 }
 
 export default function DayPickerWithTodayButton({ selected, onSelect }: DayPickerWithTodayButtonProps) {
@@ -30,7 +29,8 @@ export default function DayPickerWithTodayButton({ selected, onSelect }: DayPick
 
     const footer = (
         <button
-            className="btn btn-dark btn-color full-width"
+            type="submit"
+            className="button--dark button--submit full-width"
             disabled={isSameMonth(today, month ?? nextMonth)}
             onClick={handleTodayClick}
         >

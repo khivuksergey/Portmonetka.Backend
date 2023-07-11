@@ -1,10 +1,9 @@
 ﻿import { useEffect, useState, useMemo, useRef, forwardRef, useImperativeHandle } from "react";
-import TransactionsTablePlaceholder from "../Placeholders/TransactionsTablePlaceholder";
-import { ICategory, ITransaction } from "../../../DataTypes";
-import useTransaction from "../../../Hooks/useTransaction";
-import useCategory from "../../../Hooks/useCategory";
-import UtcDateToLocalString from "../../../Utilities/UtcDateToLocalString";
-import { MdDelete, MdRestoreFromTrash } from "react-icons/md";
+import { TransactionsTablePlaceholder } from "../Placeholders";
+import { ICategory, ITransaction } from "../../../Common/DataTypes";
+import { useCategory, useTransaction } from "../../../Hooks";
+import { UtcDateToLocalString } from "../../../Utilities";
+import { IconDelete, IconRestore } from "../../../Common/Icons";
 
 import {
     CellValueChangedEvent,
@@ -36,6 +35,7 @@ interface ITransactionsData {
 
 export interface TransactionsTableRef {
     updateTransactions: () => Promise<boolean>;
+    getTransactionsCount: () => number;
 }
 
 const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, TransactionsTableProps> =
@@ -132,6 +132,10 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
                 }
 
                 return false;
+            },
+
+            getTransactionsCount(): number {
+                return transactions.length
             }
         }));
 
@@ -174,12 +178,12 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
 
             return (
                 !isDeleted ?
-                    <div className="btn-delete" onClick={handleToggle}>
-                        <MdDelete size={18} />
+                    <div className="button--delete-transaction" onClick={handleToggle}>
+                        <IconDelete size={18} />
                     </div>
                     :
-                    <div className="btn-restore" onClick={handleToggle}>
-                        <MdRestoreFromTrash size={18} />
+                    <div className="button--restore-transaction" onClick={handleToggle}>
+                        <IconRestore size={18} />
                     </div>
             );
         }
@@ -209,63 +213,66 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
                 floatingFilter: true,
                 filterParams: {
                     maxNumConditions: 1,
-                    filterOptions: ['contains', 'notContains', 'equals', 'notEqual'],
+                    filterOptions: ["contains", "notContains", "equals", "notEqual"],
                 }
             };
         }, []);
 
         const columnDefs: ColDef[] = useMemo(() => [
             {
-                field: 'amount',
-                cellDataType: 'number',
-                filter: 'agNumberColumnFilter',
+                field: "amount",
+                cellDataType: "number",
+                filter: "agNumberColumnFilter",
+                filterParams: {
+                    defaultFilterOption: "equals"
+                },
                 width: 150,
                 minWidth: 150,
-                cellEditor: 'agNumberCellEditor',
+                cellEditor: "agNumberCellEditor",
                 cellEditorParams: {
                     precision: 2
                 },
                 valueParser: params => !params.newValue ? params.oldValue : params.newValue
             },
             {
-                field: 'description',
-                cellDataType: 'text',
-                filter: 'agTextColumnFilter',
+                field: "description",
+                cellDataType: "text",
+                filter: "agTextColumnFilter",
                 width: 340,
-                cellEditor: 'agTextCellEditor',
+                cellEditor: "agTextCellEditor",
                 cellEditorParams: {
                     maxLength: 256
                 },
                 valueParser: params => !params.newValue ? params.oldValue : params.newValue
             },
             {
-                field: 'categoryName',
-                headerName: 'Category',
-                cellDataType: 'text',
-                filter: 'agTextColumnFilter',
-                cellEditor: 'agSelectCellEditor',
+                field: "categoryName",
+                headerName: "Category",
+                cellDataType: "text",
+                filter: "agTextColumnFilter",
+                cellEditor: "agSelectCellEditor",
                 cellEditorParams: {
                     values: categories?.map(category => category.name) || [],
                 }
             },
             {
-                field: 'date',
+                field: "date",
                 editable: false,
-                filter: 'agDateColumnFilter',
+                filter: "agDateColumnFilter",
                 filterParams: {
                     ...dateFilterParams,
-                    filterOptions: ['equals', 'lessThan', 'greaterThan', 'inRange'],
+                    filterOptions: ["equals", "lessThan", "greaterThan", "inRange"],
                     browserDatePicker: true,
                 } as IDateFilterParams,
                 minWidth: 105,
                 valueFormatter: ({ value }: ValueFormatterParams) => UtcDateToLocalString(value),
-                cellEditor: 'agDateCellEditor',
+                cellEditor: "agDateCellEditor",
             },
             {
-                field: 'isDeleted',
-                headerName: '',
+                field: "isDeleted",
+                headerName: "",
                 editable: false,
-                cellDataType: 'boolean',
+                cellDataType: "boolean",
                 cellRenderer: transactionDeletedCellRenderer,
                 cellRendererParams: (params: ICellRendererParams) => ({
                     value: params.value,
@@ -347,7 +354,7 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
                 {!transactionsLoaded ?
                     <TransactionsTablePlaceholder />
                     :
-                    <div className="transactions-table-container mb-4" ref={gridRef}>
+                    <div className="full-width mb-4" ref={gridRef}>
                         <AgGridReact<ITransactionsData>
                             className="ag-theme-alpine-dark ag-theme-portmonetka"
                             rowData={transactionsData}

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Form, Row, Col, Button } from "react-bootstrap";
-import { ICategory } from "../DataTypes";
+import { Form, Row, Col } from "react-bootstrap";
+import { ICategory } from "../Common/DataTypes";
 
 interface AddCategoryProps {
     onAddCategory: (category: ICategory) => Promise<void>
@@ -47,11 +47,14 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
                 </Col>
             </Row>
             <div className="d-grid">
-                <Button className="btn btn-dark btn-color"
+                <button
+                    type="submit"
+                    className="button--dark"
                     aria-label="Post new category"
-                    onClick={handleAddCategory}>
+                    onClick={handleAddCategory}
+                >
                     Add
-                </Button>
+                </button>
             </div>
         </div>
     )

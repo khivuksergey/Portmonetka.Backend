@@ -1,34 +1,53 @@
 import { useContext } from "react";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
-import { IGlobalBalance, ICurrencyBalance } from "../../DataTypes";
-import BalanceBubble from "./Components/BalanceBubble";
+import { IGlobalBalance, ICurrencyBalance } from "../../Common/DataTypes";
+import { BalanceBubble } from "./Components";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar, Pagination, Mousewheel } from "swiper/modules";
-import 'swiper/css';
-import 'swiper/css/scrollbar';
-import 'swiper/css/pagination';
+import "swiper/css";
+import "swiper/css/scrollbar";
+import "swiper/css/pagination";
 
 export default function Balance() {
     const globalBalanceContext = useContext(GlobalBalanceContext);
 
     let balances: ICurrencyBalance[] = [];
 
+    interface IFakeStats {
+        income: number
+        outcome: number
+        incomeTrend: number
+        outcomeTrend: number
+    }
+
+    const generateFakeStats = (): IFakeStats => {
+        return {
+            income: parseFloat((Math.random() * 20000).toFixed(0)),
+            outcome: -parseFloat((Math.random() * 10000).toFixed(0)),
+            incomeTrend: parseFloat(((Math.random() * 10) - 5).toFixed(1)),
+            outcomeTrend: parseFloat(((Math.random() * 10) - 5).toFixed(1))
+        }
+    }
+
     const calculate = () => {
         var _ = require("lodash");
         let result = _.groupBy(globalBalanceContext!.globalBalance, "currency");
 
         _.forEach(result,
-            (value: IGlobalBalance[], key: string) =>
+            (value: IGlobalBalance[], key: string) => {
+                const stats = generateFakeStats();
+
                 balances = [...balances,
                 {
                     currency: key,
                     sum: value.reduce((acc, cur) => acc + cur.amount, 0),
-                    income: parseFloat((Math.random() * 20000).toFixed(0)),
-                    outcome: -parseFloat((Math.random() * 20000).toFixed(0)),
-                    incomeTrend: parseFloat(((Math.random() * 10) - 5).toFixed(1)),
-                    outcomeTrend: parseFloat(((Math.random() * 10) - 5).toFixed(1))
+                    income: stats?.income ?? 0,
+                    outcome: stats?.outcome ?? 0,
+                    incomeTrend: stats?.incomeTrend ?? 0,
+                    outcomeTrend: stats?.outcomeTrend ?? 0,
                 }]
+            }
         );
     }
 
@@ -37,7 +56,6 @@ export default function Balance() {
     const swiperParams: any = {
         scrollbar: { hide: true },
         slidesPerView: "auto",
-        //spaceBetween: 20,
         mousewheel: true,
         modules: [Scrollbar, Mousewheel, Pagination]
     };

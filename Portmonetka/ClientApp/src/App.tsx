@@ -1,7 +1,7 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import AppRoutes from './AppRoutes';
-import Layout from './Pages/Layout';
-import './custom.css';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import AppRoutes from "./AppRoutes";
+import Layout from "./Pages/Layout";
+import "./custom.css";
 
 function App(): JSX.Element {
     return (

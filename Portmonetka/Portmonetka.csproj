@@ -41,18 +41,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\Common\Icons.ts" />
     <None Remove="ClientApp\src\Components\AddCategory.tsx" />
     <None Remove="ClientApp\src\Components\BalanceBubble.tsx" />
     <None Remove="ClientApp\src\Components\DayPickerWithTodayButton.tsx" />
+    <None Remove="ClientApp\src\Components\index.ts" />
     <None Remove="ClientApp\src\Components\Modal.tsx" />
     <None Remove="ClientApp\src\Components\ModalFooter.tsx" />
     <None Remove="ClientApp\src\Components\Popper.tsx" />
     <None Remove="ClientApp\src\DataTypes.ts" />
+    <None Remove="ClientApp\src\Hooks\index.ts" />
     <None Remove="ClientApp\src\Hooks\usePopper.ts" />
     <None Remove="ClientApp\src\Pages\Home\AddFirstWallet.tsx" />
     <None Remove="ClientApp\src\Pages\Home\BalancePlaceholder.tsx" />
+    <None Remove="ClientApp\src\Pages\Home\Components\index.ts" />
     <None Remove="ClientApp\src\Pages\Home\CustomDateComponent.tsx" />
     <None Remove="ClientApp\src\Pages\Home\ErrorAlert.tsx" />
+    <None Remove="ClientApp\src\Pages\Home\index.ts" />
+    <None Remove="ClientApp\src\Pages\Home\Modals\index.ts" />
+    <None Remove="ClientApp\src\Pages\Home\Placeholders\index.ts" />
     <None Remove="ClientApp\src\Pages\Home\Placeholders\LatestTransactionsPreviewPlaceholder.tsx" />
     <None Remove="ClientApp\src\Pages\Home\TransactionsTable.tsx" />
     <None Remove="ClientApp\src\Pages\Home\TransactionsTablePlaceholder.tsx" />
@@ -63,6 +70,7 @@
     <None Remove="ClientApp\src\Pages\PageUnderConstruction.tsx" />
     <None Remove="ClientApp\src\Pages\Sidebar.tsx" />
     <None Remove="ClientApp\src\Pages\Wallets\WalletsPage.tsx" />
+    <None Remove="ClientApp\src\Utilities\index.ts" />
     <None Remove="ClientApp\src\Utilities\MoneyToLocaleString.ts" />
     <None Remove="ClientApp\src\Utilities\UtcDateToLocalString.ts" />
     <None Remove="ClientApp\tsconfig.json" />
@@ -73,6 +81,7 @@
     <TypeScriptCompile Remove="ClientApp\src\Hooks\useCategory.ts" />
     <TypeScriptCompile Remove="ClientApp\src\Hooks\useTransaction.ts" />
     <TypeScriptCompile Remove="ClientApp\src\Hooks\useWallet.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\Pages\Categories\CategoriesPage.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\AddTransactionModal.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\AddWalletModal.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\Balance.tsx" />
@@ -80,7 +89,8 @@
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\LatestTransactionsPreview.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\Wallet.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\Pages\Home\WalletModal.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\Utilities\CurrencyToSignConverter.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\Pages\Transactions\TransactionsPage.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\Utilities\CurrencyToSign.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\walletsAnimation.tsx" />
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-﻿import { MdAdd } from "react-icons/md";
+﻿import { IconAdd } from "../../Common/Icons";
 
 interface IAddFirstWalletProps {
     onAddWallet: () => void
@@ -12,10 +12,11 @@ export default function AddFirstWallet({ onAddWallet } : IAddFirstWalletProps) {
             </h1>
 
             <button
-                className="add-wallet add-wallet--big mt-2"
+                type="button"
+                className="button--add-wallet button--add-wallet--big mt-2"
                 onClick={onAddWallet}
             >
-                <MdAdd />
+                <IconAdd />
             </button>
         </div>
     )

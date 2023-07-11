@@ -2,8 +2,6 @@
 
 export default function WalletsPage() {
     return (
-        <>
-            <PageUnderConstruction page="Wallets"/>
-        </>
+        <PageUnderConstruction page="Wallets" />
     );
 }

@@ -1,7 +1,6 @@
-import { IWallet, IWalletProps } from "../../../DataTypes";
-import Modal from "../../../Components/Modal";
-import ModalFooter from "../../../Components/ModalFooter";
-import WalletPropertiesForm from "../Components/WalletPropertiesForm";
+import { IWallet, IWalletProps } from "../../../Common/DataTypes";
+import { Modal, ModalFooter } from "../../../Components";
+import { WalletPropertiesForm } from "../Components";
 
 interface AddWalletModalProps {
     show: boolean

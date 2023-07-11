@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ITransaction } from "DataTypes";
+import { ITransaction } from "../Common/DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 

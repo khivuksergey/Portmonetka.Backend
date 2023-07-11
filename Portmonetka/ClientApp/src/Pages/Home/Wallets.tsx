@@ -1,6 +1,6 @@
-﻿import { IWallet } from "../../DataTypes";
-import Wallet from "./Components/Wallet";
-import { MdAdd } from "react-icons/md";
+﻿import { IWallet } from "../../Common/DataTypes";
+import { IconAdd } from "../../Common/Icons";
+import { Wallet } from "./Components";
 
 interface IWalletsProps {
     wallets: IWallet[]
@@ -15,10 +15,10 @@ export default function Wallets({wallets, onAddWallet, onChangeWallet, onDeleteW
             <div className="wallets-header">
                 <h3>Wallets</h3>
 
-                <button className="add-wallet"
+                <button type="button" className="button--add-wallet"
                     onClick={onAddWallet}
                 >
-                    <MdAdd fill="var(--placeholder-gray)" />
+                    <IconAdd fill="var(--placeholder-grey)" />
                 </button>
             </div>
 

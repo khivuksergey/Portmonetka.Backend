@@ -1,4 +1,4 @@
-﻿import { MdConstruction } from "react-icons/md";
+﻿import { IconUnderConstruction } from "../Common/Icons";
 
 interface PageUnderConstructionProps {
     page: string
@@ -9,14 +9,14 @@ export default function PageUnderConstruction({ page }: PageUnderConstructionPro
 
     return (
         <div className="d-flex flex-column align-items-center mt-5">
-            <MdConstruction
+            <IconUnderConstruction
                 size={128}
-                fill="var(--placeholder-gray)"
+                fill="var(--placeholder-grey)"
                 className="mb-4"
             />
             <h3
                 style={{
-                    color: "var(--placeholder-gray",
+                    color: "var(--placeholder-grey",
                     textAlign: "center"
                 }}
             >

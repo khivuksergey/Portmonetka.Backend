@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { IGlobalBalanceContext } from "../DataTypes";
+import { IGlobalBalanceContext } from "../Common/DataTypes";
 
 const GlobalBalanceContext = createContext<IGlobalBalanceContext | null>(null!);
 

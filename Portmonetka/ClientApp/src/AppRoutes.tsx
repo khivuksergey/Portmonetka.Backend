@@ -1,7 +1,7 @@
-import Home from './Pages/Home/Home';
-import CategoriesPage from './Pages/Categories/CategoriesPage';
-import TransactionsPage from './Pages/Transactions/TransactionsPage';
-import WalletsPage from './Pages/Wallets/WalletsPage';
+import Home from "./Pages/Home/Home";
+import CategoriesPage from "./Pages/Categories/CategoriesPage";
+import TransactionsPage from "./Pages/Transactions/TransactionsPage";
+import WalletsPage from "./Pages/Wallets/WalletsPage";
 
 const AppRoutes = [
     {
@@ -9,15 +9,15 @@ const AppRoutes = [
         element: <Home />
     },
     {
-        path: '/wallets',
+        path: "/wallets",
         element: < WalletsPage />
     },
     {
-        path: '/transactions',
+        path: "/transactions",
         element: < TransactionsPage />
     },
     {
-        path: '/categories',
+        path: "/categories",
         element: <CategoriesPage />
     }
 ];

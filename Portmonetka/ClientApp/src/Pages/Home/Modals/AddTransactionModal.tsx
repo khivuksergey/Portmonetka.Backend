@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Formik, FieldArray, FormikErrors } from "formik";
 import * as yup from "yup";
-import { ICategory, ITransaction, IWallet } from "../../../DataTypes";
-import Modal from "../../../Components/Modal";
-import ModalFooter from "../../../Components/ModalFooter";
-import Popper from "../../../Components/Popper";
-import AddCategory from "../../../Components/AddCategory";
-import DayPickerWithTodayButton from "../../../Components/DayPickerWithTodayButton";
-import useTransaction from "../../../Hooks/useTransaction";
-import useCategory from "../../../Hooks/useCategory";
-import usePopper from "../../../Hooks/usePopper";
-import { Form, Row, Col, InputGroup, Button } from "react-bootstrap";
+import { ICategory, ITransaction, IWallet } from "../../../Common/DataTypes";
+import { AddCategory, DayPickerWithTodayButton, Modal, ModalFooter, Popper } from "../../../Components";
+import { useCategory, useTransaction, usePopper } from "../../../Hooks";
+import { Form, Row, Col, InputGroup } from "react-bootstrap";
+import { IconRemoveRow, IconPlus, IconCalendar } from "../../../Common/Icons";
 import "react-day-picker/dist/style.css";
-
-import { BiPlus } from "react-icons/bi";
-import { GoCalendar } from "react-icons/go";
-import { MdPlaylistRemove } from "react-icons/md";
 
 interface IAddTransactionModalProps {
     show: boolean
@@ -107,11 +98,11 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
             setIsTransactionContainerVisible(window.innerWidth < 992);
         };
 
-        window.addEventListener('resize', handleResize);
+        window.addEventListener("resize", handleResize);
         handleResize();
 
         return () => {
-            window.removeEventListener('resize', handleResize);
+            window.removeEventListener("resize", handleResize);
         };
     }, []);
 
@@ -237,9 +228,9 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                             <InputGroup className="mb-3">
                                                                 {
                                                                     values.transactions.length > 1 ?
-                                                                        (<Button className="btn-dark button--delete" onClick={() => handleDeleteRow(remove, i)}>
-                                                                            <MdPlaylistRemove size={20} fill="darkgrey" />
-                                                                        </Button>)
+                                                                        (<button type="button" className="button--dark button--delete" onClick={() => handleDeleteRow(remove, i)}>
+                                                                            <IconRemoveRow size={20} fill="darkgrey" />
+                                                                        </button>)
                                                                         : null
                                                                 }
                                                                 <Form.Control
@@ -272,12 +263,12 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                         </Col>
                                                         <Col sm={4} lg={3}>
                                                             <InputGroup className="mb-3" >
-                                                                <Button className="btn-dark" onClick={(e) => handleCategoryButtonClick(e, i)}>
-                                                                    <BiPlus fill="darkgrey" />
-                                                                </Button>
+                                                                <button type="button" className="button--dark" onClick={(e) => handleCategoryButtonClick(e, i)}>
+                                                                    <IconPlus fill="darkgrey" />
+                                                                </button>
                                                                 <Form.Select
                                                                     name={`transactions[${i}.categoryId]`}
-                                                                    value={transaction.categoryId || ''}
+                                                                    value={transaction.categoryId || ""}
                                                                     onChange={(e) => handleCategoryChange(i, parseInt(e.target.value), setFieldValue, values.transactions)}
                                                                     isInvalid={touched.transactions?.[i]?.categoryId &&
                                                                         !!(errors.transactions?.[i] as FormikErrors<IAddTransaction>)?.categoryId}
@@ -307,10 +298,11 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                                         !!(errors.transactions?.[i] as FormikErrors<IAddTransaction>)?.date}
                                                                     className="form-control--dark"
                                                                 />
-                                                                <Button key={i} className="btn-dark"
-                                                                    onClick={(e) => handleDateButtonClick(e, i)}>
-                                                                    <GoCalendar fill="darkgrey" />
-                                                                </Button>
+                                                                <button key={i} type="button" className="button--dark"
+                                                                    onClick={(e) => handleDateButtonClick(e, i)}
+                                                                >
+                                                                    <IconCalendar fill="darkgrey" />
+                                                                </button>
                                                             </InputGroup>
                                                         </Col>
                                                     </Row>
@@ -320,9 +312,9 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                     }
 
                                     <div className="d-grid" >
-                                        <Button className="button-add-transaction-row--dark hyphenate" onClick={() => handleAddRow(push, values)}>
+                                        <button type="button" className="button-add-transaction-row hyphenate" onClick={() => handleAddRow(push, values)}>
                                             Add transaction
-                                        </Button>
+                                        </button>
                                     </div >
 
                                     <Popper

@@ -1,5 +1,4 @@
 import { MouseEventHandler } from "react";
-import { Button } from "react-bootstrap";
 
 interface ModalFooterProps {
     children?: JSX.Element
@@ -22,16 +21,16 @@ export default function ModalFooter(
             {children ?? null}
 
             {(hasReset ?? true) ?
-                <Button type="reset" className="btn-dark" onClick={onReset}>
+                <button type="reset" className="button--dark" onClick={onReset}>
                     {resetText ?? "Cancel"}
-                </Button>
+                </button>
                 :
                 null
             }
 
-            <Button type="submit" className="btn-dark">
+            <button type="submit" className="button--dark">
                 {submitText ?? "Save"}
-            </Button>
+            </button>
         </div>
     )
 }

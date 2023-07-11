@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IWallet } from "../DataTypes";
+import { IWallet } from "../Common/DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 
@@ -96,7 +96,7 @@ export default function useWallet() {
     }
 
     const handleDeleteWallet = async (walletId: number, force?: boolean): Promise<boolean> => {
-        const url = `api/wallet/${walletId}` + (!!force ? `?force=${force}` : '');
+        const url = `api/wallet/${walletId}` + (!!force ? `?force=${force}` : "");
         
         setError("");
         setLoading(true);

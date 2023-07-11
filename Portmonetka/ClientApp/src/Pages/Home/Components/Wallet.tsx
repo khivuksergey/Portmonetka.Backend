@@ -1,12 +1,10 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import GlobalBalanceContext from "../../../Context/GlobalBalanceContext";
-import { IWallet, IGlobalBalance } from "../../../DataTypes";
+import { IWallet, IGlobalBalance } from "../../../Common/DataTypes";
 import LatestTransactionsPreview, { LatestTransactionsPreviewRef } from "./LatestTransactionsPreview";
-import AddTransactionModal from "../Modals/AddTransactionModal";
-import WalletModal from "../Modals/WalletModal";
-import CurrencyToSign from "../../../Utilities/CurrencyToSignConverter";
-import MoneyToLocaleString from "../../../Utilities/MoneyToLocaleString";
-import { IoIosCash } from "react-icons/io";
+import { AddTransactionModal, WalletModal } from "../Modals";
+import { CurrencyToSign, MoneyToLocaleString } from "../../../Utilities";
+import { IconCash } from "../../../Common/Icons";
 
 interface WalletProps {
     wallet: IWallet
@@ -73,21 +71,22 @@ export default function Wallet({ wallet, onDeleteWallet, onChangeWallet }: Walle
         <>
             <div className="wallet" onClick={handleWalletModalShow}>
                 <div className="wallet-content">
-                        <div className="wallet-header">
-                            <div className="wallet-title min-width-0">
-                                <h4 className="text-nowrap-overflow-ellipsis">{wallet.name}</h4>
-                            </div>
-                            <div className="wallet-title wallet-balance">
-                                <h4>
-                                    {MoneyToLocaleString(balance)}&nbsp;{CurrencyToSign(wallet.currency)}
-                                </h4>
-                            </div>
+                    <div className="wallet__header">
+                        <div className="min-width-0">
+                            <h4 className="text-nowrap-overflow-ellipsis">{wallet.name}</h4>
                         </div>
+                        <div className="wallet__balance">
+                            <h4>
+                                {MoneyToLocaleString(balance)}&nbsp;{CurrencyToSign(wallet.currency)}
+                            </h4>
+                        </div>
+                    </div>
 
-                    <div className="add-transactions">
-                        <button className="btn add-items-button" type="button" key={"button-" + wallet.id}
-                            onClick={(e) => handleTransactionsModalShow(e)}>
-                            <IoIosCash />
+                    <div style={{ display: "grid", width: "100%" }}>
+                        <button type="button" className="add-transactions__button" key={"button-" + wallet.id}
+                            onClick={(e) => handleTransactionsModalShow(e)}
+                        >
+                            <IconCash />
                         </button>
                     </div>
 

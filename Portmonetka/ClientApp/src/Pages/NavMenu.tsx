@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from "react";
-import { Offcanvas } from 'react-bootstrap';
-import { GiTwoCoins } from 'react-icons/gi';
+import { Offcanvas } from "react-bootstrap";
+import { IconTwoCoins } from "../Common/Icons";
 import Sidebar from "./Sidebar";
 
 export default function NavMenu() {
@@ -73,15 +73,13 @@ export default function NavMenu() {
                             backgroundColor: "#101010"
                         }}
                     >
-                        <div className="sidebar__logo">
-                            <div className="flexbox logo prevent-select" onClick={handleOffcanvasOpen}>
-                                <button className="logo__button" >
-                                    <GiTwoCoins size={40} color={"var(--primary)"} />
-                                </button>
+                        <div className="logo prevent-select" onClick={handleOffcanvasOpen}>
+                            <button type="button" className="logo__button">
+                                <IconTwoCoins size={40} color={"var(--primary)"} />
+                            </button>
 
-                                <div className="logo__text">
-                                    Portmonetka
-                                </div>
+                            <div className="logo__text">
+                                Portmonetka
                             </div>
                         </div>
                     </div>

@@ -1,21 +1,17 @@
 import { useState, useEffect } from "react";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
-import useWallet from "../../Hooks/useWallet";
-import { IWallet, IGlobalBalance } from "../../DataTypes";
-import Balance from "./Balance";
-import AddWalletModal from "./Modals/AddWalletModal";
-import BalancePlaceholder from "./Placeholders/BalancePlaceholder";
-import WalletsPlaceholder from "./Placeholders/WalletsPlaceholder";
-import ErrorAlert from "../../Components/ErrorAlert";
-import AddFirstWallet from "./AddFirstWallet";
-import WalletsAnimation from "./WalletsAnimation";
-import Wallets from "./Wallets";
+import { useWallet } from "../../Hooks";
+import { IWallet, IGlobalBalance } from "../../Common/DataTypes";
+import { BalancePlaceholder, WalletsPlaceholder } from "./Placeholders";
+import { AddFirstWallet, Balance, Wallets, WalletsAnimation } from "./index";
+import { AddWalletModal } from "./Modals";
+import { ErrorAlert } from "../../Components";
 
 export default function Home() {
 
     // #region Initializations
     const {
-        wallets/*: realWallets*/,
+        wallets,
         refreshWallets,
         handleDeleteWallet,
         handleAddWallet,
@@ -25,9 +21,6 @@ export default function Home() {
     } = useWallet();
 
     const [globalBalance, setGlobalBalance] = useState<IGlobalBalance[]>([]);
-
-    //for testing
-    //const [wallets, setWallets] = useState<IWallet[]>();
 
     // #endregion
 

@@ -1,13 +1,9 @@
 import { useRef, useState } from "react";
-import { IWallet, IWalletProps } from "../../../DataTypes";
-import TransactionsTable, { TransactionsTableRef } from "../Components/TransactionsTable";
-import WalletPropertiesForm from "../Components/WalletPropertiesForm";
-import ModalFooter from "../../../Components/ModalFooter";
-import CurrencyToSign from "../../../Utilities/CurrencyToSignConverter";
-import MoneyToLocaleString from "../../../Utilities/MoneyToLocaleString";
-import Modal from "../../../Components/Modal";
-import { Button } from "react-bootstrap";
-import { MdDelete } from "react-icons/md";
+import { IWallet, IWalletProps } from "../../../Common/DataTypes";
+import { TransactionsTable, TransactionsTableRef, WalletPropertiesForm } from "../Components";
+import { Modal, ModalFooter } from "../../../Components";
+import { CurrencyToSign, MoneyToLocaleString } from "../../../Utilities";
+import { IconDelete } from "../../../Common/Icons";
 
 interface WalletModalProps {
     wallet: IWallet
@@ -30,6 +26,12 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
 
     const getTransactionsSum = (sum: number) => {
         setTransactionsSum(sum);
+    }
+
+    const currentWallet = {
+        name: wallet.name,
+        balance: wallet.initialAmount + transactionsSum,
+        currency: CurrencyToSign(wallet.currency)
     }
 
     const walletsAreSame = (w: IWallet, p: IWalletProps): boolean => {
@@ -60,16 +62,17 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
     }
 
     const handleDeleteWallet = async () => {
+        if (transactionsTableRef.current) {
+            const count = transactionsTableRef.current.getTransactionsCount();
+            if (count === 0 && !window.confirm(`Are you sure you want to delete ${wallet.name} wallet?`)) {
+                return;
+            }
+        }
+
         const deleted = await onDeleteWallet(wallet.id!);
         if (deleted) {
             onClose();
-        }   
-    }
-
-    const currentWallet = {
-        name: wallet.name,
-        balance: wallet.initialAmount + transactionsSum,
-        currency: CurrencyToSign(wallet.currency)
+        }
     }
 
     const modalTitle =
@@ -99,13 +102,11 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                 />
 
                 <ModalFooter onReset={() => { onClose() }}>
-                    <Button className="btn-dark button--delete" style={{ marginRight: "auto" }} onClick={handleDeleteWallet}>
-                        <MdDelete size={20} />
-                    </Button>
+                    <button type="button" className="button--dark button--delete" style={{ marginRight: "auto" }} onClick={handleDeleteWallet}>
+                        <IconDelete size={20} />
+                    </button>
                 </ModalFooter>
             </WalletPropertiesForm>
-
-
         </Modal>
     )
 }

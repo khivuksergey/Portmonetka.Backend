@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ICategory } from "../DataTypes";
+import { ICategory } from "../Common/DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _ from "lodash";
 import { mapKeys } from "lodash";
@@ -99,7 +99,7 @@ export default function useCategory() {
     }
 
     const handleDeleteCategory = async (id: number, force?: boolean): Promise<boolean> => {
-        const url = `api/category/${id}` + (!!force ? `?force=${force}` : '');
+        const url = `api/category/${id}` + (!!force ? `?force=${force}` : "");
             setError("");
             setLoading(true);
 

@@ -1,7 +1,6 @@
-﻿import { ICurrencyBalance } from "../../../DataTypes";
-import CurrencyToSign from "../../../Utilities/CurrencyToSignConverter";
-import MoneyToLocaleString from "../../../Utilities/MoneyToLocaleString";
-import { MdTrendingUp, MdTrendingDown, MdTrendingFlat } from "react-icons/md";
+﻿import { ICurrencyBalance } from "../../../Common/DataTypes";
+import { CurrencyToSign, MoneyToLocaleString } from "../../../Utilities";
+import { IconTrendingUp, IconTrendingDown, IconTrendingFlat } from "../../../Common/Icons";
 
 
 interface BalanceBubbleProps {
@@ -11,87 +10,85 @@ interface BalanceBubbleProps {
 export default function BalanceBubble({ balance }: BalanceBubbleProps) {
     return (
         <div className="balance prevent-select">
-            <div className="balance-content">
-                <div className="currency-sign-container" key={balance.currency}>
-                    <img
-                        src="./superellipse-64x64.svg"
-                        width={48}
-                        alt="Superellipse"
-                        className="currencySuperEllispe" />
+            <div className="balance__currency-sign" key={balance.currency}>
+                <img
+                    src="./superellipse-64x64.svg"
+                    width={48}
+                    alt="Superellipse"
+                    className="balance__currency-sign__icon" />
 
-                    <h3 className="text-overlay">
-                        {CurrencyToSign(balance.currency)}
-                    </h3>
-                </div>
+                <h3 className="balance__currency-sign__text">
+                    {CurrencyToSign(balance.currency)}
+                </h3>
+            </div>
 
-                <div className="balance-info">
-                    <div className="balance-progress">
-                        <h6>+{balance.income}</h6>
+            <div className="balance__info">
+                <div className="balance__info__stats">
+                    <h6>+{balance.income}</h6>
 
-                        <div className="balance-trend">
-                            <h6>
-                                <span style={{ whiteSpace: "nowrap" }}>
-                                    {
-                                        balance.incomeTrend > 0 ?
-                                            `+${balance.incomeTrend}`
-                                            :
-                                            balance.incomeTrend < 0 ?
-                                                `–${Math.abs(balance.incomeTrend)}`
-                                                :
-                                                0
-                                    }%
-                                </span>
-                            </h6>
-                            <span style={{ whiteSpace: "nowrap" }}>
+                    <div className="balance__info__stats__trend">
+                        <h6>
+                            <span>
                                 {
                                     balance.incomeTrend > 0 ?
-                                        <MdTrendingUp color="lightgreen" />
+                                        `+${balance.incomeTrend}`
                                         :
                                         balance.incomeTrend < 0 ?
-                                            <MdTrendingDown color="red" />
+                                            `–${Math.abs(balance.incomeTrend)}`
                                             :
-                                            <MdTrendingFlat color="grey" />
-                                }
+                                            0
+                                }%
                             </span>
-                        </div>
+                        </h6>
+                        <span>
+                            {
+                                balance.incomeTrend > 0 ?
+                                    <IconTrendingUp color="var(--trend-green)" />
+                                    :
+                                    balance.incomeTrend < 0 ?
+                                        <IconTrendingDown color="var(--trend-red)" />
+                                        :
+                                        <IconTrendingFlat color="var(--trend-grey)" />
+                            }
+                        </span>
                     </div>
+                </div>
 
-                    <h3 key={balance.currency} style={{ alignSelf: "flex-end" }}>
-                        {MoneyToLocaleString(balance.sum)}
-                    </h3>
+                <h3 key={balance.currency} style={{ alignSelf: "flex-end" }}>
+                    {MoneyToLocaleString(balance.sum)}
+                </h3>
 
-                    <div className="balance-progress">
-                        <h6>{balance.outcome}</h6>
+                <div className="balance__info__stats">
+                    <h6>{balance.outcome}</h6>
 
-                        <div className="balance-trend">
-                            <h6>
-                                <span style={{ whiteSpace: "nowrap" }}>
-                                    {
-                                        balance.outcomeTrend > 0 ?
-                                            `+${balance.outcomeTrend}`
-                                            :
-                                            balance.outcomeTrend < 0 ?
-                                                `–${Math.abs(balance.outcomeTrend)}`
-                                                :
-                                                0
-                                    }%
-                                </span>
-                            </h6>
-                            <span style={{ whiteSpace: "nowrap" }}>
+                    <div className="balance__info__stats__trend">
+                        <h6>
+                            <span>
                                 {
                                     balance.outcomeTrend > 0 ?
-                                        <MdTrendingUp color="red" />
+                                        `+${balance.outcomeTrend}`
                                         :
                                         balance.outcomeTrend < 0 ?
-                                            <MdTrendingDown color="lightgreen" />
+                                            `–${Math.abs(balance.outcomeTrend)}`
                                             :
-                                            <MdTrendingFlat color="grey" />
-                                }
+                                            0
+                                }%
                             </span>
-                        </div>
+                        </h6>
+                        <span>
+                            {
+                                balance.outcomeTrend > 0 ?
+                                    <IconTrendingUp color="var(--trend-red)" />
+                                    :
+                                    balance.outcomeTrend < 0 ?
+                                        <IconTrendingDown color="var(--trend-green)" />
+                                        :
+                                        <IconTrendingFlat color="var(--trend-grey)" />
+                            }
+                        </span>
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     )
 }
