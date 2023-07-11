@@ -1,85 +1,128 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
-import useWallet from "../../Hooks/useWallet";
-import { IWallet, IGlobalBalance } from "../../DataTypes";
-import Balance from "./Balance";
-import Wallet from "./Wallet";
-import AddWalletModal from "./AddWalletModal";
-import { Container } from "react-bootstrap";
-import { FaWallet } from "react-icons/fa";
+import { useWallet } from "../../Hooks";
+import { IWallet, IGlobalBalance } from "../../Common/DataTypes";
+import { BalancePlaceholder, WalletsPlaceholder } from "./Placeholders";
+import { AddFirstWallet, Balance, Wallets, WalletsAnimation } from "./index";
+import { AddWalletModal } from "./Modals";
+import { ErrorAlert } from "../../Components";
 
 export default function Home() {
-    const { wallets, handleGetWallets, handleDeleteWallet, handleAddWallet, handleChangeWallet } = useWallet();
-    const [showAddWalletModal, setShowAddWalletModal] = useState(false);
+
+    // #region Initializations
+    const {
+        wallets,
+        refreshWallets,
+        handleDeleteWallet,
+        handleAddWallet,
+        handleChangeWallet,
+        dataFetched: walletsLoaded,
+        error: walletsError
+    } = useWallet();
+
     const [globalBalance, setGlobalBalance] = useState<IGlobalBalance[]>([]);
 
-    const handleAddWalletModalClose = () => setShowAddWalletModal(false);
-    const handleAddWalletModalShow = () => setShowAddWalletModal(true);
+    // #endregion
 
-    const onDeleteWallet = async (id: number, force: boolean) => {
-        handleDeleteWallet(id, force);
-        setGlobalBalance((prev: any[]) => {
-            console.log(prev.filter(entry => entry.id !== id));
-            return prev.filter(entry => entry.id !== id);
-        });
+    // #region UI functions
+
+    const [showAddWalletModal, setShowAddWalletModal] = useState(false);
+
+    const [showError, setShowError] = useState(false);
+
+    useEffect(() => {
+        setShowError(!!walletsError && walletsError !== "Component unmounted");
+    }, [walletsError])
+
+    useEffect(() => {
+        if (walletsLoaded) {
+            WalletsAnimation();
+        }
+    }, [walletsLoaded])
+
+    const handleAddWalletModalClose = () => {
+        setShowAddWalletModal(false);
     }
+
+    const handleAddWalletModalShow = () => {
+        setShowAddWalletModal(true);
+    }
+
+    // #endregion
+
+    // #region Data change handlers
 
     const onAddWallet = async (wallet: IWallet) => {
-        handleAddWallet(wallet);
-    }
-
-    const onGetWallets = async () => {
-        handleGetWallets();
+        const walletAdded = handleAddWallet(wallet);
+        walletAdded.then((success) => {
+            if (success)
+                refreshWallets();
+        })
     }
 
     const onChangeWallet = async (wallet: IWallet) => {
-        handleChangeWallet(wallet);
+        const walletChanged = handleChangeWallet(wallet);
+        walletChanged.then((success) => {
+            if (success)
+                refreshWallets();
+        })
     }
+
+    const onDeleteWallet = async (id: number, force?: boolean): Promise<boolean> => {
+        try {
+            const success = await handleDeleteWallet(id, force);
+
+            if (success) {
+                refreshWallets();
+
+                setGlobalBalance((prev: any[]) => {
+                    return prev.filter(entry => entry.id !== id);
+                });
+            }
+
+            return success;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
+    // #endregion
 
     return (
         <GlobalBalanceContext.Provider value={{ globalBalance, setGlobalBalance }}>
+            {!walletsLoaded ?
+                <>
+                    <BalancePlaceholder />
+                    <WalletsPlaceholder />
+                </>
+                :
+                <>
+                    <ErrorAlert showError={showError} onClose={() => setShowError(false)} error={walletsError} />
 
-            <Balance />
+                    {wallets && (wallets.length > 1) ?
+                        <>
+                            <Balance />
 
-            <section className="wallets mt-4">
-                <Container>
-                    {
-                        wallets && wallets.length > 0 ?
-                            wallets.map((wallet) => {
-                                return <Wallet
-                                    key={wallet.id}
-                                    wallet={wallet}
-                                    onGetWallets={onGetWallets}
-                                    onDeleteWallet={onDeleteWallet}
-                                    onChangeWallet={onChangeWallet} />
-                            })                    
-                            : null
+                            <Wallets
+                                wallets={wallets}
+                                onAddWallet={handleAddWalletModalShow}
+                                onDeleteWallet={onDeleteWallet}
+                                onChangeWallet={onChangeWallet}
+                            />
+                        </>
+                        :
+                        <AddFirstWallet onAddWallet={handleAddWalletModalShow}/>
                     }
-
-                </Container>
-
-            </section>
-
-            <div className="container d-grid my-4">
-                <button className="btn btn-dark add-wallet"
-                    onClick={() => handleAddWalletModalShow()}>
-                    {
-                        wallets.length === 0 ?
-                            <h1><FaWallet /> Add new wallet </h1>
-                            : <FaWallet />
-                    }
-
-                </button>
-            </div>
-
-            {showAddWalletModal ?
-                <AddWalletModal
-                    show={showAddWalletModal}
-                    onClose={handleAddWalletModalClose}
-                    onAddWallet={onAddWallet}
-                />
-                : null
+                </>
             }
+
+            <AddWalletModal
+                show={showAddWalletModal}
+                onClose={handleAddWalletModalClose}
+                onAddWallet={onAddWallet}
+            />
+
         </GlobalBalanceContext.Provider>
     )
 }

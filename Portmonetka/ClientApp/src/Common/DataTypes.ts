@@ -34,7 +34,23 @@ export interface IGlobalBalance {
     amount: number
 }
 
+export interface ICurrencyBalance {
+    currency: string
+    sum: number
+    income: number
+    outcome: number
+    incomeTrend: number
+    outcomeTrend: number
+}
+
 export interface IGlobalBalanceContext {
     globalBalance: IGlobalBalance[]
     setGlobalBalance: any
+}
+
+export interface IWalletProps {
+    name: string,
+    currency: string,
+    initialAmount: string,
+    iconFileName?: string
 }

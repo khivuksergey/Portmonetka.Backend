@@ -17,6 +17,7 @@ public partial class Transaction : Auditable
     [Required(ErrorMessage = "Date is required")]
     public DateTimeOffset Date { get; set; }
 
+    [Required(ErrorMessage = "Category is required")]
     public int? CategoryId { get; set; }
 
     public int? WalletId { get; set; }

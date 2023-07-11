@@ -1,6 +1,7 @@
-import Home from './Pages/Home/Home';
-import About from './Pages/About/About';
-import Contact from './Pages/Contact/Contact';
+import Home from "./Pages/Home/Home";
+import CategoriesPage from "./Pages/Categories/CategoriesPage";
+import TransactionsPage from "./Pages/Transactions/TransactionsPage";
+import WalletsPage from "./Pages/Wallets/WalletsPage";
 
 const AppRoutes = [
     {
@@ -8,12 +9,16 @@ const AppRoutes = [
         element: <Home />
     },
     {
-        path: '/about',
-        element: < About />
+        path: "/wallets",
+        element: < WalletsPage />
     },
     {
-        path: '/contact',
-        element: <Contact />
+        path: "/transactions",
+        element: < TransactionsPage />
+    },
+    {
+        path: "/categories",
+        element: <CategoriesPage />
     }
 ];
 

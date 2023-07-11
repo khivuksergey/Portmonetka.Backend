@@ -1,11 +1,12 @@
 interface PopperProps {
     open: boolean
+    setOpen: any
     popper: any
     setPopperElement: any
     children: React.ReactNode
 }
 
-export default function Popper({ open, popper, setPopperElement, children }: PopperProps) {
+export default function Popper({ open, setOpen, popper, setPopperElement, children }: PopperProps) {
     return (
         open ? (
             <div

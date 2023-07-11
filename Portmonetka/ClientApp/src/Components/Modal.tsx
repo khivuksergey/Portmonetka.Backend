@@ -4,15 +4,24 @@ interface ModalProps {
     title: React.ReactNode
     size?: "sm" | "lg" | "xl" | undefined
     show: boolean
+    backdrop?: boolean | "static" | undefined
+    fullscreen?: true | string
     onClose: () => void
     children: React.ReactNode
     contentClassName: string
 }
 
-function Modal({ title, size, show, onClose, children, contentClassName }: ModalProps) {
+function Modal({ title, size, show, fullscreen, backdrop, onClose, children, contentClassName }: ModalProps) {
     return (
-        <BModal show={show} onHide={onClose} contentClassName={contentClassName} size={size} backdrop="static" /*fullscreen="md-down" centered*/>
-            <BModal.Header /*closeButton*/>
+        <BModal
+            show={show}
+            onHide={onClose}
+            contentClassName={contentClassName}
+            fullscreen={fullscreen}
+            backdrop={backdrop ?? true}
+            size={size}
+        >
+            <BModal.Header>
                 <BModal.Title>
                     {title}
                 </BModal.Title>
