@@ -23,12 +23,6 @@ This is a web application built using ASP.NET Core as the backend framework and 
 * Display the total balance across all wallets, grouped by currency.
 * Show statistics for each currency, including absolute income and outcome amounts.
 * Present trends compared to the previous time period (feature in development).
-  
-4. **Custom Hooks and Utilities**
-
-* Encapsulate data operations and UI elements using custom hooks for improved convenience.
-* Handle data retrieval, posting, and deletion with error messages and status indicators.
-* Utilize date and currency utilities for streamlined operations.
 
 ### Tech Stack
 
@@ -43,9 +37,11 @@ This is a web application built using ASP.NET Core as the backend framework and 
 
 
 ### Code Details
-The project follows good coding practices, adhering to SOLID principles. The codebase consists of various components, each with its own specific responsibilities to promote reusability. Custom hooks are implemented to simplify data handling and improve user experience during data transfers, displaying loading placeholders while fetching data.
 
-Additional utilities are included to facilitate working with dates and currencies efficiently. These utilities aid in tasks such as calculating statistics and formatting data appropriately.
+The project follows good coding practices, adhering to SOLID principles.
+* Encapsulate data operations and UI elements, each with its own specific responsibilities, to promote reusability and improved convenience.
+* Handle data retrieval, posting, and deletion with error messages and status indicators to improve user experience during data transfers, displaying loading placeholders while fetching data.
+* Utilize date and currency utilities for streamlined operations. These utilities aid in tasks such as calculating statistics and formatting data appropriately.
 
 ### Future Plans
 The project has a roadmap for future enhancements and improvements:
