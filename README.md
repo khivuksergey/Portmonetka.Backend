@@ -60,7 +60,7 @@ The project has a roadmap for future enhancements and improvements:
 
 To get started with the application, please follow the instructions below:
 
-1. Clone the repository: git clone <repository-url>
+1. Clone the repository: `git clone https://github.com/khivuksergey/Portmonetka`
 2. Install the required dependencies for the frontend and backend applications.
 3. Set up the database using Entity Framework Core migrations.
 4. Run the backend server.
