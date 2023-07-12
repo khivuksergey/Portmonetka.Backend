@@ -3,7 +3,7 @@ import GlobalBalanceContext from "../../Context/GlobalBalanceContext";
 import { useWallet } from "../../Hooks";
 import { IWallet, IGlobalBalance } from "../../Common/DataTypes";
 import { BalancePlaceholder, WalletsPlaceholder } from "./Placeholders";
-import { AddFirstWallet, Balance, Wallets, WalletsAnimation } from "./index";
+import { AddFirstWallet, Balance, Wallets, WalletsAnimation } from "./";
 import { AddWalletModal } from "./Modals";
 import { ErrorAlert } from "../../Components";
 

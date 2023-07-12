@@ -1,7 +1,7 @@
 ﻿import AddFirstWallet from "./AddFirstWallet";
 import Balance from "./Balance";
 import Wallets from "./Wallets";
-import WalletsAnimation from "./WalletsAnimation";
+import WalletsAnimation from "./walletsAnimation";
 
 export {
     AddFirstWallet,
