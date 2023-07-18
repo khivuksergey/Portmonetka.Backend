@@ -1,0 +1,153 @@
+﻿*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+.ag-theme-portmonetka {
+    --ag-header-background-color: var(--grey-1);
+    --ag-odd-row-background-color: var(--grey-2);
+    --ag-row-hover-color: var(--grey-3);
+    --ag-border-color: var(--grey-6);
+    --ag-odd-row-background-color: transparent;
+    --ag-input-focus-border-color: transparent;
+    --ag-input-focus-box-shadow: none;
+    --ag-range-selection-border-color: transparent;
+    --ag-alpine-active-color: var(--primary);
+    --ag-background-color: var(--grey-1);
+    --ag-control-panel-background-color: var(--grey-2);
+    --ag-data-color: var(--text-color);
+    --ag-selected-row-background-color: var(--grey-4);
+    --ag-border-radius: 5px;
+    --ag-borders-input: 1px solid var(--grey-2);
+    --ag-widget-vertical-spacing: 1rem;
+    --ag-list-item-height: 2rem;
+}
+
+[class*=ag-theme-] {
+    -webkit-font-smoothing: antialiased;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.ag-root-wrapper {
+    border: none;
+}
+
+input[class^=ag-],
+input[class^=ag-][type=number],
+input[class^=ag-][type=text],
+input[class^=ag-][type=date] {
+    background-color: var(--grey-2);
+    border: 1px solid var(--grey-2);
+    transition: background-color 0.2s ease-out;
+}
+
+    input[class^=ag-]:hover,
+    input[class^=ag-]:focus-visible {
+        background-color: var(--grey-0);
+        border: 1px solid var(--grey-3);
+    }
+
+.ag-theme-alpine-dark .ag-ltr input[class^=ag-][type=text],
+.ag-theme-alpine-dark .ag-ltr input[class^=ag-][type=number],
+.ag-theme-alpine-dark .ag-ltr input[class^=ag-][type=date] {
+    min-height: 2rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.ag-header {
+    border: none;
+}
+
+.ag-header-cell, .ag-header-group-cell {
+    padding: 0 0.75rem;
+}
+
+    .ag-header-cell[col-id="isDeleted"],
+    .ag-cell[col-id="isDeleted"] {
+        padding: 0;
+    }
+
+.ag-theme-alpine-dark .ag-header-row {
+    font-weight: normal;
+    color: var(--text-color);
+}
+
+.ag-menu {
+    border: none;
+    box-shadow: none;
+    padding: 1rem;
+}
+
+.ag-theme-alpine-dark .ag-menu {
+    background-color: var(--grey-3);
+}
+
+.ag-icon {
+    color: darkgrey;
+}
+
+.ag-icon-small-down::before {
+    margin: 0 0.5rem;
+}
+
+.ag-simple-filter-body-wrapper {
+    padding: 0;
+    overflow-y: visible;
+}
+
+.ag-picker-field-wrapper {
+    border: none;
+}
+
+    .ag-picker-field-wrapper:focus {
+        box-shadow: var(--focus-box-shadow);
+    }
+
+.ag-select .ag-picker-field-wrapper {
+    background-color: var(--grey-0);
+}
+
+.ag-select .ag-picker-field-display {
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+}
+
+.ag-filter-apply-panel {
+    border: none;
+    padding: 0;
+    display: flex;
+    gap: 1rem;
+}
+
+    .ag-filter-apply-panel > button {
+        width: 50%;
+    }
+
+.ag-theme-alpine-dark .ag-standard-button {
+    -moz-appearance: none;
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+    background: var(--grey-1);
+    color: var(--text-color);
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.15s ease-in-out;
+}
+
+    .ag-theme-alpine-dark .ag-standard-button:hover {
+        background: var(--grey-3);
+        color: var(--text-color-accent);
+    }
+
+    .ag-theme-alpine-dark .ag-standard-button[type=submit]:hover {
+        background: var(--primary);
+        color: var(--grey-1);
+    }
+
+.ag-overlay-no-rows-center {
+    align-self: flex-end;
+}
