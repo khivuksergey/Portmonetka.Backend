@@ -14,7 +14,7 @@ const context = [
 module.exports = function (app) {
     const appProxy = createProxyMiddleware(context, {
         //target: target,
-        target: "https://localhost:7195",
+        target: "https://localhost:7208",//API Gateway
         secure: false,
         headers: {
             Connection: "Keep-Alive"

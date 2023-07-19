@@ -1,0 +1,129 @@
+{
+  "Routes": [
+    // Wallet API
+    {
+      "UpstreamPathTemplate": "/api/wallet",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7195
+        }
+      ],
+      "DownstreamPathTemplate": "/api/wallet"
+    },
+    {
+      "UpstreamPathTemplate": "/api/wallet/{id}",
+      "UpstreamHttpMethod": [ "Get", "Delete" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7195
+        }
+      ],
+      "DownstreamPathTemplate": "/api/wallet/{id}"
+    },
+
+    // Category API
+    {
+      "UpstreamPathTemplate": "/api/category",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7195
+        }
+      ],
+      "DownstreamPathTemplate": "/api/category"
+    },
+    {
+      "UpstreamPathTemplate": "/api/category/{id}",
+      "UpstreamHttpMethod": [ "Get", "Delete" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7195
+        }
+      ],
+      "DownstreamPathTemplate": "/api/category/{id}"
+    },
+
+    // Transaction API
+    {
+      "UpstreamPathTemplate": "/api/transaction",
+      "UpstreamHttpMethod": [ "Post", "Delete" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7195
+        }
+      ],
+      "DownstreamPathTemplate": "/api/transaction"
+    },
+    {
+      "UpstreamPathTemplate": "/api/transaction/all",
+      "UpstreamHttpMethod": [ "Get" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7195
+        }
+      ],
+      "DownstreamPathTemplate": "/api/transaction/all"
+    },
+    {
+      "UpstreamPathTemplate": "/api/transaction/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7195
+        }
+      ],
+      "DownstreamPathTemplate": "/api/transaction/{id}"
+    },
+    {
+      "UpstreamPathTemplate": "/api/transaction/wallet/{walletId}",
+      "UpstreamHttpMethod": [ "Get", "Delete" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7195
+        }
+      ],
+      "DownstreamPathTemplate": "/api/transaction/wallet/{walletId}"
+    },
+    {
+      "UpstreamPathTemplate": "/api/transaction/currency/{currency}",
+      "UpstreamHttpMethod": [ "Get" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7195
+        }
+      ],
+      "DownstreamPathTemplate": "/api/transaction/currency/{currency}"
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:7208"
+  }
+}
