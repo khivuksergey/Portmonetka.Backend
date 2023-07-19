@@ -5,8 +5,7 @@ import axios, { AxiosError, CancelTokenSource } from "axios";
 import _ from "lodash";
 import { mapKeys } from "lodash";
 
-export default function useCategory() {
-    const { token, userId } = useContext(AuthContext);
+export default function useCategory(sorted?: boolean) {
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -15,7 +14,7 @@ export default function useCategory() {
 
     useEffect(() => {
         if (!dataFetched)
-            fetchCategories();
+            fetchCategories(sorted);
 
         return () => {
             if (cancelTokenSource) {
@@ -28,8 +27,8 @@ export default function useCategory() {
         setDataFetched(false);
     }
 
-    const fetchCategories = async () => {
-        const url = "api/category";
+    const fetchCategories = async (sorted? : boolean) => {
+        const url = `api/category${sorted ? "?sorted=true" : ""}`;
         try {
             setError("");
 

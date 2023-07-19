@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { IWallet } from "../Common/DataTypes";
+import { readFromLocalStorage, writeToLocalStorage } from "../Utilities";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 
@@ -13,8 +14,15 @@ export default function useWallet() {
     let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
-        if (!dataFetched)
-            fetchWallets();
+        if (!dataFetched) {
+            const data = readFromLocalStorage("wallets") as IWallet[];
+            if (data) {
+                setWallets(data);
+                setDataFetched(true);
+            } else {
+                fetchWallets();
+            }
+        }
 
         return () => {
             if (cancelTokenSource) {
@@ -47,6 +55,7 @@ export default function useWallet() {
                     setWallets(camelCasedData);
                     setDataFetched(true);
                     setLoading(false);
+                    writeToLocalStorage("wallets", camelCasedData);
                 });
         } catch (e: unknown) {
             setLoading(false);
@@ -111,7 +120,7 @@ export default function useWallet() {
 
     const handleDeleteWallet = async (walletId: number, force?: boolean): Promise<boolean> => {
         const url = `api/wallet/${walletId}` + (!!force ? `?force=${force}` : "");
-        
+
         setError("");
         setLoading(true);
 

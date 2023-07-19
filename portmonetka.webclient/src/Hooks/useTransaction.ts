@@ -1,8 +1,9 @@
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { ITransaction } from "../Common/DataTypes";
+import { readFromLocalStorage, writeToLocalStorage } from "../Utilities";
 import axios, { AxiosError, CancelTokenSource } from "axios";
-import _, { mapKeys } from "lodash";
+import _, { camelCase, mapKeys } from "lodash";
 
 export default function useTransaction(walletId: number, latestCount?: number) {
     const { token, userId } = useContext(AuthContext);
@@ -16,9 +17,21 @@ export default function useTransaction(walletId: number, latestCount?: number) {
     useEffect(() => {
         if (!dataFetched) {
             if (!!latestCount) {
-                fetchTransactionsLatest(latestCount);
+                const dataLatest = readFromLocalStorage(`transactionsLatest_${walletId}`) as ITransaction[];
+                if (dataLatest) {
+                    setTransactions(dataLatest);
+                    setDataFetched(true);
+                } else {
+                    fetchTransactionsLatest(latestCount);
+                }
             } else {
-                fetchTransactions();
+                const data = readFromLocalStorage(`transactions_${walletId}`) as ITransaction[];
+                if (data) {
+                    setTransactions(data);
+                    setDataFetched(true);
+                } else {
+                    fetchTransactions();
+                }
             }
         }
         return () => {
@@ -61,6 +74,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
                     setTransactions(camelCasedData);
                     setDataFetched(true);
+
+                    writeToLocalStorage(`transactions_${walletId}`, camelCasedData);
                 });
         } catch (e: unknown) {
             if (axios.isCancel(e)) {
@@ -92,6 +107,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
                     setTransactions(camelCasedData);
                     setDataFetched(true);
+
+                    writeToLocalStorage(`transactionsLatest_${walletId}`, camelCasedData);
                 });
         } catch (e: unknown) {
             if (axios.isCancel(e)) {

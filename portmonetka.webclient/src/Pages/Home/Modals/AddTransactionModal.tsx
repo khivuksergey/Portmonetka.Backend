@@ -65,7 +65,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
 
     const { handleAddTransactions } = useTransaction(wallet.id!);
 
-    const { categories, handleAddCategory, dataFetched: categoriesLoaded, refreshCategories } = useCategory();
+    const { categories, handleAddCategory, dataFetched: categoriesLoaded, refreshCategories } = useCategory(true);
 
     const [currentIndex, setCurrentIndex] = useState<number>(0);
 
