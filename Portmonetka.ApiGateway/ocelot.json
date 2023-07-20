@@ -1,5 +1,35 @@
 {
   "Routes": [
+    // Authentication Service, User API
+    {
+      "UpstreamPathTemplate": "/api/user/",
+      "UpstreamHttpMethod": [ "Get" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7100
+        }
+      ],
+      "DownstreamPathTemplate": "/api/user/",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/user/",
+      "UpstreamHttpMethod": [ "Post" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7100
+        }
+      ],
+      "DownstreamPathTemplate": "/api/user/"
+    },
     // Wallet API
     {
       "UpstreamPathTemplate": "/api/wallet",
@@ -9,13 +39,13 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7195
+          "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/wallet",
+      "DownstreamPathTemplate": "/api/wallet" /*,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "authentication-service-api"
-      }
+      }*/
     },
     {
       "UpstreamPathTemplate": "/api/wallet/{id}",
@@ -25,13 +55,13 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7195
+          "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/wallet/{id}",
+      "DownstreamPathTemplate": "/api/wallet/{id}" /*,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "authentication-service-api"
-      }
+      }*/
     },
 
     // Category API
@@ -43,13 +73,13 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7195
+          "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/category",
+      "DownstreamPathTemplate": "/api/category" /*,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "authentication-service-api"
-      }
+      }*/
     },
     {
       "UpstreamPathTemplate": "/api/category/{id}",
@@ -59,13 +89,13 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7195
+          "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/category/{id}",
+      "DownstreamPathTemplate": "/api/category/{id}" /*,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "authentication-service-api"
-      }
+      }*/
     },
 
     // Transaction API
@@ -77,13 +107,13 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7195
+          "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction",
+      "DownstreamPathTemplate": "/api/transaction" /*,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "authentication-service-api"
-      }
+      }*/
     },
     {
       "UpstreamPathTemplate": "/api/transaction/all",
@@ -93,13 +123,13 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7195
+          "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction/all",
+      "DownstreamPathTemplate": "/api/transaction/all" /*,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "authentication-service-api"
-      }
+      }*/
     },
     {
       "UpstreamPathTemplate": "/api/transaction/{id}",
@@ -109,13 +139,13 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7195
+          "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction/{id}",
+      "DownstreamPathTemplate": "/api/transaction/{id}" /*,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "authentication-service-api"
-      }
+      }*/
     },
     {
       "UpstreamPathTemplate": "/api/transaction/wallet/{walletId}",
@@ -125,13 +155,13 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7195
+          "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction/wallet/{walletId}",
+      "DownstreamPathTemplate": "/api/transaction/wallet/{walletId}" /*,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "authentication-service-api"
-      }
+      }*/
     },
     {
       "UpstreamPathTemplate": "/api/transaction/currency/{currency}",
@@ -141,16 +171,16 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7195
+          "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction/currency/{currency}",
+      "DownstreamPathTemplate": "/api/transaction/currency/{currency}" /*,
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "authentication-service-api"
-      }
+      }*/
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:7208"
+    "BaseUrl": "https://localhost:7000"
   }
 }

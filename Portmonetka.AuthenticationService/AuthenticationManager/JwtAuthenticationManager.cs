@@ -16,7 +16,7 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
             _context = context;
         }
 
-        public string? Authenticate(string userName, string password)
+        public AuthenticationToken? Authenticate(string userName, string password)
         {
             var user = _context.Users.FirstOrDefault(u => u.Name == userName);
             if (user == null)
@@ -48,7 +48,9 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
 
             var token = tokenHandler.CreateToken(tokenDesctiptor);
 
-            return tokenHandler.WriteToken(token);
+            var expirationTimeStamp = DateTime.Now.AddHours(1);
+
+            return new AuthenticationToken(user.Id, tokenHandler.WriteToken(token), (int)expirationTimeStamp.Subtract(DateTime.Now).TotalSeconds);
         }
     }
 }

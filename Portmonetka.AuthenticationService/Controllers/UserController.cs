@@ -102,7 +102,7 @@ namespace Portmonetka.AuthenticationService.Controllers
         {
             var token = _jwtAuthenticationManager.Authenticate(userCredentials.Name, userCredentials.Password);
 
-            if (string.IsNullOrEmpty(token))
+            if (token is null)
                 return Unauthorized();
 
             return Ok(token);
