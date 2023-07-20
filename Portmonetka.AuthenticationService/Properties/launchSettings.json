@@ -1,0 +1,32 @@
+{
+  "profiles": {
+    "Portmonetka.AuthenticationService": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "weatherforecast",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JWT_SECRET": "UkH4*JdAxt@qSdp%@heCXSm!Il7E7Zpv"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7183;http://localhost:5218"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "weatherforecast",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:31118",
+      "sslPort": 44335
+    }
+  }
+}

@@ -157,7 +157,7 @@ namespace Portmonetka.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("wallet/{walletId}")]
@@ -186,7 +186,7 @@ namespace Portmonetka.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            return Ok();
+            return NoContent();
         }
 
         #endregion

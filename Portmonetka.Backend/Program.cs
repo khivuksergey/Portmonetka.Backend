@@ -13,12 +13,13 @@ builder.Services.AddCors(c =>
 
 builder.Services.AddDbContext<PortmonetkaDbContext>();
 
-builder.Services.AddControllers()//WithViews()
+builder.Services.AddControllers()
     .AddNewtonsoftJson(options => {
         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         options.SerializerSettings.ContractResolver = new DefaultContractResolver();
     });
 
+//TO-DO Remove
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();

@@ -71,7 +71,7 @@ namespace Portmonetka.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteCategory(int id, bool force)
+        public async Task<ActionResult> DeleteCategory(int id, [FromQuery] bool force = false)
         {
             if (_dbContext.Categories == null)
                 return NotFound();
@@ -80,27 +80,31 @@ namespace Portmonetka.Controllers
             if (category == null)
                 return NotFound();
 
-            var hasTransactions = await (_dbContext.Transactions.AnyAsync(t => t.CategoryId == id));
-            if (!hasTransactions || force)
+            if (!force)
             {
-                if (typeof(Auditable).IsAssignableFrom(typeof(Category)))
-                {
-                    category.DateDeleted = DateTimeOffset.UtcNow;
-                    _dbContext.Categories.Attach(category);
-                    _dbContext.Entry(category).State = EntityState.Modified;
-                }
-                else
-                {
-                    _dbContext.Categories.Remove(category);
-                }
+                var hasTransactions = await (_dbContext.Transactions.AnyAsync(t => t.CategoryId == id));
 
-                await _dbContext.SaveChangesAsync();
-
-                return Ok();
+                if (hasTransactions)
+                {
+                    return Ok(new { ConfirmationRequired = true });
+                }
             }
 
-            var confirmation = JsonConvert.SerializeObject("hasTransactions");
-            return Content(confirmation);   //send confirmation to force deleting
+
+            if (typeof(Auditable).IsAssignableFrom(typeof(Category)))
+            {
+                category.DateDeleted = DateTimeOffset.UtcNow;
+                _dbContext.Categories.Attach(category);
+                _dbContext.Entry(category).State = EntityState.Modified;
+            }
+            else
+            {
+                _dbContext.Categories.Remove(category);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

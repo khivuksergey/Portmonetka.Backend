@@ -8,6 +8,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "portmonetka.webclient", "Po
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portmonetka.ApiGateway", "Portmonetka.ApiGateway\Portmonetka.ApiGateway.csproj", "{F1739688-F349-443D-BB17-2B3874A8FF1F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portmonetka.AuthenticationService", "Portmonetka.AuthenticationService\Portmonetka.AuthenticationService.csproj", "{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
