@@ -3,7 +3,7 @@
     // Authentication Service, User API
     {
       "UpstreamPathTemplate": "/api/user/",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHttpMethod": [ "Get", "Post" ],
 
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -18,7 +18,7 @@
       }
     },
     {
-      "UpstreamPathTemplate": "/api/user/",
+      "UpstreamPathTemplate": "/api/user/new",
       "UpstreamHttpMethod": [ "Post" ],
 
       "DownstreamScheme": "https",
@@ -28,7 +28,7 @@
           "Port": 7100
         }
       ],
-      "DownstreamPathTemplate": "/api/user/"
+      "DownstreamPathTemplate": "/api/user/new"
     },
     // Wallet API
     {

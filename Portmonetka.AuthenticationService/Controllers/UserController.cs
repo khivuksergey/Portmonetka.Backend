@@ -65,6 +65,11 @@ namespace Portmonetka.AuthenticationService.Controllers
             if (user.Id != 0)
                 return BadRequest("User Id must be 0");
 
+            bool userNameExists = await _context.Users.AnyAsync(u => u.Name == user.Name);
+
+            if (userNameExists)
+                return BadRequest("User with this name already exists");
+
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
             _context.Users.Add(user);
