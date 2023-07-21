@@ -40,6 +40,7 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, userName),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Iss, _iss)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),

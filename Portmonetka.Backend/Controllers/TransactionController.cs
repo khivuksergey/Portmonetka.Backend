@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portmonetka.Models;
+using System.Security.Claims;
 
 namespace Portmonetka.Controllers
 {
@@ -11,7 +12,6 @@ namespace Portmonetka.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly PortmonetkaDbContext _dbContext;
-
         public TransactionController(PortmonetkaDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -19,7 +19,7 @@ namespace Portmonetka.Controllers
 
         #region GET
 
-        [HttpGet("all")]
+        [HttpGet("all")] //TO-DO: only for testing, remove in production
         public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
         {
             if (_dbContext.Transactions == null)
@@ -31,7 +31,7 @@ namespace Portmonetka.Controllers
                 .ToListAsync();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")] //TO-DO: not used, remove later
         public async Task<ActionResult<Transaction>> GetTransaction(int id)
         {
             if (_dbContext.Transactions == null)
@@ -48,13 +48,19 @@ namespace Portmonetka.Controllers
         [HttpGet("wallet/{walletId}")]
         public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByWallet(int walletId, [FromQuery(Name = "latest")] int? count)
         {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
+
             if (_dbContext.Transactions == null)
                 return NotFound();
 
             if (count.HasValue)
             {
                 return await _dbContext.Transactions
-                    .Where(t => t.WalletId == walletId && t.DateDeleted == null)
+                    .Where(t =>
+                        t.UserId == userId &&
+                        t.WalletId == walletId &&
+                        t.DateDeleted == null)
                     .OrderByDescending(t => t.Date)
                     .ThenByDescending(t => t.DateCreated)
                     .Take(count.Value)
@@ -63,7 +69,10 @@ namespace Portmonetka.Controllers
             else
             {
                 return await _dbContext.Transactions
-                    .Where(t => t.WalletId == walletId && t.DateDeleted == null)
+                    .Where(t =>
+                        t.UserId == userId &&
+                        t.WalletId == walletId &&
+                        t.DateDeleted == null)
                     .OrderByDescending(t => t.Date)
                     .ThenByDescending(t => t.DateCreated)
                     .ToListAsync();
@@ -73,8 +82,11 @@ namespace Portmonetka.Controllers
         [HttpGet("currency/{currency}")]
         public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByCurrency(string currency)
         {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
+
             if (currency == null || currency.Length != 3)
-                return NotFound();
+                return BadRequest("Invalid currency");
 
             if (_dbContext.Transactions == null)
                 return NotFound();
@@ -82,7 +94,10 @@ namespace Portmonetka.Controllers
             currency = currency.ToUpper();
 
             var wallets = await _dbContext.Wallets
-                .Where(w => w.Currency == currency && w.DateDeleted == null)
+                .Where(w =>
+                    w.UserId == userId &&
+                    w.DateDeleted == null &&
+                    w.Currency == currency)
                 .ToListAsync();
 
             List<Transaction> transactionsResult = new();
@@ -90,7 +105,10 @@ namespace Portmonetka.Controllers
             foreach (var wallet in wallets)
             {
                 var transactions = await _dbContext.Transactions
-                    .Where(t => t.WalletId == wallet.Id && t.DateDeleted == null)
+                    .Where(t =>
+                        t.UserId == userId &&
+                        t.WalletId == wallet.Id &&
+                        t.DateDeleted == null)
                     .ToListAsync();
                 transactionsResult.AddRange(transactions);
             }
@@ -105,6 +123,9 @@ namespace Portmonetka.Controllers
         [HttpPost]
         public async Task<ActionResult<IEnumerable<Transaction>>> PostTransactions(IEnumerable<Transaction> transactions)
         {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
+
             var existingTransactionIds = transactions.Where(t => t.Id != 0).Select(t => t.Id);
 
             if (existingTransactionIds.Any())
@@ -121,6 +142,7 @@ namespace Portmonetka.Controllers
             }
 
             var newTransactions = transactions.Where(t => t.Id == 0);
+
             await _dbContext.Transactions.AddRangeAsync(newTransactions);
 
             await _dbContext.SaveChangesAsync();
@@ -135,6 +157,9 @@ namespace Portmonetka.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeleteTransactions(IEnumerable<int> ids)
         {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
+
             if (_dbContext.Transactions == null)
                 return NotFound();
 
@@ -165,11 +190,17 @@ namespace Portmonetka.Controllers
         [HttpDelete("wallet/{walletId}")]
         public async Task<ActionResult> DeleteTransactionsByWallet(int walletId)
         {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
+
             if (_dbContext.Transactions == null)
                 return NotFound();
 
             var transactionsToDelete = _dbContext.Transactions
-                .Where(t => t.WalletId == walletId && t.DateDeleted == null);
+                .Where(t =>
+                    t.UserId == userId &&
+                    t.WalletId == walletId &&
+                    t.DateDeleted == null);
 
 
             foreach (var transaction in transactionsToDelete)
@@ -192,5 +223,12 @@ namespace Portmonetka.Controllers
         }
 
         #endregion
+
+        private bool CheckIdentity(out int userId)
+        {
+            userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            return userId != 0;
+        }
     }
 }
