@@ -22,6 +22,7 @@ namespace JwtTokenAuthentication
                 options.RequireHttpsMetadata = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidateLifetime = true,
                     ValidateIssuer = true,
                     ValidIssuer = Issuer,
                     ValidateAudience = false,
