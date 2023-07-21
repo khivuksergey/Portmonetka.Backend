@@ -42,10 +42,10 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/wallet" /*,
+      "DownstreamPathTemplate": "/api/wallet",
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "authentication-service-api"
-      }*/
+        "AuthenticationProviderKey": "Bearer"
+      }
     },
     {
       "UpstreamPathTemplate": "/api/wallet/{id}",
@@ -58,10 +58,10 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/wallet/{id}" /*,
+      "DownstreamPathTemplate": "/api/wallet/{id}",
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "authentication-service-api"
-      }*/
+        "AuthenticationProviderKey": "Bearer"
+      }
     },
 
     // Category API
@@ -76,10 +76,10 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/category" /*,
+      "DownstreamPathTemplate": "/api/category",
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "authentication-service-api"
-      }*/
+        "AuthenticationProviderKey": "Bearer"
+      }
     },
     {
       "UpstreamPathTemplate": "/api/category/{id}",
@@ -92,10 +92,10 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/category/{id}" /*,
+      "DownstreamPathTemplate": "/api/category/{id}",
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "authentication-service-api"
-      }*/
+        "AuthenticationProviderKey": "Bearer"
+      }
     },
 
     // Transaction API
@@ -110,10 +110,10 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction" /*,
+      "DownstreamPathTemplate": "/api/transaction",
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "authentication-service-api"
-      }*/
+        "AuthenticationProviderKey": "Bearer"
+      }
     },
     {
       "UpstreamPathTemplate": "/api/transaction/all",
@@ -126,10 +126,10 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction/all" /*,
+      "DownstreamPathTemplate": "/api/transaction/all",
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "authentication-service-api"
-      }*/
+        "AuthenticationProviderKey": "Bearer"
+      }
     },
     {
       "UpstreamPathTemplate": "/api/transaction/{id}",
@@ -142,10 +142,10 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction/{id}" /*,
+      "DownstreamPathTemplate": "/api/transaction/{id}",
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "authentication-service-api"
-      }*/
+        "AuthenticationProviderKey": "Bearer"
+      }
     },
     {
       "UpstreamPathTemplate": "/api/transaction/wallet/{walletId}",
@@ -158,10 +158,10 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction/wallet/{walletId}" /*,
+      "DownstreamPathTemplate": "/api/transaction/wallet/{walletId}",
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "authentication-service-api"
-      }*/
+        "AuthenticationProviderKey": "Bearer"
+      }
     },
     {
       "UpstreamPathTemplate": "/api/transaction/currency/{currency}",
@@ -174,10 +174,10 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction/currency/{currency}" /*,
+      "DownstreamPathTemplate": "/api/transaction/currency/{currency}",
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "authentication-service-api"
-      }*/
+        "AuthenticationProviderKey": "Bearer"
+      }
     }
   ],
   "GlobalConfiguration": {

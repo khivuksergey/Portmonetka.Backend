@@ -10,6 +10,7 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
     {
         private UserDbContext _context;
         private readonly string _key = Environment.GetEnvironmentVariable("JWT_SECRET")!;
+        private readonly string _iss = Environment.GetEnvironmentVariable("AUTH_SERVICE")!;
 
         public JwtAuthenticationManager(UserDbContext context)
         {
@@ -38,7 +39,8 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, userName)
+                    new Claim(ClaimTypes.Name, userName),
+                    new Claim(JwtRegisteredClaimNames.Iss, _iss)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(
