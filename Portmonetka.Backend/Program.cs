@@ -1,6 +1,10 @@
+using JwtTokenAuthentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Portmonetka.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,12 +17,30 @@ builder.Services.AddCors(c =>
 
 builder.Services.AddDbContext<PortmonetkaDbContext>();
 
-builder.Services.AddControllers()//WithViews()
-    .AddNewtonsoftJson(options => {
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         options.SerializerSettings.ContractResolver = new DefaultContractResolver();
     });
 
+// Add authentication services
+builder.Services.AddJwtAuthentication();
+//.AddJwtBearer(options =>
+//{
+//    options.Authority = Environment.GetEnvironmentVariable("AUTH_SERVICE"); //Authentication Service
+//    options.RequireHttpsMetadata = false; // Change this to true in production
+//    //options.Audience = "backend";
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        //ValidateIssuer = true,
+//        //ValidateAudience = true,
+//        //ValidAudience = Environment.GetEnvironmentVariable("BACKEND_SERVICE"), //Backend Service, not API Gateway
+//        ValidIssuer = Environment.GetEnvironmentVariable("AUTH_SERVICE") //Authentication Service
+//    };
+//});
+
+//TO-DO Remove
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
@@ -33,14 +55,14 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors("AllowOrigin");
 
-//app.MapControllers();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseCors("AllowOrigin");
 
 app.MapControllerRoute(
    name: "default",
    pattern: "{controller}/{action=Index}/{id?}");
-
-//app.MapFallbackToFile("index.html");
 
 app.Run();

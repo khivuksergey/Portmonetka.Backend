@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import { AuthContext } from "../Context/AuthContext";
 import { ICategory } from "../Common/DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _ from "lodash";
 import { mapKeys } from "lodash";
 
 export default function useCategory() {
+    const { token, userId } = useContext(AuthContext);
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -37,7 +39,10 @@ export default function useCategory() {
 
             cancelTokenSource = axios.CancelToken.source();
 
-            await axios.get<ICategory[]>(url, { cancelToken: cancelTokenSource.token })
+            await axios.get<ICategory[]>(url, {
+                cancelToken: cancelTokenSource.token,
+                headers: { Authorization: `Bearer ${token}` }
+            })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ICategory[];
@@ -61,7 +66,11 @@ export default function useCategory() {
         try {
             setError("");
             setLoading(true);
-            await axios.post(url, category)
+            await axios.post(
+                url,
+                { ...category, userId: userId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
                 .then(response => {
                     fetchCategories();
                     result = response.data.Id;
@@ -83,7 +92,11 @@ export default function useCategory() {
         setLoading(true);
 
         return new Promise<boolean>((resolve, reject) => {
-            axios.put(url, changedCategory)
+            axios.put(
+                url,
+                { ...changedCategory, userId: userId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
                 .then((response) => {
                     resolve(response.status >= 200 && response.status < 300);
                 })
@@ -100,11 +113,11 @@ export default function useCategory() {
 
     const handleDeleteCategory = async (id: number, force?: boolean): Promise<boolean> => {
         const url = `api/category/${id}` + (!!force ? `?force=${force}` : "");
-            setError("");
-            setLoading(true);
+        setError("");
+        setLoading(true);
 
         return new Promise<boolean>((resolve, reject) => {
-            axios.delete(url)
+            axios.delete(url, { headers: { Authorization: `Bearer ${token}` } })
                 .then((response) => {
                     resolve(response.status >= 200 && response.status < 300);
                 })

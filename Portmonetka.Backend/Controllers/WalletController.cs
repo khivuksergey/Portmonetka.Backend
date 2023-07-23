@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portmonetka.Models;
+using System.Security.Claims;
 
 namespace Portmonetka.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WalletController : ControllerBase
     {
         private readonly PortmonetkaDbContext _dbContext;
-
         public WalletController(PortmonetkaDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -19,21 +20,29 @@ namespace Portmonetka.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Wallet>>> GetWallets()
         {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
+
             if (_dbContext.Wallets == null)
                 return NotFound();
 
             return await _dbContext.Wallets
-                .Where(w => w.DateDeleted == null)
+                .Where(w => w.UserId == userId && w.DateDeleted == null)
                 .ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Wallet>> GetWallet(int id)
         {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
+
             if (_dbContext.Wallets == null)
                 return NotFound();
 
-            var wallet = await _dbContext.Wallets.FindAsync(id);
+            var wallet = await _dbContext.Wallets
+                .Where(w => w.Id == id && w.UserId == userId)
+                .FirstOrDefaultAsync();
 
             if (wallet == null)
                 return NotFound();
@@ -44,6 +53,9 @@ namespace Portmonetka.Controllers
         [HttpPost]
         public async Task<ActionResult<Wallet>> PostWallet(Wallet wallet)
         {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -84,23 +96,28 @@ namespace Portmonetka.Controllers
 
                 return Ok();
             }
-            
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteWallet(int id, [FromQuery] bool force = false)
         {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
+
             if (_dbContext.Wallets == null)
                 return NotFound();
 
-            var wallet = await _dbContext.Wallets.FindAsync(id);
+            var wallet = await _dbContext.Wallets
+                .Where(w => w.UserId == userId && w.Id == id)
+                .FirstOrDefaultAsync();
 
             if (wallet == null)
                 return NotFound();
 
             if (!force)
             {
-                var hasTransactions = await _dbContext.Transactions.AnyAsync(t => t.WalletId == id);
+                var hasTransactions = await _dbContext.Transactions
+                    .AnyAsync(t => t.UserId == userId && t.WalletId == id);
 
                 if (hasTransactions)
                 {
@@ -122,6 +139,13 @@ namespace Portmonetka.Controllers
             await _dbContext.SaveChangesAsync();
 
             return Ok();
+        }
+
+        private bool CheckIdentity(out int userId)
+        {
+            userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            return userId != 0;
         }
     }
 }

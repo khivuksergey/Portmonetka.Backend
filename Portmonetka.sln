@@ -6,6 +6,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Portmonetka.Backend", "Port
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "portmonetka.webclient", "Portmonetka.WebClient\portmonetka.webclient.esproj", "{974E549B-A9B8-4634-A6A2-36995920CBD8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Portmonetka.ApiGateway", "Portmonetka.ApiGateway\Portmonetka.ApiGateway.csproj", "{F1739688-F349-443D-BB17-2B3874A8FF1F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Portmonetka.AuthenticationService", "Portmonetka.AuthenticationService\Portmonetka.AuthenticationService.csproj", "{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwtTokenAuthentication", "JwtExtensions\JwtTokenAuthentication.csproj", "{6C811A00-125B-4CD8-B172-4EC9F2E1AD1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +28,18 @@ Global
 		{974E549B-A9B8-4634-A6A2-36995920CBD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{974E549B-A9B8-4634-A6A2-36995920CBD8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{974E549B-A9B8-4634-A6A2-36995920CBD8}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C811A00-125B-4CD8-B172-4EC9F2E1AD1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C811A00-125B-4CD8-B172-4EC9F2E1AD1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C811A00-125B-4CD8-B172-4EC9F2E1AD1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C811A00-125B-4CD8-B172-4EC9F2E1AD1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

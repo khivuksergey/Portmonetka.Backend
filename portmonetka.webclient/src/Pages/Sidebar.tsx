@@ -1,5 +1,6 @@
 ﻿import { NavLink } from "react-router-dom";
-import { IconTwoCoins, IconDashboard, IconWallet, IconCash, IconCategory } from "../Common/Icons";
+import { useLogin } from "../Hooks";
+import { IconTwoCoins, IconDashboard, IconWallet, IconCash, IconCategory, IconLogout } from "../Common/Icons";
 
 interface ISidebarProps {
     className: string
@@ -7,6 +8,7 @@ interface ISidebarProps {
 }
 
 export default function Sidebar({ className, onClose }: ISidebarProps) {
+    const { handleLogout } = useLogin();
     return (
         <div className={className}>
             <div className="logo prevent-select" onClick={onClose}>
@@ -45,6 +47,24 @@ export default function Sidebar({ className, onClose }: ISidebarProps) {
                     </div>
                 </NavLink>
             </section>
+
+            <button
+                type="button"
+                className="nav-link"
+                style={{
+                    position: "absolute",
+                    width: "calc(100% - 0.5rem)",
+                    bottom: "0",
+                    margin: "0.75rem 0.25rem",
+                    textAlign: "left"
+                }}
+                onClick={handleLogout}
+            >
+                <IconLogout size={32} className="nav-link__icon"/>
+                <div className="nav-link__text">
+                        Logout
+                    </div>
+            </button>
         </div>
     );
 }

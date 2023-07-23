@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "JwtExtensions": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "JWT_SECRET": "UkH4*JdAxt@qSdp%@heCXSm!Il7E7Zpv",
+        "AUTH_SERVICE": "https://localhost:7100"
+      }
+    }
+  }
+}

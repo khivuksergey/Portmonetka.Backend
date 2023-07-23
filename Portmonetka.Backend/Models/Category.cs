@@ -6,6 +6,8 @@ public partial class Category: Auditable
 {
     public int Id { get; set; }
 
+    public int UserId { get; set; }
+
     [Required(ErrorMessage = "Name is required")]
     [MinLength(1, ErrorMessage = "Name length should at least be 1 symbol")]
     [MaxLength(128, ErrorMessage = "Name length should be less than 128 symbols")]

@@ -6,6 +6,7 @@ import WalletsPage from "./Pages/Wallets/WalletsPage";
 const AppRoutes = [
     {
         index: true,
+        path: "",
         element: <Home />
     },
     {
