@@ -24,6 +24,11 @@ This is a web application built using ASP.NET Core as the backend framework and 
 * Show statistics for each currency, including absolute income and outcome amounts.
 * Present trends compared to the previous time period (feature in development).
 
+4. **Authentication and Security**
+
+* User Authentication: Rest assured that your data is protected with robust user authentication system.
+* Token Validation: Token validation process provides an additional layer of protection, guaranteeing that only authenticated users can interact with their accounts.
+
 ### Tech Stack
 
 * Backend:
@@ -46,15 +51,17 @@ The project follows good coding practices, adhering to SOLID principles.
 ### Future Plans
 The project has a roadmap for future enhancements and improvements:
 
-1. Authentication: Implement user authentication to allow users to log in and securely access their data.
+- [x] Authentication: Implement user authentication to allow users to log in and securely access their data.
 
-2. Microservices Architecture: Extract the frontend and backend parts into separate applications and adopt a microservices architecture. New features will be developed as separate services, communicating with each other through RabbitMQ. Each microservice will run in Docker containers for improved scalability and deployment.
+- [x] Microservices Architecture: Extract the frontend and backend parts into separate applications and adopt a microservices architecture. New features will be developed as separate services.
 
-3. Advanced Statistics: Create a dedicated microservice for calculating advanced statistics for wallets and currencies. These statistics will be presented to users with numerical data and infographics, offering valuable insights into their financial management.
+3. Microservices communication through RabbitMQ. Each microservice will run in Docker containers for improved scalability and deployment.
 
-4. Wallet and Category Management: Develop convenient tools for managing wallets and categories, allowing users to easily add, edit, and remove entities as needed.
+4. Advanced Statistics: Create a dedicated microservice for calculating advanced statistics for wallets and currencies. These statistics will be presented to users with numerical data and infographics, offering valuable insights into their financial management.
 
-5. UI/UX Enhancements: Continuously improve the user interface design to provide a visually appealing and intuitive user experience across different devices and screen sizes.
+5. Wallet and Category Management: Develop convenient tools for managing wallets and categories, allowing users to easily add, edit, and remove entities as needed.
+
+6. UI/UX Enhancements: Continuously improve the user interface design to provide a visually appealing and intuitive user experience across different devices and screen sizes.
 
 ### Getting Started
 
