@@ -68,7 +68,7 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                 return;
             }
         }
-
+        
         const deleted = await onDeleteWallet(wallet.id!);
         if (deleted) {
             onClose();

@@ -108,7 +108,7 @@ namespace Portmonetka.Controllers
                 return NotFound();
 
             var wallet = await _dbContext.Wallets
-                .Where(w => w.UserId == userId)
+                .Where(w => w.UserId == userId && w.Id == id)
                 .FirstOrDefaultAsync();
 
             if (wallet == null)
@@ -138,7 +138,7 @@ namespace Portmonetka.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool CheckIdentity(out int userId)

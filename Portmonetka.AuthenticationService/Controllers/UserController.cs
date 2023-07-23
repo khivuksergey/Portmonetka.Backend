@@ -21,6 +21,8 @@ namespace Portmonetka.AuthenticationService.Controllers
             _jwtAuthenticationManager = jwtAuthenticationManager;
         }
 
+        #region Test Methods
+
         [HttpGet] //TO-DO: for testing only, remove in production
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
@@ -52,9 +54,51 @@ namespace Portmonetka.AuthenticationService.Controllers
             return user;
         }
 
+        #endregion
+
+        #region Authentication and Login
+
         [AllowAnonymous]
-        [HttpPost("new")]
-        public async Task<ActionResult<User>> PostNewUser(User user)
+        [HttpPost("login")]
+        public IActionResult Authenticate([FromBody] UserCredentials userCredentials)
+        {
+            var token = _jwtAuthenticationManager.Authenticate(userCredentials.Name, userCredentials.Password, userCredentials.KeepLoggedIn);
+
+            if (token is null)
+                return Unauthorized("Invalid user name or password");
+
+            return Ok(token);
+        }
+
+        //[AllowAnonymous]
+        //[HttpPost("login")]
+        //public async Task<ActionResult<User>> Login(User user)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+
+        //    if (_context.Users == null)
+        //        return NotFound();
+
+        //    if (user.Id != 0)
+        //        return BadRequest("User Id must be 0");
+
+        //    bool userNameExists = await _context.Users.AnyAsync(u => u.Name == user.Name);
+
+        //    if (userNameExists)
+        //        return BadRequest("User with this name already exists");
+
+        //    user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+        //    _context.Users.Add(user);
+        //    await _context.SaveChangesAsync();
+
+        //    return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, user);
+        //}
+
+        [AllowAnonymous]
+        [HttpPost("signup")]
+        public async Task<ActionResult<User>> SignUp(User user)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -78,8 +122,27 @@ namespace Portmonetka.AuthenticationService.Controllers
             return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, user);
         }
 
+        [AllowAnonymous]
+        [HttpGet("checkusername/{userName}")]
+        public async Task<ActionResult> CheckUserNameIfExists(string userName)
+        {
+            if (userName is null)
+                return BadRequest("User name is empty");
+
+            if (_context.Users == null)
+                return NotFound();
+
+            bool userNameExists = await _context.Users.AnyAsync(u => u.Name == userName);
+
+            return userNameExists ?  Ok() : NotFound("User doesn't exist");
+        }
+
+        #endregion
+
+        #region User Actions
+
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<User>> ChangeUser(User user)
         {
             if (!CheckIdentity(out int userId) || user.Id != userId)
                 return Forbid();
@@ -101,18 +164,6 @@ namespace Portmonetka.AuthenticationService.Controllers
             }
 
             return Ok();
-        }
-
-        [AllowAnonymous]
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody] UserCredentials userCredentials)
-        {
-            var token = _jwtAuthenticationManager.Authenticate(userCredentials.Name, userCredentials.Password);
-
-            if (token is null)
-                return Unauthorized();
-
-            return Ok(token);
         }
 
         [HttpDelete("{id}")]
@@ -144,6 +195,8 @@ namespace Portmonetka.AuthenticationService.Controllers
 
             return NoContent();
         }
+
+        #endregion
 
         private bool CheckIdentity(out int userId)
         {

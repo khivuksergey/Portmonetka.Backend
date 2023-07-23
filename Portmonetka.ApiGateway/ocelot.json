@@ -2,6 +2,32 @@
   "Routes": [
     // Authentication Service, User API
     {
+      "UpstreamPathTemplate": "/api/user/checkusername/{userName}",
+      "UpstreamHttpMethod": [ "Get" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7100
+        }
+      ],
+      "DownstreamPathTemplate": "/api/user/checkusername/{userName}"
+    },
+    {
+      "UpstreamPathTemplate": "/api/user/login",
+      "UpstreamHttpMethod": [ "Post" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7100
+        }
+      ],
+      "DownstreamPathTemplate": "/api/user/login"
+    },
+    {
       "UpstreamPathTemplate": "/api/user/",
       "UpstreamHttpMethod": [ "Get", "Post" ],
 
@@ -16,19 +42,6 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }
-    },
-    {
-      "UpstreamPathTemplate": "/api/user/new",
-      "UpstreamHttpMethod": [ "Post" ],
-
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7100
-        }
-      ],
-      "DownstreamPathTemplate": "/api/user/new"
     },
     // Wallet API
     {
@@ -100,7 +113,7 @@
 
     // Transaction API
     {
-      "UpstreamPathTemplate": "/api/transaction",
+      "UpstreamPathTemplate": "/api/transaction/",
       "UpstreamHttpMethod": [ "Post", "Delete" ],
 
       "DownstreamScheme": "https",
@@ -110,7 +123,7 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction",
+      "DownstreamPathTemplate": "/api/transaction/",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }

@@ -12,6 +12,7 @@ export default function LatestTransactionsPreviewPlaceholder() {
                     </div>
                 ))
             }
+            <div className="transactions-preview-blur"></div>
         </div>
     )
 }

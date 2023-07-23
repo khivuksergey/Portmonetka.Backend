@@ -17,7 +17,7 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
             _context = context;
         }
 
-        public AuthenticationToken? Authenticate(string userName, string password)
+        public AuthenticationToken? Authenticate(string userName, string password, bool keepLoggedIn)
         {
             var user = _context.Users.FirstOrDefault(u => u.Name == userName);
             if (user == null)
@@ -35,6 +35,8 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
 
             var tokenKey = Encoding.ASCII.GetBytes(_key);
 
+            var expires = keepLoggedIn ? DateTime.UtcNow.AddDays(14) : DateTime.UtcNow.AddHours(2);
+
             var tokenDesctiptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
@@ -43,7 +45,7 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Iss, _iss)
                 }),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = expires,
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey),
                     SecurityAlgorithms.HmacSha256)
@@ -51,9 +53,8 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
 
             var token = tokenHandler.CreateToken(tokenDesctiptor);
 
-            var expirationTimeStamp = DateTime.Now.AddHours(1);
 
-            return new AuthenticationToken(user.Id, tokenHandler.WriteToken(token), (int)expirationTimeStamp.Subtract(DateTime.Now).TotalSeconds);
+            return new AuthenticationToken(user.Id, tokenHandler.WriteToken(token), expires);
         }
     }
 }

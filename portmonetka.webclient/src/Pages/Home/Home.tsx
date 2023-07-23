@@ -112,7 +112,7 @@ export default function Home() {
                             />
                         </>
                         :
-                        <AddFirstWallet onAddWallet={handleAddWalletModalShow}/>
+                        <AddFirstWallet onAddWallet={handleAddWalletModalShow} />
                     }
                 </>
             }

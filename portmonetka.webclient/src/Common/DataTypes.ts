@@ -4,7 +4,11 @@ interface IAuditable {
     dateDeleted?: Date
 }
 
-export interface IWallet extends IAuditable {
+interface IAuthorizable {
+    userId?: number
+}
+
+export interface IWallet extends IAuditable, IAuthorizable {
     id?: number
     name: string
     currency: string 
@@ -12,14 +16,14 @@ export interface IWallet extends IAuditable {
     iconFileName?: string
 }
 
-export interface ICategory extends IAuditable {
+export interface ICategory extends IAuditable, IAuthorizable {
     id?: number
     name: string
     isExpense: boolean
     iconFileName?: string
 }
 
-export interface ITransaction extends IAuditable {
+export interface ITransaction extends IAuditable, IAuthorizable {
     id?: number
     description: string
     amount: number
@@ -43,14 +47,35 @@ export interface ICurrencyBalance {
     outcomeTrend: number
 }
 
-export interface IGlobalBalanceContext {
-    globalBalance: IGlobalBalance[]
-    setGlobalBalance: any
-}
-
 export interface IWalletProps {
     name: string,
     currency: string,
     initialAmount: string,
     iconFileName?: string
 }
+
+export interface IUserCredentials {
+    name: string
+    password: string
+    keepLoggedIn: boolean
+}
+
+export interface IGlobalBalanceContext {
+    globalBalance: IGlobalBalance[]
+    setGlobalBalance: any
+}
+
+export interface IAuthContext {
+    token: string
+    setToken: (token: string) => void
+    userId: number
+    setUserId: (id: number) => void
+    expireTimestamp: number
+    setExpireTimestamp: (milliseconds: number) => void
+}
+
+export enum PasswordStrength {
+    WEAK = "Weak",
+    MEDIUM = "Medium",
+    STRONG = "Strong",
+  }

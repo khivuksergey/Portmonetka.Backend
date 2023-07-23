@@ -2,6 +2,6 @@
 {
     public interface IJwtAuthenticationManager
     {
-        AuthenticationToken? Authenticate(string userName, string password);
+        AuthenticationToken? Authenticate(string userName, string password, bool keepLoggedIn);
     }
 }

@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import { AuthContext } from "../Context/AuthContext";
 import { IWallet } from "../Common/DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 
 export default function useWallet() {
+    const { token, userId } = useContext(AuthContext);
     const [wallets, setWallets] = useState<IWallet[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -35,7 +37,10 @@ export default function useWallet() {
 
             cancelTokenSource = axios.CancelToken.source();
 
-            await axios.get<IWallet[]>(url, { cancelToken: cancelTokenSource.token })
+            await axios.get<IWallet[]>(url, {
+                cancelToken: cancelTokenSource.token,
+                headers: { Authorization: `Bearer ${token}` }
+            })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as IWallet[];
@@ -49,7 +54,8 @@ export default function useWallet() {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
-            setError(error.message);
+            // setError(error.message);
+            setError(error.response?.statusText ?? error.message);
         }
     }
 
@@ -59,7 +65,11 @@ export default function useWallet() {
         setLoading(true);
 
         return new Promise<boolean>((resolve, reject) => {
-            axios.post<IWallet>(url, wallet)
+            axios.post<IWallet>(
+                url,
+                { ...wallet, userId: userId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
                 .then((response) => {
                     resolve(response.status === 201);
                 })
@@ -80,7 +90,11 @@ export default function useWallet() {
         setLoading(true);
 
         return new Promise<boolean>((resolve, reject) => {
-            axios.post<IWallet>(url, changedWallet)
+            axios.post<IWallet>(
+                url,
+                { ...changedWallet, userId: userId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
                 .then((response) => {
                     resolve(response.status >= 200 && response.status < 300);
                 })
@@ -102,7 +116,7 @@ export default function useWallet() {
         setLoading(true);
 
         try {
-            const response = await axios.delete(url);
+            const response = await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
 
             if (response.data && response.data.ConfirmationRequired) {
                 const confirmed = window.confirm("Are you sure you want to delete the wallet and all its transactions?");

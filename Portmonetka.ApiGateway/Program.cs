@@ -12,8 +12,8 @@ builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
 // Add services to the container.
 builder.Services.AddJwtAuthentication();
 
-builder.Services.AddOcelot(builder.Configuration);
-    //.AddDelegatingHandler<AuthenticationDelegatingHandler>();
+builder.Services.AddOcelot(builder.Configuration)
+    .AddDelegatingHandler<AuthenticationDelegatingHandler>();
 
 var app = builder.Build();
 

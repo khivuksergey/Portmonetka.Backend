@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import { AuthContext } from "../Context/AuthContext";
 import { ITransaction } from "../Common/DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 
 export default function useTransaction(walletId: number, latestCount?: number) {
+    const { token, userId } = useContext(AuthContext);
     const [transactions, setTransactions] = useState<ITransaction[]>([]);
     const [transactionsSum, setTransactionsSum] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -50,7 +52,10 @@ export default function useTransaction(walletId: number, latestCount?: number) {
             }
 
             cancelTokenSource = axios.CancelToken.source();
-            await axios.get<ITransaction[]>(url, { cancelToken: cancelTokenSource.token })
+            await axios.get<ITransaction[]>(url, {
+                cancelToken: cancelTokenSource.token,
+                headers: { Authorization: `Bearer ${token}` }
+            })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
@@ -78,7 +83,10 @@ export default function useTransaction(walletId: number, latestCount?: number) {
             }
 
             cancelTokenSource = axios.CancelToken.source();
-            await axios.get<ITransaction[]>(url, { cancelToken: cancelTokenSource.token })
+            await axios.get<ITransaction[]>(url, {
+                cancelToken: cancelTokenSource.token,
+                headers: { Authorization: `Bearer ${token}` }
+            })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
@@ -101,8 +109,16 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         setError("");
         setLoading(true);
 
+        const transactionsWithUserId = transactions.map(transaction => {
+            return { ...transaction, userId: userId }
+        })
+
         return new Promise<boolean>((resolve, reject) => {
-            axios.post(url, transactions)
+            axios.post(
+                url,
+                transactionsWithUserId,
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
                 .then((response) => {
                     resolve(response.status === 201);
                 })
@@ -121,9 +137,17 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         const url = `api/transaction/`;
         setError("");
         setLoading(true);
+        
+        const transactionsWithUserId = transactions.map(transaction => {
+            return { ...transaction, userId: userId }
+        })
 
         return new Promise<boolean>((resolve, reject) => {
-            axios.post(url, transactions)
+            axios.post(
+                url,
+                transactionsWithUserId,
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
                 .then((response) => {
                     resolve(response.status >= 200 && response.status < 300);
                 })
@@ -144,7 +168,10 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         setLoading(true);
 
         return new Promise<boolean>((resolve, reject) => {
-            axios.delete(url, { data: ids })
+            axios.delete(url, {
+                data: ids,
+                headers: { Authorization: `Bearer ${token}` }
+            })
                 .then((response) => {
                     resolve(response.status >= 200 && response.status < 300);
                 })

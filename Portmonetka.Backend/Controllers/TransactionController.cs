@@ -131,7 +131,7 @@ namespace Portmonetka.Controllers
             if (existingTransactionIds.Any())
             {
                 var existingTransactions = await _dbContext.Transactions
-                    .Where(t => existingTransactionIds.Contains(t.Id))
+                    .Where(t => t.UserId == userId && existingTransactionIds.Contains(t.Id))
                     .ToListAsync();
 
                 foreach (var existingTransaction in existingTransactions)
@@ -163,7 +163,7 @@ namespace Portmonetka.Controllers
             if (_dbContext.Transactions == null)
                 return NotFound();
 
-            var transactionsToDelete = _dbContext.Transactions.Where(t => ids.Any(id => id == t.Id));
+            var transactionsToDelete = _dbContext.Transactions.Where(t => t.UserId == userId && ids.Any(id => id == t.Id));
 
             if (transactionsToDelete == null)
                 return NotFound();
