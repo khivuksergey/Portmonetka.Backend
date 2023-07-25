@@ -4,7 +4,7 @@ import { ICategory } from "../Common/DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _ from "lodash";
 import { mapKeys } from "lodash";
-import { ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
+import { ClearLocalStorage, ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
 
 export default function useCategory(sorted?: boolean) {
     const { token, userId } = useContext(AuthContext);
@@ -33,6 +33,7 @@ export default function useCategory(sorted?: boolean) {
     }, [dataFetched])
 
     const refreshCategories = () => {
+        ClearLocalStorage(`categories_${userId}`);
         setDataFetched(false);
     }
 

@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { ITransactionTemplate } from "../Common/DataTypes";
-import { ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
+import { ClearLocalStorage, ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 
@@ -15,13 +15,13 @@ export default function useTransactionTemplate() {
 
     useEffect(() => {
         if (!dataFetched) {
-            //const data = ReadFromLocalStorage(`transactionTemplates_${userId}`) as ITransactionTemplate[];
-            // if (data) {
-            //     setTemplates(data);
-            //     setDataFetched(true);
-            // } else {
+            const data = ReadFromLocalStorage(`transactionTemplates_${userId}`) as ITransactionTemplate[];
+            if (data) {
+                setTemplates(data);
+                setDataFetched(true);
+            } else {
                 fetchTemplates();
-            //}
+            }
         }
 
         return () => {
@@ -32,6 +32,7 @@ export default function useTransactionTemplate() {
     }, [dataFetched])
 
     const refreshTemplates = () => {
+        ClearLocalStorage(`transactionTemplates_${userId}`);
         setDataFetched(false);
     };
 

@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { ITransaction } from "../Common/DataTypes";
-import { ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
+import { ClearLocalStorage, ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 
@@ -52,6 +52,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
     }
 
     const refreshTransactions = () => {
+        ClearLocalStorage(`transactions_${walletId}`);
+        ClearLocalStorage(`transactionsLatest_${walletId}`);
         setDataFetched(false);
     };
 

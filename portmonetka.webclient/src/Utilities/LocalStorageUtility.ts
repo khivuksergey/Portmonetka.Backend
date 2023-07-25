@@ -22,3 +22,7 @@ export function ReadFromLocalStorage(key: string) {
 
     return null;
 }
+
+export function ClearLocalStorage(key: string) {
+    localStorage.removeItem(key);
+}
