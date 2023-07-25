@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { ITransaction } from "../Common/DataTypes";
+import { ClearLocalStorage, ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 
@@ -16,9 +17,21 @@ export default function useTransaction(walletId: number, latestCount?: number) {
     useEffect(() => {
         if (!dataFetched) {
             if (!!latestCount) {
-                fetchTransactionsLatest(latestCount);
+                const dataLatest = ReadFromLocalStorage(`transactionsLatest_${walletId}`) as ITransaction[];
+                if (dataLatest) {
+                    setTransactions(dataLatest);
+                    setDataFetched(true);
+                } else {
+                    fetchTransactionsLatest(latestCount);
+                }
             } else {
-                fetchTransactions();
+                const data = ReadFromLocalStorage(`transactions_${walletId}`) as ITransaction[];
+                if (data) {
+                    setTransactions(data);
+                    setDataFetched(true);
+                } else {
+                    fetchTransactions();
+                }
             }
         }
         return () => {
@@ -39,6 +52,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
     }
 
     const refreshTransactions = () => {
+        ClearLocalStorage(`transactions_${walletId}`);
+        ClearLocalStorage(`transactionsLatest_${walletId}`);
         setDataFetched(false);
     };
 
@@ -52,6 +67,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
             }
 
             cancelTokenSource = axios.CancelToken.source();
+
             await axios.get<ITransaction[]>(url, {
                 cancelToken: cancelTokenSource.token,
                 headers: { Authorization: `Bearer ${token}` }
@@ -61,6 +77,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
                     setTransactions(camelCasedData);
                     setDataFetched(true);
+
+                    WriteToLocalStorage(`transactions_${walletId}`, camelCasedData);
                 });
         } catch (e: unknown) {
             if (axios.isCancel(e)) {
@@ -92,6 +110,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransaction[];
                     setTransactions(camelCasedData);
                     setDataFetched(true);
+
+                    WriteToLocalStorage(`transactionsLatest_${walletId}`, camelCasedData);
                 });
         } catch (e: unknown) {
             if (axios.isCancel(e)) {
@@ -137,7 +157,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         const url = `api/transaction/`;
         setError("");
         setLoading(true);
-        
+
         const transactionsWithUserId = transactions.map(transaction => {
             return { ...transaction, userId: userId }
         })

@@ -10,12 +10,12 @@ const AppRoutes = [
         element: <Home />
     },
     {
-        path: "/wallets",
-        element: < WalletsPage />
-    },
-    {
         path: "/transactions",
         element: < TransactionsPage />
+    },
+    {
+        path: "/wallets",
+        element: < WalletsPage />
     },
     {
         path: "/categories",

@@ -1,16 +1,16 @@
 ﻿using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Portmonetka.Models;
+using Portmonetka.Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
-namespace Portmonetka.Controllers
+namespace Portmonetka.Backend.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class CategoryController : BaseAuthorizableController
     {
         private readonly PortmonetkaDbContext _dbContext;
         public CategoryController(PortmonetkaDbContext dbContext)
@@ -19,7 +19,7 @@ namespace Portmonetka.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategories([FromQuery]bool? sorted)
         {
             if (!CheckIdentity(out int userId))
                 return Forbid();
@@ -27,9 +27,18 @@ namespace Portmonetka.Controllers
             if (_dbContext.Categories == null)
                 return NotFound();
 
-            return await (_dbContext.Categories
-                .Where(c => c.UserId == userId && c.DateDeleted == null)
-                .ToListAsync());
+            //TO-DO: Find a way to optimize order by transactions count
+
+            return sorted.HasValue && sorted.Value ?
+                await _dbContext.Categories
+                    .Where(c => c.UserId == userId && c.DateDeleted == null)
+                    .Include(c => c.Transactions)
+                    .OrderByDescending(c => c.Transactions.Count)
+                    .ToListAsync()
+                :
+                await _dbContext.Categories
+                    .Where(c => c.UserId == userId && c.DateDeleted == null)
+                    .ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -136,13 +145,6 @@ namespace Portmonetka.Controllers
             await _dbContext.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool CheckIdentity(out int userId)
-        {
-            userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-            return userId != 0;
         }
     }
 }

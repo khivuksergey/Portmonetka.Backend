@@ -4,8 +4,9 @@ import { ICategory } from "../Common/DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _ from "lodash";
 import { mapKeys } from "lodash";
+import { ClearLocalStorage, ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
 
-export default function useCategory() {
+export default function useCategory(sorted?: boolean) {
     const { token, userId } = useContext(AuthContext);
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [loading, setLoading] = useState(false);
@@ -14,8 +15,15 @@ export default function useCategory() {
     let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
-        if (!dataFetched)
-            fetchCategories();
+        if (!dataFetched) {
+            const data = ReadFromLocalStorage(`categories_${userId}`) as ICategory[];
+            if (data) {
+                setCategories(data);
+                setDataFetched(true);
+            } else {
+                fetchCategories(sorted);
+            }
+        }
 
         return () => {
             if (cancelTokenSource) {
@@ -25,11 +33,12 @@ export default function useCategory() {
     }, [dataFetched])
 
     const refreshCategories = () => {
+        ClearLocalStorage(`categories_${userId}`);
         setDataFetched(false);
     }
 
-    const fetchCategories = async () => {
-        const url = "api/category";
+    const fetchCategories = async (sorted? : boolean) => {
+        const url = `api/category${sorted ? "?sorted=true" : ""}`;
         try {
             setError("");
 
@@ -48,6 +57,8 @@ export default function useCategory() {
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ICategory[];
                     setCategories(camelCasedData);
                     setDataFetched(true);
+
+                    WriteToLocalStorage(`categories_${userId}`, camelCasedData);
                 });
         } catch (e: unknown) {
             if (axios.isCancel(e)) {

@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Portmonetka.Models;
+using Portmonetka.Backend.Models;
 using System.Security.Claims;
 
-namespace Portmonetka.Controllers
+namespace Portmonetka.Backend.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class TransactionController : ControllerBase
+    public class TransactionController : BaseAuthorizableController
     {
         private readonly PortmonetkaDbContext _dbContext;
         public TransactionController(PortmonetkaDbContext dbContext)
@@ -223,12 +223,5 @@ namespace Portmonetka.Controllers
         }
 
         #endregion
-
-        private bool CheckIdentity(out int userId)
-        {
-            userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-            return userId != 0;
-        }
     }
 }

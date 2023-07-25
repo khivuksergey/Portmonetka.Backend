@@ -32,6 +32,13 @@ export interface ITransaction extends IAuditable, IAuthorizable {
     walletId: number
 }
 
+export interface ITransactionTemplate extends IAuditable, IAuthorizable {
+    id?: number
+    description: string
+    amount?: number | null
+    categoryId: number
+}
+
 export interface IGlobalBalance {
     id: number
     currency: string

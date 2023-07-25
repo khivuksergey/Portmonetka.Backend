@@ -3,7 +3,7 @@ import { Formik, FieldArray, FormikErrors } from "formik";
 import * as yup from "yup";
 import { ICategory, ITransaction, IWallet } from "../../../Common/DataTypes";
 import { AddCategory, DayPickerWithTodayButton, Modal, ModalFooter, Popper } from "../../../Components";
-import { useCategory, useTransaction, usePopper } from "../../../Hooks";
+import { useCategory, useTransaction, useTransactionTemplate, usePopper } from "../../../Hooks";
 import { Form, Row, Col, InputGroup } from "react-bootstrap";
 import { IconRemoveRow, IconPlus, IconCalendar } from "../../../Common/Icons";
 import "react-day-picker/dist/style.css";
@@ -22,7 +22,7 @@ interface IAddTransaction {
     walletId: number
 }
 
-type addTransactionsType = {
+type TAddTransactionsType = {
     transactions: IAddTransaction[]
 }
 
@@ -59,13 +59,15 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
         )
     }
 
-    const initialValues: addTransactionsType = {
+    const initialValues: TAddTransactionsType = {
         transactions: [generateTransactionTemplate(new Date(new Date().getTime()))]
     }
 
     const { handleAddTransactions } = useTransaction(wallet.id!);
 
-    const { categories, handleAddCategory, dataFetched: categoriesLoaded, refreshCategories } = useCategory();
+    const { templates } = useTransactionTemplate();
+    
+    const { categories, handleAddCategory, dataFetched: categoriesLoaded, refreshCategories } = useCategory(true);
 
     const [currentIndex, setCurrentIndex] = useState<number>(0);
 
@@ -106,7 +108,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
         };
     }, []);
 
-    const handleAddRow = (push: Function, values: addTransactionsType) => {
+    const handleAddRow = (push: Function, values: TAddTransactionsType) => {
         let lastTransaction: IAddTransaction = values.transactions[values.transactions.length - 1];
         const newTransaction = generateTransactionTemplate(lastTransaction.date);
         push(newTransaction);
@@ -131,6 +133,18 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
     // #endregion
 
     // #region Data change handlers
+
+    const handleDescriptionChange = (index: number, value: string, setFieldValue: Function, transactions: IAddTransaction[]) => {
+        const description = value;
+        const template = templates.find(t => t.description.toLowerCase() === description.toLowerCase())
+        if (template) {
+            setFieldValue(`transactions[${index}].categoryId`, template.categoryId);
+            if (!!template.amount){
+                setFieldValue(`transactions[${index}].amount`, template.amount);
+            }
+        }
+        setFieldValue(`transactions[${index}].description`, value);
+    }
 
     const handleAmountChange = (index: number, value: string, setFieldValue: Function, transactions: IAddTransaction[]) => {
         const currentTransaction = transactions[index];
@@ -191,7 +205,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
         setIsPopperCategoryOpen(false);
     }
 
-    const handleSubmit = (values: addTransactionsType) => {
+    const handleSubmit = (values: TAddTransactionsType) => {
         const added = handleAddTransactions(values.transactions as unknown as ITransaction[]);
         added.then((success) => {
             onClose(success);
@@ -238,7 +252,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                                     name={`transactions[${i}].description`}
                                                                     placeholder="Description"
                                                                     value={transaction.description}
-                                                                    onChange={handleChange}
+                                                                    onChange={(e) => handleDescriptionChange(i, e.target.value, setFieldValue, values.transactions)}
                                                                     className="form-control--dark"
                                                                     isInvalid={touched.transactions?.[i]?.description &&
                                                                         !!(errors.transactions?.[i] as FormikErrors<IAddTransaction>)?.description}
@@ -330,7 +344,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
 
                                     <Popper
                                         open={isPopperCategoryOpen}
-                                        setOpen={setIsPopperDateOpen}
+                                        setOpen={setIsPopperCategoryOpen}
                                         popper={popperCategory}
                                         setPopperElement={setPopperCategory}
                                     >

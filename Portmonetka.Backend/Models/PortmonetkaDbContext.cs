@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Portmonetka.Models;
+namespace Portmonetka.Backend.Models;
 
 public partial class PortmonetkaDbContext : DbContext
 {
@@ -24,6 +24,8 @@ public partial class PortmonetkaDbContext : DbContext
     public virtual DbSet<Transaction> Transactions { get; set; }
 
     public virtual DbSet<Wallet> Wallets { get; set; }
+
+    public virtual DbSet<TransactionTemplate> TransactionTemplates { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

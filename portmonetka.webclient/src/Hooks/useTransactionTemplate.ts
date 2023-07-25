@@ -1,13 +1,13 @@
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Context/AuthContext";
-import { IWallet } from "../Common/DataTypes";
+import { ITransactionTemplate } from "../Common/DataTypes";
 import { ClearLocalStorage, ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 
-export default function useWallet() {
+export default function useTransactionTemplate() {
     const { token, userId } = useContext(AuthContext);
-    const [wallets, setWallets] = useState<IWallet[]>([]);
+    const [templates, setTemplates] = useState<ITransactionTemplate[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [dataFetched, setDataFetched] = useState(false);
@@ -15,12 +15,12 @@ export default function useWallet() {
 
     useEffect(() => {
         if (!dataFetched) {
-            const data = ReadFromLocalStorage(`wallets_${userId}`) as IWallet[];
+            const data = ReadFromLocalStorage(`transactionTemplates_${userId}`) as ITransactionTemplate[];
             if (data) {
-                setWallets(data);
+                setTemplates(data);
                 setDataFetched(true);
             } else {
-                fetchWallets();
+                fetchTemplates();
             }
         }
 
@@ -31,82 +31,61 @@ export default function useWallet() {
         }
     }, [dataFetched])
 
-    const refreshWallets = () => {
-        ClearLocalStorage(`wallets_${userId}`);
+    const refreshTemplates = () => {
+        ClearLocalStorage(`transactionTemplates_${userId}`);
         setDataFetched(false);
     };
 
-    const fetchWallets = async () => {
-        const url = "api/wallet";
+    const fetchTemplates = async () => {
+        const url = "api/transactionTemplate/";
         try {
             setError("");
 
-            if (!loading)
+            if (!loading) {
                 setLoading(true);
+            }
 
             cancelTokenSource = axios.CancelToken.source();
 
-            await axios.get<IWallet[]>(url, {
+            await axios.get<ITransactionTemplate[]>(url, {
                 cancelToken: cancelTokenSource.token,
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => {
                     const camelCasedData = response.data.map(item =>
-                        mapKeys(item, (value, key) => _.camelCase(key))) as unknown as IWallet[];
-                    setWallets(camelCasedData);
+                        mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransactionTemplate[];
+                    setTemplates(camelCasedData);
                     setDataFetched(true);
-                    setLoading(false);
-                    WriteToLocalStorage(`wallets_${userId}`, camelCasedData);
+                    WriteToLocalStorage(`transactionTemplates_${userId}`, camelCasedData);
                 });
         } catch (e: unknown) {
-            setLoading(false);
             if (axios.isCancel(e)) {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
-            // setError(error.message);
-            setError(error.response?.statusText ?? error.message);
+            setError(error.message);
+        } finally {
+            setLoading(false);
         }
     }
 
-    const handleAddWallet = async (wallet: IWallet): Promise<boolean> => {
-        const url = "api/wallet";
+    const handleAddTemplates = async (templates: ITransactionTemplate[]): Promise<boolean> => {
+        const url = "api/transactionTemplate";
         setError("");
         setLoading(true);
 
+        const templatesWithUserId = templates.map(template => {
+            return { ...template, userId: userId }
+        })
+
         return new Promise<boolean>((resolve, reject) => {
-            axios.post<IWallet>(
+            axios.post(
                 url,
-                { ...wallet, userId: userId },
+                templatesWithUserId,
                 { headers: { Authorization: `Bearer ${token}` } }
             )
                 .then((response) => {
                     resolve(response.status === 201);
-                })
-                .catch((e: unknown) => {
-                    const error = e as AxiosError;
-                    setError(error.response?.data as string);
-                    console.error(error);
-                })
-                .finally(() => {
-                    setLoading(false);
-                })
-        })
-    }
-
-    const handleChangeWallet = async (changedWallet: IWallet) => {
-        const url = "api/wallet";
-        setError("");
-        setLoading(true);
-
-        return new Promise<boolean>((resolve, reject) => {
-            axios.post<IWallet>(
-                url,
-                { ...changedWallet, userId: userId },
-                { headers: { Authorization: `Bearer ${token}` } }
-            )
-                .then((response) => {
-                    resolve(response.status >= 200 && response.status < 300);
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
@@ -115,44 +94,68 @@ export default function useWallet() {
                 })
                 .finally(() => {
                     setLoading(false);
+                });
+        })
+    }
+
+    const handleChangeTemplates = async (templates: ITransactionTemplate[]): Promise<boolean> => {
+        const url = "api/transactionTemplate";
+        setError("");
+        setLoading(true);
+
+        const templatesWithUserId = templates.map(template => {
+            return { ...template, userId: userId }
+        })
+
+        return new Promise<boolean>((resolve, reject) => {
+            axios.post(
+                url,
+                templatesWithUserId,
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+                .then((response) => {
+                    resolve(response.status >= 200 && response.status < 300);
+                })
+                .catch((e: unknown) => {
+                    const error = e as AxiosError;
+                    setError(error.message);
+                    //console.error(error);
+                })
+                .finally(() => {
+                    setLoading(false);
                 })
         })
     }
 
-    const handleDeleteWallet = async (walletId: number, force?: boolean): Promise<boolean> => {
-        const url = `api/wallet/${walletId}` + (!!force ? `?force=${force}` : "");
-
+    const handleDeleteTemplates = async (ids: number[]): Promise<boolean> => {
+        const url = "api/transactionTemplate/";
         setError("");
         setLoading(true);
 
-        try {
-            const response = await axios.delete(url, { headers: { Authorization: `Bearer ${token}` } });
-
-            if (response.data && response.data.ConfirmationRequired) {
-                const confirmed = window.confirm("Are you sure you want to delete the wallet and all its transactions?");
-                if (confirmed) {
-                    return handleDeleteWallet(walletId, true);
-                } else {
-                    return false;
-                }
-            }
-
-            return response.status >= 200 && response.status < 300;
-        } catch (error: unknown) {
-            setError((error as AxiosError).message);
-            console.error(error);
-            return false;
-        } finally {
-            setLoading(false);
-        }
+        return new Promise<boolean>((resolve, reject) => {
+            axios.delete(url, {
+                data: ids,
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then((response) => {
+                    resolve(response.status >= 200 && response.status < 300);
+                })
+                .catch((e: unknown) => {
+                    const error = e as AxiosError;
+                    setError(error.message);
+                })
+                .finally(() => {
+                    setLoading(false);
+                })
+        })
     }
 
     return {
-        wallets,
-        handleAddWallet,
-        handleChangeWallet,
-        handleDeleteWallet,
-        refreshWallets,
+        templates,
+        handleAddTemplates,
+        handleChangeTemplates,
+        handleDeleteTemplates,
+        refreshTemplates,
         dataFetched,
         loading,
         error
