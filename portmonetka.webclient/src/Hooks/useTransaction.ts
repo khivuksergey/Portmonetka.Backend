@@ -3,7 +3,7 @@ import { AuthContext } from "../Context/AuthContext";
 import { ITransaction } from "../Common/DataTypes";
 import { ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
 import axios, { AxiosError, CancelTokenSource } from "axios";
-import _, { camelCase, mapKeys } from "lodash";
+import _, { mapKeys } from "lodash";
 
 export default function useTransaction(walletId: number, latestCount?: number) {
     const { token, userId } = useContext(AuthContext);
@@ -155,7 +155,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         const url = `api/transaction/`;
         setError("");
         setLoading(true);
-        
+
         const transactionsWithUserId = transactions.map(transaction => {
             return { ...transaction, userId: userId }
         })
