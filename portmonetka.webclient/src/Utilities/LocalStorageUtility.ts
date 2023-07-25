@@ -1,11 +1,11 @@
-export function writeToLocalStorage(key: string, value: any) {
+export function WriteToLocalStorage(key: string, value: any) {
     const data = value;
     const timestamp = Date.now();
 
     localStorage.setItem(key, JSON.stringify({ data, timestamp }));
 }
 
-export function readFromLocalStorage(key: string) {
+export function ReadFromLocalStorage(key: string) {
     const cachedData = localStorage.getItem(key);
     if (!cachedData) {
         return null;

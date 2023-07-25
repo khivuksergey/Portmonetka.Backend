@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { IWallet } from "../Common/DataTypes";
-import { readFromLocalStorage, writeToLocalStorage } from "../Utilities";
+import { ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _, { mapKeys } from "lodash";
 
@@ -15,7 +15,7 @@ export default function useWallet() {
 
     useEffect(() => {
         if (!dataFetched) {
-            const data = readFromLocalStorage("wallets") as IWallet[];
+            const data = ReadFromLocalStorage("wallets") as IWallet[];
             if (data) {
                 setWallets(data);
                 setDataFetched(true);
@@ -55,7 +55,7 @@ export default function useWallet() {
                     setWallets(camelCasedData);
                     setDataFetched(true);
                     setLoading(false);
-                    writeToLocalStorage("wallets", camelCasedData);
+                    WriteToLocalStorage("wallets", camelCasedData);
                 });
         } catch (e: unknown) {
             setLoading(false);

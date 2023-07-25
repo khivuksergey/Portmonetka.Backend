@@ -4,8 +4,10 @@ import { ICategory } from "../Common/DataTypes";
 import axios, { AxiosError, CancelTokenSource } from "axios";
 import _ from "lodash";
 import { mapKeys } from "lodash";
+import { ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
 
 export default function useCategory(sorted?: boolean) {
+    const { token, userId } = useContext(AuthContext);
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -13,8 +15,15 @@ export default function useCategory(sorted?: boolean) {
     let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
-        if (!dataFetched)
-            fetchCategories(sorted);
+        if (!dataFetched) {
+            const data = ReadFromLocalStorage(`categories_${userId}`) as ICategory[];
+            if (data) {
+                setCategories(data);
+                setDataFetched(true);
+            } else {
+                fetchCategories(sorted);
+            }
+        }
 
         return () => {
             if (cancelTokenSource) {
@@ -47,6 +56,8 @@ export default function useCategory(sorted?: boolean) {
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ICategory[];
                     setCategories(camelCasedData);
                     setDataFetched(true);
+
+                    WriteToLocalStorage(`categories_${userId}`, camelCasedData);
                 });
         } catch (e: unknown) {
             if (axios.isCancel(e)) {

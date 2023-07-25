@@ -2,11 +2,13 @@
 import CurrencyToSign from "./CurrencyToSign";
 import MoneyToLocaleString from "./MoneyToLocaleString";
 import UtcDateToLocalString from "./UtcDateToLocalString";
-import { readFromLocalStorage, writeToLocalStorage } from "./LocalStorageUtility";
+import { ReadFromLocalStorage, WriteToLocalStorage } from "./LocalStorageUtility";
 
 export {
     CheckPasswordStrength,
     CurrencyToSign,
     MoneyToLocaleString,
-    UtcDateToLocalString
+    UtcDateToLocalString,
+    ReadFromLocalStorage,
+    WriteToLocalStorage
 }
