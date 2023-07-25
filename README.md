@@ -15,8 +15,9 @@ This is a web application built using ASP.NET Core as the backend framework and 
 
 2. **Transaction Management**
 
-* Add multiple transactions at once, specifying descriptions, amounts, categories, and dates.
-* Validate data on both the front-end and back-end to ensure accurate inputs.
+* Add Transactions Easily: Add multiple transactions at once, specifying descriptions, amounts, categories, and dates effortlessly.
+* Smart Template Usage: Create and save templates for frequently used transactions. When you add a new transaction with a description that matches a template, the template's fields will automatically populate, saving you time and reducing repetitive data entry.
+* Data Validation: Rest assured that your inputs are accurate and error-free. Our system performs data validation on both the front-end and back-end, ensuring precise and reliable data recording.
 
 3. **Balance Section**
 
