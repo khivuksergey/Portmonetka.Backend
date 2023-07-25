@@ -7,6 +7,7 @@ const { env } = require("process");
 const context = [
     "/api/wallet",
     "/api/transaction",
+    "/api/transactionTemplate",
     "/api/category",
     "/api/user"
 ];

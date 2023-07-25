@@ -22,7 +22,7 @@ interface IAddTransaction {
     walletId: number
 }
 
-type addTransactionsType = {
+type TAddTransactionsType = {
     transactions: IAddTransaction[]
 }
 
@@ -59,7 +59,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
         )
     }
 
-    const initialValues: addTransactionsType = {
+    const initialValues: TAddTransactionsType = {
         transactions: [generateTransactionTemplate(new Date(new Date().getTime()))]
     }
 
@@ -106,7 +106,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
         };
     }, []);
 
-    const handleAddRow = (push: Function, values: addTransactionsType) => {
+    const handleAddRow = (push: Function, values: TAddTransactionsType) => {
         let lastTransaction: IAddTransaction = values.transactions[values.transactions.length - 1];
         const newTransaction = generateTransactionTemplate(lastTransaction.date);
         push(newTransaction);
@@ -191,7 +191,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
         setIsPopperCategoryOpen(false);
     }
 
-    const handleSubmit = (values: addTransactionsType) => {
+    const handleSubmit = (values: TAddTransactionsType) => {
         const added = handleAddTransactions(values.transactions as unknown as ITransaction[]);
         added.then((success) => {
             onClose(success);
@@ -330,7 +330,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
 
                                     <Popper
                                         open={isPopperCategoryOpen}
-                                        setOpen={setIsPopperDateOpen}
+                                        setOpen={setIsPopperCategoryOpen}
                                         popper={popperCategory}
                                         setPopperElement={setPopperCategory}
                                     >

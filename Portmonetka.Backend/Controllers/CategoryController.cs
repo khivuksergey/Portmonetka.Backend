@@ -21,7 +21,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategories([FromQuery]bool? sorted)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (_dbContext.Categories == null)
@@ -44,7 +44,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (_dbContext.Categories == null)
@@ -63,7 +63,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (!ModelState.IsValid)
@@ -107,7 +107,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCategory(int id, [FromQuery] bool force = false)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (_dbContext.Categories == null)

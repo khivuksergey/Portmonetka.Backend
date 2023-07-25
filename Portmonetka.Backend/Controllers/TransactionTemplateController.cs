@@ -20,7 +20,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TransactionTemplate>>> GetTransactionTemplates()
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (_context.TransactionTemplates == null)
@@ -34,7 +34,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<TransactionTemplate>> PostTransactionTemplates(IEnumerable<TransactionTemplate> templates)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             var existingTemplateIds = templates.Where(t => t.Id != 0).Select(t => t.Id);
@@ -64,7 +64,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteTransactionTemplates(IEnumerable<int> ids)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (_context.TransactionTemplates == null)

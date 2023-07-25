@@ -48,7 +48,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpGet("wallet/{walletId}")]
         public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByWallet(int walletId, [FromQuery(Name = "latest")] int? count)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (_dbContext.Transactions == null)
@@ -82,7 +82,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpGet("currency/{currency}")]
         public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByCurrency(string currency)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (currency == null || currency.Length != 3)
@@ -123,7 +123,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpPost]
         public async Task<ActionResult<IEnumerable<Transaction>>> PostTransactions(IEnumerable<Transaction> transactions)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             var existingTransactionIds = transactions.Where(t => t.Id != 0).Select(t => t.Id);
@@ -157,7 +157,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeleteTransactions(IEnumerable<int> ids)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (_dbContext.Transactions == null)
@@ -190,7 +190,7 @@ namespace Portmonetka.Backend.Controllers
         [HttpDelete("wallet/{walletId}")]
         public async Task<ActionResult> DeleteTransactionsByWallet(int walletId)
         {
-            if (!CheckIdentity(User, out int userId))
+            if (!CheckIdentity(out int userId))
                 return Forbid();
 
             if (_dbContext.Transactions == null)

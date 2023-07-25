@@ -14,7 +14,7 @@ export function ReadFromLocalStorage(key: string) {
     const { data, timestamp } = JSON.parse(cachedData);
     const currentTime = Date.now();
 
-    const cacheExpirationTime = 1 * 60 * 1000;
+    const cacheExpirationTime = 5 * 60 * 1000;
 
     if (currentTime - timestamp <= cacheExpirationTime) {
         return data;

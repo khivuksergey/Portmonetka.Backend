@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }: any) => {
     }
 
     const [expireTimestamp, setExpireTimestampState] = useState<number>(() => {
-        debugger
         const date = new Date(localStorage.getItem("expireTimestamp") ?? Date.now()).getTime();
         return date;
     });

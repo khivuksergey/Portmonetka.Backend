@@ -45,8 +45,6 @@ app.UseAuthorization();
 
 app.UseCors("AllowOrigin");
 
-app.MapControllerRoute(
-   name: "default",
-   pattern: "{controller}/{action=Index}/{id?}");
+app.MapControllers();
 
 app.Run();

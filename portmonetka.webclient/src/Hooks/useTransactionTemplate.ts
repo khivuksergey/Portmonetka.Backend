@@ -15,13 +15,13 @@ export default function useTransactionTemplate() {
 
     useEffect(() => {
         if (!dataFetched) {
-            const data = ReadFromLocalStorage(`transactionTemplates_${userId}`) as ITransactionTemplate[];
-            if (data) {
-                setTemplates(data);
-                setDataFetched(true);
-            } else {
+            //const data = ReadFromLocalStorage(`transactionTemplates_${userId}`) as ITransactionTemplate[];
+            // if (data) {
+            //     setTemplates(data);
+            //     setDataFetched(true);
+            // } else {
                 fetchTemplates();
-            }
+            //}
         }
 
         return () => {
@@ -55,7 +55,6 @@ export default function useTransactionTemplate() {
                         mapKeys(item, (value, key) => _.camelCase(key))) as unknown as ITransactionTemplate[];
                     setTemplates(camelCasedData);
                     setDataFetched(true);
-
                     WriteToLocalStorage(`transactionTemplates_${userId}`, camelCasedData);
                 });
         } catch (e: unknown) {
