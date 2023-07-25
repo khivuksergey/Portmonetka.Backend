@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Portmonetka.Models;
+using Portmonetka.Backend.Models;
 using System.Security.Claims;
 
-namespace Portmonetka.Controllers
+namespace Portmonetka.Backend.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class WalletController : ControllerBase
+    public class WalletController : BaseAuthorizableController
     {
         private readonly PortmonetkaDbContext _dbContext;
         public WalletController(PortmonetkaDbContext dbContext)
@@ -20,7 +20,7 @@ namespace Portmonetka.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Wallet>>> GetWallets()
         {
-            if (!CheckIdentity(out int userId))
+            if (!CheckIdentity(User, out int userId))
                 return Forbid();
 
             if (_dbContext.Wallets == null)
@@ -34,7 +34,7 @@ namespace Portmonetka.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Wallet>> GetWallet(int id)
         {
-            if (!CheckIdentity(out int userId))
+            if (!CheckIdentity(User, out int userId))
                 return Forbid();
 
             if (_dbContext.Wallets == null)
@@ -53,7 +53,7 @@ namespace Portmonetka.Controllers
         [HttpPost]
         public async Task<ActionResult<Wallet>> PostWallet(Wallet wallet)
         {
-            if (!CheckIdentity(out int userId))
+            if (!CheckIdentity(User, out int userId))
                 return Forbid();
 
             if (!ModelState.IsValid)
@@ -101,7 +101,7 @@ namespace Portmonetka.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteWallet(int id, [FromQuery] bool force = false)
         {
-            if (!CheckIdentity(out int userId))
+            if (!CheckIdentity(User, out int userId))
                 return Forbid();
 
             if (_dbContext.Wallets == null)
@@ -139,13 +139,6 @@ namespace Portmonetka.Controllers
             await _dbContext.SaveChangesAsync();
 
             return Ok();
-        }
-
-        private bool CheckIdentity(out int userId)
-        {
-            userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-            return userId != 0;
         }
     }
 }

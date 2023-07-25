@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Portmonetka.Models;
+namespace Portmonetka.Backend.Models;
 
 public partial class Category: Auditable
 {

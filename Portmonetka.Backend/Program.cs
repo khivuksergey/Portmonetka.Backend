@@ -1,10 +1,7 @@
 using JwtTokenAuthentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Portmonetka.Models;
-using System.Text;
+using Portmonetka.Backend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,19 +23,6 @@ builder.Services.AddControllers()
 
 // Add authentication services
 builder.Services.AddJwtAuthentication();
-//.AddJwtBearer(options =>
-//{
-//    options.Authority = Environment.GetEnvironmentVariable("AUTH_SERVICE"); //Authentication Service
-//    options.RequireHttpsMetadata = false; // Change this to true in production
-//    //options.Audience = "backend";
-//    options.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        //ValidateIssuer = true,
-//        //ValidateAudience = true,
-//        //ValidAudience = Environment.GetEnvironmentVariable("BACKEND_SERVICE"), //Backend Service, not API Gateway
-//        ValidIssuer = Environment.GetEnvironmentVariable("AUTH_SERVICE") //Authentication Service
-//    };
-//});
 
 //TO-DO Remove
 builder.Services.AddAutoMapper(typeof(Program));
