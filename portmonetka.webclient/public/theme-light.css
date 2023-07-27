@@ -1,0 +1,194 @@
+:root {
+    /*Color*/
+    --primary: #fec36f;
+    --primary-accent: #ffd294;
+    /*rgb(254,195,111)*/
+    --primary-opaque: rgb(254, 195, 111, 0.9);
+    --page-background: #f0f0f0; /*#f7f7f7;*/
+    --grey-0: #a9a9a9;
+    --grey-1: #b9b9b9;
+    --grey-2: #c9c9c9;
+    --grey-3: #d9d9d9;
+    --grey-4: #e9e9e9;
+    --grey-5: #f9f9f9;
+    --grey-6: #ffffff;/*???*/
+    --placeholder-grey: var(--grey-1);
+    --green: #6ed26e;
+    --red: #da4747;/*#ff2d2d;*/
+    --red-light: var(--red);
+    --trend-green: #00ae00;
+    --trend-red: red;
+    --trend-grey: #aaaaaa;
+    --font-weight: 500;
+    --text-color: #191919;
+    --text-color-accent: #090909;
+    --logo-background: #101010;
+    --logo-text-color: #e6e6e6;
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-color);
+    /*Box-shadow*/
+    --popper-box-shadow: 0 1px 20px 1px rgba(0,0,0,0.2);
+    --focus-box-shadow: 0 0 0 0.2rem rgba(254, 195, 111, 0.5);
+    /*Animation*/
+    --animation-duration: 300ms;
+    --animation-timing-curve: ease-in-out;
+    /*Swiper*/
+    --swiper-scrollbar-bg-color: transparent;
+    --swiper-scrollbar-drag-bg-color: var(--grey-3);/* rgba(0, 0, 0, 0.15);*/
+    --swiper-scrollbar-bottom: -10px;
+    --swiper-scrollbar-sides-offset: 0px;
+    /*Theme colors*/
+    --scrollbar-track: var(--page-background);
+    --scrollbar-thumb: rgba(0,0,0,0.15);
+    --alert-close-button-filter: none;
+    --react-bootstrap-placeholder: var(--grey-2);
+    --kusya: #95634d;
+    --yasya: #d5854a;
+    /* --nav-link-active-background: var(--grey-6); */
+    --nav-link-active-color: var(--text-color);
+    --nav-link-hover-background: var(--grey-4);
+    --nav-link-hover-color: var(--text-color-accent);
+    --offcanvas-background: var(--page-background);
+    --offcanvas-sidebar-logo-background: #0c0c0c;
+    --input-focus-background: var(--grey-5);
+    --input-focus-text: var(--text-color);
+    --input-disabled-background: var(--grey-4);
+    --input-disabled-border: var(--grey-4);
+    --input-selection-text: var(--text-color);
+    --check-input-background: var(--grey-5);
+    --button-background: var(--grey-3);
+    --button-hover-background: var(--grey-3);
+    --button-disabled-background: var(--grey-4);
+    --button-disabled-border-color: var(--grey-4);
+    --button-submit-hover-text: var(--text-color-accent);
+    --button-transaction-delete-color: var(--grey-2);
+    --input-group-button-icon-color: var(--grey-0);
+    --input-group-button-hover-icon-color: var(--text-color);
+    --form-control-background: var(--grey-5);
+    --form-control-border: var(--grey-5);
+    --form-control-hover-background: var(--grey-6);
+    --form-control-hover-border: var(--grey-5);
+    --form-check-checked: var(--grey-5);
+    --form-label-text: var(--text-color);
+    --invalid-feedback-text: #ed5453;
+    /* --modal-border-color: var(--grey-2); */
+    --modal-background: var(--grey-4);
+    --alert-danger-background: linear-gradient(20deg, #f36a5f 0%, #eabfbd 100%);
+    --popper-background: var(--grey-4);
+    --password-strength-background: var(--grey-2);
+    --password-strength-weak: #ed5453;
+    --password-strength-medium: var(--primary);
+    --password-strength-strong: #28bb63;
+    --balance-background: var(--grey-5);
+    --balance-currency-sign-color: var(--text-color);
+    --balance-info-stats-color: #000000;
+    --button-add-wallet-icon: var(--grey-0);
+    --button-add-wallet-icon-hover: var(--text-color-accent);
+    --button-add-wallet-border-color: var(--grey-0);
+    --button-add-wallet-hover-background: var(--grey-4);
+    --button-add-wallet-hover-border-color: var(--grey-0);
+    --wallet-background: var(--grey-5);
+    --transactions-preview-blur-background: linear-gradient(to top, rgba(255, 255, 255, 1) 30%, rgba(255, 255, 255, 0) 100%);
+    --button-add-transactions-border-color: var(--grey-0);
+    --button-add-transactions-background-color: var(--grey-4);
+    --transaction-container-border-color: var(--grey-3);
+    --template-container-border-color: var(--grey-3);
+    --template-container-disabled-background: transparent;
+    --button-add-transaction-row-color: var(--placeholder-grey);
+    --button-add-transaction-row-border-color: var(--grey-3);
+    --button-add-transaction-row-hover-background: var(--grey-5);
+    --button-add-transaction-row-focus-background: var(--grey-5);
+    --button-add-transaction-row-focus-color: var(--text-color);
+    --rdp-day-today-background: var(--grey-4);
+    --rdp-day-selected-color: var(--text-color);
+    --rdp-button-hover-background: var(--grey-3);
+}
+
+body {
+    font-weight: 500;
+}
+
+.form-label,
+.form-control {
+    font-weight: 400;
+}
+
+.form-select {
+    --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23a9a9a9%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
+}
+
+.nav-link.active > .nav-link__text {
+    font-weight: 800;
+}
+
+.wallet-content {
+    -webkit-box-shadow: 4px 4px 30px -15px rgba(0, 0, 0, 0.35);
+    -moz-box-shadow: 4px 4px 30px -15px rgba(0, 0, 0, 0.35);
+    box-shadow: 4px 4px 30px -15px rgba(0, 0, 0, 0.35);
+}
+
+.balance {
+    -webkit-box-shadow: 4px 4px 25px -15px rgba(0, 0, 0, 0.35);
+    -moz-box-shadow: 4px 4px 25px -15px rgba(0, 0, 0, 0.35);
+    box-shadow: 4px 4px 25px -15px rgba(0, 0, 0, 0.35);
+}
+
+.wallet::before {
+    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.2), transparent 40%);
+    z-index: 3;
+}
+
+.wallet::after {
+    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(0, 0, 0, 0.2), transparent 40%);
+    z-index: 1;
+}
+
+.add-transactions__button > svg {
+    stroke-width: 1;
+}
+
+button[type="submit"] {
+    background-color: var(--primary);
+}
+
+button[type="submit"]:disabled {
+    background-color: var(--grey-3);
+}
+
+button[type="submit"]:hover:not(:disabled),
+button[type="submit"]:focus-visible:not(:disabled){
+    background-color: var(--primary-accent);
+}
+
+.input-group > button:not(:disabled) {
+    background-color: var(--grey-5);
+    /* border: 1px solid transparent; */
+}
+
+.input-group > button:hover:not(:disabled) {
+    background-color: var(--grey-3);
+}
+
+/* .input-group > button[type="button"] > svg {
+    fill: var(--grey-0);
+}
+
+.input-group > button[type="button"]:hover > svg{
+    fill: var(--text-color);
+    transition: all 0.15s ease-in-out;
+} */
+
+.modal-footer > button.button--delete > svg {
+    fill: var(--grey-5);
+}
+
+button.button--delete:hover > svg,
+button.button--restore:hover > svg,
+.input-group > button.button--delete:hover > svg,
+.input-group > button.button--restore:hover > svg {
+    fill: var(--grey-5);
+}
+
+.rdp-day_today:not(.rdp-day_outside) {
+    font-weight: 900;
+}

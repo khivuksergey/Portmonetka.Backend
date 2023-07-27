@@ -21,14 +21,14 @@ export default function ModalFooter(
             {children ?? null}
 
             {(hasReset ?? true) ?
-                <button type="reset" className="button--dark" onClick={onReset}>
+                <button type="reset"onClick={onReset}>
                     {resetText ?? "Cancel"}
                 </button>
                 :
                 null
             }
 
-            <button type="submit" className="button--dark">
+            <button type="submit">
                 {submitText ?? "Save"}
             </button>
         </div>

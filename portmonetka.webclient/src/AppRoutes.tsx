@@ -11,11 +11,11 @@ const AppRoutes = [
     },
     {
         path: "/transactions",
-        element: < TransactionsPage />
+        element: <TransactionsPage />
     },
     {
         path: "/wallets",
-        element: < WalletsPage />
+        element: <WalletsPage />
     },
     {
         path: "/categories",

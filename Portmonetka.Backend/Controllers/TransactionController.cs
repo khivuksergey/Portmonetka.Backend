@@ -63,13 +63,13 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (currency == null || currency.Length != 3)
+            if (String.IsNullOrEmpty(currency) || currency.Length != 3)
                 return BadRequest("Invalid currency");
 
-            if (!_transactions.Exist())
-                return NotFound();
-
             var transactions = await _transactions.FindByCurrency(userId, currency);
+
+            if (transactions == null)
+                return NotFound($"No transactions were found with currency {currency}");
 
             return Ok(transactions);
         }
@@ -152,7 +152,7 @@ namespace Portmonetka.Backend.Controllers
             bool transactionsExist = (await _transactions.FindByUserId(userId)).Any();
 
             if (!transactionsExist)
-                return NotFound("No transactions exist for the user");
+                return NotFound("No transactions were found for the user");
 
             var transactionsToDelete = await _transactions.FindExistingById(userId, ids);
 

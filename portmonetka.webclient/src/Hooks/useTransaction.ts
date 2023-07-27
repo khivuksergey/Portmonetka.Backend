@@ -12,6 +12,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [dataFetched, setDataFetched] = useState(false);
+    const [transactionsExist, setTransactionsExist] = useState(false);
     let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
@@ -40,6 +41,10 @@ export default function useTransaction(walletId: number, latestCount?: number) {
             }
         }
     }, [dataFetched, latestCount])
+
+    useEffect(() => {
+        setTransactionsExist(transactions.length > 0 && !error.includes("No transactions were found"));
+    }, [transactions, error])
 
     //replace with backend service
     useEffect(() => {
@@ -85,7 +90,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
-            setError(error.message);
+            setError(error.response?.data?.toString() ?? error.message);
         } finally {
             setLoading(false);
         }
@@ -118,7 +123,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
-            setError(error.message);
+            setError(error.response?.data?.toString() ?? error.message);
         } finally {
             setLoading(false);
         }
@@ -140,13 +145,11 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 { headers: { Authorization: `Bearer ${token}` } }
             )
                 .then((response) => {
-                    console.log("add transactions response:", response);
                     resolve(response.status >= 200 && response.status < 300);
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.message);
-                    console.error(error);
+                    setError(error.response?.data?.toString() ?? error.message);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -174,7 +177,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.message);
+                    setError(error.response?.data?.toString() ?? error.message);
                     //console.error(error);
                 })
                 .finally(() => {
@@ -198,7 +201,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.message);
+                    setError(error.response?.data?.toString() ?? error.message);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -213,6 +216,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         handleChangeTransactions,
         handleDeleteTransactions,
         refreshTransactions,
+        transactionsExist,
         dataFetched,
         loading,
         error

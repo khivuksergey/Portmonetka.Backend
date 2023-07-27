@@ -1,4 +1,4 @@
-﻿import { IconUnderConstruction } from "../Common/Icons";
+﻿import { IconUnderConstruction } from "../../Common/Icons";
 
 interface PageUnderConstructionProps {
     page: string

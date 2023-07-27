@@ -6,7 +6,7 @@ import { Formik, FormikErrors } from "formik";
 import { IUserCredentials, PasswordStrength } from "../../Common/DataTypes";
 import { CheckPasswordStrength } from "../../Utilities";
 import { useLogin } from "../../Hooks";
-import { IconTwoCoins } from "../../Common/Icons";
+import { IconPortmonetka } from "../../Common/Icons";
 import { ErrorAlert } from "../../Components";
 
 export default function Login() {
@@ -18,7 +18,7 @@ export default function Login() {
     const { handleCheckUserName, handleLogin, handleSignup, loading, error: loginError } = useLogin();
 
     useEffect(() => {
-        setShowError(!!loginError && !loginError.includes("404"));
+        setShowError(!!loginError && !loginError.includes("User doesn't exist"));
     }, [loginError])
 
     useEffect(() => {
@@ -62,7 +62,7 @@ export default function Login() {
 
     const handleSubmit = async (user: IUserCredentials) => {
         let loggedIn = false;
-        
+
         if (userNameExists) {
             loggedIn = await handleLogin(user);
         } else {
@@ -86,7 +86,7 @@ export default function Login() {
                 style={{ height: "80vh", gap: "2rem" }}
             >
                 <div className="d-flex align-items-center gap-2">
-                    <IconTwoCoins size={40} fill={"var(--primary)"} />
+                    <IconPortmonetka size={40} className="icon-portmonetka" />
                     <h1 className="prevent-select" style={{ margin: "0", fontSize: "2rem" }}>
                         Portmonetka
                     </h1>
@@ -174,7 +174,7 @@ export default function Login() {
                                 <Col>
                                     <button
                                         type="submit"
-                                        className="button--dark full-width"
+                                        className="full-width"
                                         style={{ height: "38px" }}
                                         disabled={loading}
                                     >

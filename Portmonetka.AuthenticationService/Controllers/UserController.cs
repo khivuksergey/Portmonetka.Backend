@@ -61,7 +61,7 @@ namespace Portmonetka.AuthenticationService.Controllers
                 return BadRequest(ModelState);
 
             if (user.Id != 0)
-                return BadRequest("User Id must be 0");
+                return BadRequest("User id must be 0");
 
             if (_users.UserNameExists(user.Name!))
                 return BadRequest("User with this name already exists");

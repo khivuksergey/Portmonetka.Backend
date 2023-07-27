@@ -40,7 +40,7 @@ namespace Portmonetka.Backend.Controllers
             var category = await _categories.FindById(id, userId);
 
             if (category == null)
-                return NotFound();
+                return NotFound($"Category with id = {id} was not found");
 
             return Ok(category);
         }

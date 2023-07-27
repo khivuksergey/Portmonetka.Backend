@@ -1,6 +1,6 @@
-﻿import { useEffect, useState, useMemo, useRef, forwardRef, useImperativeHandle } from "react";
+﻿import { useEffect, useState, useMemo, useRef, forwardRef, useImperativeHandle, useContext } from "react";
 import { TransactionsTablePlaceholder } from "../Placeholders";
-import { ICategory, ITransaction } from "../../../Common/DataTypes";
+import { ICategory, IThemeContext, ITransaction } from "../../../Common/DataTypes";
 import { useCategory, useTransaction } from "../../../Hooks";
 import { UtcDateToLocalString } from "../../../Utilities";
 import { IconDelete, IconRestore } from "../../../Common/Icons";
@@ -16,6 +16,7 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "./ag-theme-portmonetka.css";
+import { ThemeContext } from "../../../Context/ThemeContext";
 
 interface TransactionsTableProps {
     walletId: number
@@ -42,13 +43,17 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
     ({ walletId, getTransactionsSum }: TransactionsTableProps, ref) => {
 
         //#region Data Initializations
+        const { isDarkTheme } = useContext<IThemeContext>(ThemeContext);
 
         const {
             transactions,
             transactionsSum,
             handleChangeTransactions,
             handleDeleteTransactions,
-            dataFetched: transactionsLoaded
+            transactionsExist,
+            loading: transactionsLoading,
+            dataFetched: transactionsLoaded,
+            error: transactionsError
         } = useTransaction(walletId);
 
         const {
@@ -61,7 +66,7 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
         const [editedData, setEditedData] = useState<ITransactionsData[]>([]);
 
         useEffect(() => {
-            if (!transactionsLoaded && !categoriesLoaded)
+            if (!transactionsExist && !transactionsLoaded && !categoriesLoaded)
                 return;
 
             const data = transactions.map(t => {
@@ -81,7 +86,7 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
 
             setTransactionsData(data);
 
-        }, [transactionsLoaded, categoriesLoaded]);
+        }, [transactionsExist, transactionsLoaded, categoriesLoaded]);
 
         //#endregion
 
@@ -351,12 +356,12 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
 
         return (
             <>
-                {!transactionsLoaded ?
+                {transactionsLoading ?
                     <TransactionsTablePlaceholder />
                     :
                     <div className="full-width mb-4" ref={gridRef}>
                         <AgGridReact<ITransactionsData>
-                            className="ag-theme-alpine-dark ag-theme-portmonetka"
+                            className={`ag-theme-alpine-dark ag-theme-portmonetka-${isDarkTheme ? "dark" : "light"}`}
                             rowData={transactionsData}
                             defaultColDef={defaultColDef}
                             columnDefs={filteredColumnDefs}

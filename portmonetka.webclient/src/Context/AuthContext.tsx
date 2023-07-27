@@ -7,6 +7,8 @@ export const AuthContext = createContext<IAuthContext>(
         setToken: () => { },
         userId: 0,
         setUserId: () => { },
+        userName: "",
+        setUserName: () => { },
         expireTimestamp: Date.now(),
         setExpireTimestamp: () => { }
     });
@@ -30,6 +32,15 @@ export const AuthProvider = ({ children }: any) => {
         localStorage.setItem("userId", newUserId.toString());
     }
 
+    const [userName, setUserNameState] = useState<string>(() => {
+        return localStorage.getItem("userName") || "";
+    });
+
+    const setUserName = (userName: string) => {
+        setUserNameState(userName);
+        localStorage.setItem("userName", userName);
+    }
+
     const [expireTimestamp, setExpireTimestampState] = useState<number>(() => {
         const date = new Date(localStorage.getItem("expireTimestamp") ?? Date.now()).getTime();
         return date;
@@ -44,6 +55,7 @@ export const AuthProvider = ({ children }: any) => {
         <AuthContext.Provider value={{
             token, setToken,
             userId, setUserId,
+            userName, setUserName,
             expireTimestamp, setExpireTimestamp
         }} >
             {children}

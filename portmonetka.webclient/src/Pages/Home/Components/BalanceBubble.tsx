@@ -15,8 +15,8 @@ export default function BalanceBubble({ balance }: BalanceBubbleProps) {
                     src="./superellipse-64x64.svg"
                     width={48}
                     alt="Superellipse"
-                    className="balance__currency-sign__icon" />
-
+                    className="balance__currency-sign__icon"
+                />
                 <h3 className="balance__currency-sign__text">
                     {CurrencyToSign(balance.currency)}
                 </h3>

@@ -1,5 +1,5 @@
 ﻿import { IWallet } from "../../Common/DataTypes";
-import { IconAdd, IconRefresh } from "../../Common/Icons";
+import { IconAdd } from "../../Common/Icons";
 import { Wallet } from "./Components";
 
 interface IWalletsProps {
@@ -18,7 +18,7 @@ export default function Wallets({ wallets, onAddWallet, onChangeWallet, onDelete
                 <button type="button" className="button--add-wallet"
                     onClick={onAddWallet}
                 >
-                    <IconAdd fill="var(--placeholder-grey)" />
+                    <IconAdd fill="var(--button-add-wallet-icon)" />
                 </button>
             </div>
 

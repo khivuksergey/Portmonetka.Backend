@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react"
+
 interface IAuditable {
     dateCreated?: Date
     dateUpdated?: Date
@@ -11,7 +13,7 @@ interface IAuthorizable {
 export interface IWallet extends IAuditable, IAuthorizable {
     id?: number
     name: string
-    currency: string 
+    currency: string
     initialAmount: number
     iconFileName?: string
 }
@@ -77,6 +79,8 @@ export interface IAuthContext {
     setToken: (token: string) => void
     userId: number
     setUserId: (id: number) => void
+    userName: string
+    setUserName: (name: string) => void
     expireTimestamp: number
     setExpireTimestamp: (milliseconds: number) => void
 }
@@ -85,4 +89,9 @@ export enum PasswordStrength {
     WEAK = "Weak",
     MEDIUM = "Medium",
     STRONG = "Strong",
-  }
+}
+
+export interface IThemeContext {
+    isDarkTheme: boolean
+    setIsDarkTheme: (isDark: boolean) => void
+}

@@ -1,10 +1,11 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import GlobalBalanceContext from "../../../Context/GlobalBalanceContext";
-import { IWallet, IGlobalBalance } from "../../../Common/DataTypes";
+import { IWallet, IGlobalBalance, IThemeContext } from "../../../Common/DataTypes";
 import LatestTransactionsPreview, { LatestTransactionsPreviewRef } from "./LatestTransactionsPreview";
 import { AddTransactionModal, WalletModal } from "../Modals";
 import { CurrencyToSign, MoneyToLocaleString } from "../../../Utilities";
-import { IconCash } from "../../../Common/Icons";
+import { IconTransactions } from "../../../Common/Icons";
+import { ThemeContext } from "../../../Context/ThemeContext";
 
 interface WalletProps {
     wallet: IWallet
@@ -13,6 +14,7 @@ interface WalletProps {
 }
 
 export default function Wallet({ wallet, onDeleteWallet, onChangeWallet }: WalletProps) {
+    const { isDarkTheme } = useContext<IThemeContext>(ThemeContext);
     const globalBalanceContext = useContext(GlobalBalanceContext);
 
     const [balance, setBalance] = useState<number>(0);
@@ -86,7 +88,7 @@ export default function Wallet({ wallet, onDeleteWallet, onChangeWallet }: Walle
                         <button type="button" className="add-transactions__button" key={"button-" + wallet.id}
                             onClick={(e) => handleTransactionsModalShow(e)}
                         >
-                            <IconCash />
+                            <IconTransactions size={24} isDarkMode={isDarkTheme} />
                         </button>
                     </div>
 
