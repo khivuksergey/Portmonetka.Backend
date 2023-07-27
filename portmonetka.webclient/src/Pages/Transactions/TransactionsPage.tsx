@@ -30,6 +30,7 @@ export default function TransactionsPage() {
     const {
         templates: templatesData,
         refreshTemplates,
+        handleAddTemplates,
         handleChangeTemplates,
         handleDeleteTemplates,
         loading,
@@ -222,13 +223,14 @@ export default function TransactionsPage() {
     const handleSubmit = async (values: TAddTemplatesType) => {
         let deleted: boolean = false;
         let changed: boolean = false;
+        let added: boolean = false;
 
         const templateIdsToDelete: number[] = values.templates
             .filter(t => t.isDeleted)
             .map((t) => { return t.id });
 
-        const templates: ITransactionTemplate[] = values.templates
-            .filter(t => !t.isDeleted)
+        const templatesToChange: ITransactionTemplate[] = values.templates
+            .filter(t => !t.isDeleted && !t.isNew)
             .map((t) => {
                 return {
                     id: t.id,
@@ -238,7 +240,18 @@ export default function TransactionsPage() {
                 }
             });
 
-        if (templateIdsToDelete.length > 0 || templates.length > 0) {
+        const templatesToAdd: ITransactionTemplate[] = values.templates
+            .filter(t => !t.isDeleted && t.isNew)
+            .map((t) => {
+                return {
+                    id: t.id,
+                    description: t.description,
+                    amount: !!t.amount ? parseFloat(t.amount) : null,
+                    categoryId: t.categoryId
+                }
+            });
+
+        if (templateIdsToDelete.length > 0 || templatesToChange.length > 0 || templatesToAdd.length > 0) {
             if (!window.confirm("Are you sure you want to apply changes?"))
                 return;
         }
@@ -247,11 +260,15 @@ export default function TransactionsPage() {
             deleted = await handleDeleteTemplates(templateIdsToDelete);
         }
 
-        if (templates.length > 0) {
-            changed = await handleChangeTemplates(templates);
+        if (templatesToChange.length > 0) {
+            changed = await handleChangeTemplates(templatesToChange);
         }
 
-        if (changed || deleted) {
+        if (templatesToChange.length > 0) {
+            added = await handleAddTemplates(templatesToAdd);
+        }
+
+        if (changed || deleted || added) {
             refreshTemplates();
             applyEnabledStylesOnReset();
         }

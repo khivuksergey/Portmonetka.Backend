@@ -125,7 +125,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
     }
 
     const handleAddTransactions = async (transactions: ITransaction[]): Promise<boolean> => {
-        const url = "api/transaction";
+        const url = "api/transaction/";
         setError("");
         setLoading(true);
 
@@ -140,7 +140,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 { headers: { Authorization: `Bearer ${token}` } }
             )
                 .then((response) => {
-                    resolve(response.status === 201);
+                    console.log("add transactions response:", response);
+                    resolve(response.status >= 200 && response.status < 300);
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
@@ -154,7 +155,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
     }
 
     const handleChangeTransactions = async (transactions: ITransaction[]): Promise<boolean> => {
-        const url = `api/transaction/`;
+        const url = "api/transaction/update";
         setError("");
         setLoading(true);
 
@@ -183,7 +184,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
     }
 
     const handleDeleteTransactions = async (ids: number[]): Promise<boolean> => {
-        const url = `api/transaction/`;
+        const url = "api/transaction/";
         setError("");
         setLoading(true);
 

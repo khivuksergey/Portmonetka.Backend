@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
-using System.Security.Claims;
+using Portmonetka.Backend.Repositories;
 
 namespace Portmonetka.Backend.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class WalletController : BaseAuthorizableController
+    public class WalletController : AuthorizableController
     {
-        private readonly PortmonetkaDbContext _dbContext;
-        public WalletController(PortmonetkaDbContext dbContext)
+        private readonly WalletRepository _wallets;
+
+        public WalletController(WalletRepository wallets)
         {
-            _dbContext = dbContext;
+            _wallets = wallets;
         }
 
         [HttpGet]
@@ -23,12 +23,12 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (_dbContext.Wallets == null)
+            if (!_wallets.Exist())
                 return NotFound();
 
-            return await _dbContext.Wallets
-                .Where(w => w.UserId == userId && w.DateDeleted == null)
-                .ToListAsync();
+            var wallets = await _wallets.FindByUserId(userId);
+
+            return Ok(wallets);
         }
 
         [HttpGet("{id}")]
@@ -37,12 +37,10 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (_dbContext.Wallets == null)
+            if (!_wallets.Exist())
                 return NotFound();
 
-            var wallet = await _dbContext.Wallets
-                .Where(w => w.Id == id && w.UserId == userId)
-                .FirstOrDefaultAsync();
+            var wallet = await _wallets.FindById(id, userId);
 
             if (wallet == null)
                 return NotFound();
@@ -67,34 +65,41 @@ namespace Portmonetka.Backend.Controllers
                 return StatusCode(500, "Wallet was not created, try again");
             }
 
-            if (wallet.Id == 0)
-            {
-                _dbContext.Wallets.Add(wallet);
-                await _dbContext.SaveChangesAsync();
+            if (wallet.Id != 0)
+                return BadRequest("New wallet's id should be 0");
 
+            try
+            {
+                await _wallets.Add(wallet);
                 return CreatedAtAction(nameof(GetWallet), new { id = wallet.Id }, wallet);
             }
-            else
+            catch (Exception)
             {
-                var existingWallet = await _dbContext.Wallets.FindAsync(wallet.Id);
+                return StatusCode(500, "An error occured while adding the wallet");
+            }
+        }
 
-                if (existingWallet == null)
-                {
-                    return BadRequest($"Wallet with id = {wallet.Id} was not found");
-                }
+        [HttpPost("update")]
+        public async Task<ActionResult<Wallet>> UpdateWallet(Wallet wallet)
+        {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
 
-                _dbContext.Entry(existingWallet).CurrentValues.SetValues(wallet);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                try
-                {
-                    await _dbContext.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    throw;
-                }
+            try
+            {
+                var updatedWallet = await _wallets.Update(wallet);
 
-                return Ok();
+                if (updatedWallet == null)
+                    return NotFound("Wallet was not found");
+
+                return Ok(updatedWallet);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occured while updating the wallet");
             }
         }
 
@@ -104,20 +109,14 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (_dbContext.Wallets == null)
-                return NotFound();
-
-            var wallet = await _dbContext.Wallets
-                .Where(w => w.UserId == userId && w.Id == id)
-                .FirstOrDefaultAsync();
+            var wallet = await _wallets.FindById(id, userId);
 
             if (wallet == null)
-                return NotFound();
+                return NotFound($"Wallet with id {id} was not found");
 
             if (!force)
             {
-                var hasTransactions = await _dbContext.Transactions
-                    .AnyAsync(t => t.UserId == userId && t.WalletId == id);
+                var hasTransactions = await _wallets.HasTransactions(id, userId);
 
                 if (hasTransactions)
                 {
@@ -125,20 +124,15 @@ namespace Portmonetka.Backend.Controllers
                 }
             }
 
-            if (typeof(Auditable).IsAssignableFrom(typeof(Wallet)))
+            try
             {
-                wallet.DateDeleted = DateTimeOffset.UtcNow;
-                _dbContext.Wallets.Attach(wallet);
-                _dbContext.Entry(wallet).State = EntityState.Modified;
+                await _wallets.Delete(wallet);
+                return NoContent();
             }
-            else
+            catch (Exception)
             {
-                _dbContext.Wallets.Remove(wallet);
+                return StatusCode(500, "An error occured while deleting wallet");
             }
-
-            await _dbContext.SaveChangesAsync();
-
-            return Ok();
         }
     }
 }

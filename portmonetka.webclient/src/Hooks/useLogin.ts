@@ -54,6 +54,27 @@ export default function useLogin() {
         return false;
     }
 
+    const handleSignup = async (user: IUserCredentials) => {
+        const url = "api/user/signup";
+        try {
+            setError("");
+            setLoading(true);
+            const response = await axios.post(url, user);
+            switch (response.status) {
+                case 201:
+                    return true;
+                default: return false;
+            }
+        } catch (e: unknown) {
+            const error = e as AxiosError;
+            setError(error.request.response);
+        } finally {
+            setLoading(false);
+        }
+
+        return false;
+    }
+
     const handleLogout = () => {
         setToken("");
         setUserId(0);
@@ -61,6 +82,7 @@ export default function useLogin() {
 
     return {
         handleCheckUserName,
+        handleSignup,
         handleLogin,
         handleLogout,
         loading,

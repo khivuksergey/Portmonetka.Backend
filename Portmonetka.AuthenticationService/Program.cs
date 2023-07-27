@@ -1,30 +1,18 @@
 using JwtTokenAuthentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Portmonetka.AuthenticationService.AuthenticationManager;
 using Portmonetka.AuthenticationService.Models;
-using System.Text;
+using Portmonetka.AuthenticationService.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<UserDbContext>();
 
+builder.Services.AddScoped<UserRepository>();
+
 builder.Services.AddControllers();
 
 builder.Services.AddJwtAuthentication();
-//    .AddJwtBearer(/*"authentication-service-api",*/ x =>
-//    {
-//        x.RequireHttpsMetadata = false;
-//        x.SaveToken = true;
-//        x.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuerSigningKey = true,
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")!)),
-//            ValidateIssuer = false,
-//            ValidateAudience = false
-//        };
-//    });
 
 builder.Services.AddScoped<IJwtAuthenticationManager, JwtAuthenticationManager>();
 

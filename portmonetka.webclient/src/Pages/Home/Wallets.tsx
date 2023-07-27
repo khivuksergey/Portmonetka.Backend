@@ -1,5 +1,5 @@
 ﻿import { IWallet } from "../../Common/DataTypes";
-import { IconAdd } from "../../Common/Icons";
+import { IconAdd, IconRefresh } from "../../Common/Icons";
 import { Wallet } from "./Components";
 
 interface IWalletsProps {
@@ -9,7 +9,7 @@ interface IWalletsProps {
     onDeleteWallet: (id: number, force?: boolean) => Promise<boolean>
 }
 
-export default function Wallets({wallets, onAddWallet, onChangeWallet, onDeleteWallet } : IWalletsProps) {
+export default function Wallets({ wallets, onAddWallet, onChangeWallet, onDeleteWallet }: IWalletsProps) {
     return (
         <section>
             <div className="wallets-header">

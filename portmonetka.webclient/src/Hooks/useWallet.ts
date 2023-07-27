@@ -37,7 +37,7 @@ export default function useWallet() {
     };
 
     const fetchWallets = async () => {
-        const url = "api/wallet";
+        const url = "api/wallet/";
         try {
             setError("");
 
@@ -70,7 +70,7 @@ export default function useWallet() {
     }
 
     const handleAddWallet = async (wallet: IWallet): Promise<boolean> => {
-        const url = "api/wallet";
+        const url = "api/wallet/";
         setError("");
         setLoading(true);
 
@@ -81,7 +81,7 @@ export default function useWallet() {
                 { headers: { Authorization: `Bearer ${token}` } }
             )
                 .then((response) => {
-                    resolve(response.status === 201);
+                    resolve(response.status >= 200 && response.status < 300);
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
@@ -95,7 +95,7 @@ export default function useWallet() {
     }
 
     const handleChangeWallet = async (changedWallet: IWallet) => {
-        const url = "api/wallet";
+        const url = "api/wallet/update";
         setError("");
         setLoading(true);
 
@@ -121,7 +121,6 @@ export default function useWallet() {
 
     const handleDeleteWallet = async (walletId: number, force?: boolean): Promise<boolean> => {
         const url = `api/wallet/${walletId}` + (!!force ? `?force=${force}` : "");
-
         setError("");
         setLoading(true);
 

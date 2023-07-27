@@ -70,7 +70,7 @@ export default function useTransactionTemplate() {
     }
 
     const handleAddTemplates = async (templates: ITransactionTemplate[]): Promise<boolean> => {
-        const url = "api/transactionTemplate";
+        const url = "api/transactionTemplate/";
         setError("");
         setLoading(true);
 
@@ -85,7 +85,7 @@ export default function useTransactionTemplate() {
                 { headers: { Authorization: `Bearer ${token}` } }
             )
                 .then((response) => {
-                    resolve(response.status === 201);
+                    resolve(response.status >= 200 && response.status < 300);
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
@@ -99,7 +99,7 @@ export default function useTransactionTemplate() {
     }
 
     const handleChangeTemplates = async (templates: ITransactionTemplate[]): Promise<boolean> => {
-        const url = "api/transactionTemplate";
+        const url = "api/transactionTemplate/update";
         setError("");
         setLoading(true);
 
