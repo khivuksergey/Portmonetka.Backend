@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
 using Portmonetka.Backend.Repositories;
-using System.Security.Claims;
 
 namespace Portmonetka.Backend.Controllers
 {
@@ -20,8 +18,8 @@ namespace Portmonetka.Backend.Controllers
 
         #region GET
 
-        [HttpGet("all")] //Private
-        private async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
         {
             if (!CheckIdentity(out int userId))
                 return Forbid();

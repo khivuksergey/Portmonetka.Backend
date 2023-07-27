@@ -206,6 +206,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
     }
 
     const handleSubmit = (values: TAddTransactionsType) => {
+        debugger;
         const added = handleAddTransactions(values.transactions as unknown as ITransaction[]);
         added.then((success) => {
             onClose(success);

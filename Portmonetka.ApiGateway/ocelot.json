@@ -79,7 +79,7 @@
 
     // #region Wallet API
     {
-      "UpstreamPathTemplate": "/api/wallet",
+      "UpstreamPathTemplate": "/api/wallet/",
       "UpstreamHttpMethod": [ "Get", "Post" ],
 
       "DownstreamScheme": "https",
@@ -89,7 +89,7 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/wallet",
+      "DownstreamPathTemplate": "/api/wallet/",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }
@@ -130,7 +130,7 @@
 
     //#region Category API
     {
-      "UpstreamPathTemplate": "/api/category",
+      "UpstreamPathTemplate": "/api/category/",
       "UpstreamHttpMethod": [ "Get", "Post" ],
 
       "DownstreamScheme": "https",
@@ -140,7 +140,7 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/category",
+      "DownstreamPathTemplate": "/api/category/",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }

@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
 using Portmonetka.Backend.Repositories;
-using System.Security.Claims;
 
 namespace Portmonetka.Backend.Controllers
 {

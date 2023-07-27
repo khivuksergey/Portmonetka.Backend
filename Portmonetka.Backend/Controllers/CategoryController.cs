@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 using Portmonetka.Backend.Repositories;
 
 namespace Portmonetka.Backend.Controllers

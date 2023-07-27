@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
 using Portmonetka.Backend.Repositories;
 
@@ -33,7 +32,7 @@ namespace Portmonetka.Backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<TransactionTemplate>>> PostTransactions(IEnumerable<TransactionTemplate> templates)
+        public async Task<ActionResult<IEnumerable<TransactionTemplate>>> PostTransactionTemplates(IEnumerable<TransactionTemplate> templates)
         {
             if (!CheckIdentity(out int userId))
                 return Forbid();

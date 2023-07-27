@@ -15,14 +15,14 @@ export default function Login() {
     const [userNameExists, setUserNameExists] = useState<boolean | null>(null);
     const [passwordStrength, setPasswordStrength] = useState<PasswordStrength | null>(null);
     const navigate = useNavigate();
-    const { handleCheckUserName, handleLogin, loading, error: loginError } = useLogin();
+    const { handleCheckUserName, handleLogin, handleSignup, loading, error: loginError } = useLogin();
 
     useEffect(() => {
         setShowError(!!loginError && !loginError.includes("404"));
     }, [loginError])
 
     useEffect(() => {
-        const delay = 400;
+        const delay = 200;
 
         const debounceTimer = setTimeout(async () => {
             if (userName !== "") {
@@ -61,7 +61,16 @@ export default function Login() {
     }
 
     const handleSubmit = async (user: IUserCredentials) => {
-        const loggedIn = await handleLogin(user);
+        let loggedIn = false;
+        
+        if (userNameExists) {
+            loggedIn = await handleLogin(user);
+        } else {
+            const signedUp = await handleSignup(user);
+            if (signedUp) {
+                loggedIn = await handleLogin(user);
+            }
+        }
 
         if (loggedIn) {
             navigate("/");

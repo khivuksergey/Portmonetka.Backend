@@ -73,7 +73,7 @@ export default function useCategory(sorted?: boolean) {
 
     const handleAddCategory = async (category: ICategory): Promise<number> => {
         let result = 0;
-        const url = "api/category";
+        const url = "api/category/";
         try {
             setError("");
             setLoading(true);
@@ -98,7 +98,7 @@ export default function useCategory(sorted?: boolean) {
     }
 
     const handleChangeCategory = async (changedCategory: ICategory) => {
-        const url = `api/category/${changedCategory.id}`;
+        const url = "api/category/update";
         setError("");
         setLoading(true);
 

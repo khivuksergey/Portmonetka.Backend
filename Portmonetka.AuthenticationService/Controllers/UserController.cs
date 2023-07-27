@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Portmonetka.AuthenticationService.AuthenticationManager;
 using Portmonetka.AuthenticationService.Models;
 using Portmonetka.AuthenticationService.Repositories;

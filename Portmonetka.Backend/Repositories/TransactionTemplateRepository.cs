@@ -45,13 +45,13 @@ namespace Portmonetka.Backend.Repositories
 
         public async Task Add(TransactionTemplate template)
         {
-            _context.Add(template);
+            _context.TransactionTemplates.Add(template);
             await _context.SaveChangesAsync();
         }
 
         public async Task AddRange(IEnumerable<TransactionTemplate> templates)
         {
-            await _context.TransactionTemplates.AddRangeAsync(templates);
+            _context.TransactionTemplates.AddRange(templates);
             await _context.SaveChangesAsync();
         }
 

@@ -92,13 +92,13 @@ namespace Portmonetka.Backend.Repositories
 
         public async Task Add(Transaction transaction)
         {
-            _context.Add(transaction);
+            _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync();
         }
 
         public async Task AddRange(IEnumerable<Transaction> transactions)
         {
-            await _context.Transactions.AddRangeAsync(transactions);
+            _context.Transactions.AddRange(transactions);
             await _context.SaveChangesAsync();
         }
 
