@@ -4,41 +4,34 @@ using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Portmonetka.Backend.Repositories;
 
 namespace Portmonetka.Backend.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : BaseAuthorizableController
+    public class CategoryController : AuthorizableController
     {
-        private readonly PortmonetkaDbContext _dbContext;
-        public CategoryController(PortmonetkaDbContext dbContext)
+        private readonly CategoryRepository _categories;
+        public CategoryController(CategoryRepository categories)
         {
-            _dbContext = dbContext;
+            _categories = categories;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories([FromQuery]bool? sorted)
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategories([FromQuery] bool? sorted)
         {
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (_dbContext.Categories == null)
+            if (!_categories.Exist())
                 return NotFound();
 
             //TO-DO: Find a way to optimize order by transactions count
+            var categories = await _categories.FindByUserIdSorted(userId, sorted ?? false);
 
-            return sorted.HasValue && sorted.Value ?
-                await _dbContext.Categories
-                    .Where(c => c.UserId == userId && c.DateDeleted == null)
-                    .Include(c => c.Transactions)
-                    .OrderByDescending(c => c.Transactions.Count)
-                    .ToListAsync()
-                :
-                await _dbContext.Categories
-                    .Where(c => c.UserId == userId && c.DateDeleted == null)
-                    .ToListAsync();
+            return Ok(categories);
         }
 
         [HttpGet("{id}")]
@@ -47,17 +40,12 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (_dbContext.Categories == null)
-                return NotFound();
-
-            var category = await (_dbContext.Categories
-                .Where(c => c.UserId == userId && c.Id == id)
-                .FirstOrDefaultAsync());
+            var category = await _categories.FindById(id, userId);
 
             if (category == null)
                 return NotFound();
 
-            return category;
+            return Ok(category);
         }
 
         [HttpPost]
@@ -67,40 +55,43 @@ namespace Portmonetka.Backend.Controllers
                 return Forbid();
 
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            if (category.Id == 0)
+            if (category.Id != 0)
+                return BadRequest("New category's id should be 0");
+
+            try
             {
-                _dbContext.Categories.Add(category);
-                await _dbContext.SaveChangesAsync();
-
+                await _categories.Add(category);
                 return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
             }
-            else
+            catch (Exception)
             {
-                var existingCategory = await (_dbContext.Categories
-                    .Where(c => c.UserId == userId && c.Id == category.Id)
-                    .FirstOrDefaultAsync());
+                return StatusCode(500, "An error occured while adding the category");
+            }
+        }
 
-                if (existingCategory == null)
-                {
-                    return BadRequest($"Category with id = {category.Id} was not found");
-                }
+        [HttpPost("update")]
+        public async Task<ActionResult<Category>> UpdateCategory(Category category)
+        {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
 
-                _dbContext.Entry(existingCategory).CurrentValues.SetValues(category);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                try
-                {
-                    await _dbContext.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    throw;
-                }
+            try
+            {
+                var updatedCategory = await _categories.Update(category);
 
-                return Ok();
+                if (updatedCategory == null)
+                    return NotFound("Category was not found");
+
+                return Ok(updatedCategory);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occured while updating the category");
             }
         }
 
@@ -110,41 +101,28 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (_dbContext.Categories == null)
-                return NotFound();
-
-            var category = await (_dbContext.Categories
-                .Where(c => c.UserId == userId && c.Id == id)
-                .FirstOrDefaultAsync());
+            var category = await _categories.FindById(id, userId);
 
             if (category == null)
-                return NotFound();
+                return NotFound("Category was not found");
 
             if (!force)
             {
-                var hasTransactions = await (_dbContext.Transactions
-                    .AnyAsync(t => t.UserId == userId && t.CategoryId == id));
+                var hasTransactions = await _categories.HasTransactions(id, userId);
 
                 if (hasTransactions)
-                {
                     return Ok(new { ConfirmationRequired = true });
-                }
             }
 
-            if (typeof(Auditable).IsAssignableFrom(typeof(Category)))
+            try
             {
-                category.DateDeleted = DateTimeOffset.UtcNow;
-                _dbContext.Categories.Attach(category);
-                _dbContext.Entry(category).State = EntityState.Modified;
+                await _categories.Delete(category);
+                return NoContent();
             }
-            else
+            catch (Exception)
             {
-                _dbContext.Categories.Remove(category);
+                return StatusCode(500, "An error occured while deleting the category");
             }
-
-            await _dbContext.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }

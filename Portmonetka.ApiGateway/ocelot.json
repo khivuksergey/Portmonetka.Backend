@@ -1,6 +1,6 @@
 {
   "Routes": [
-    // Authentication Service, User API
+    //#region Authentication Service
     {
       "UpstreamPathTemplate": "/api/user/checkusername/{userName}",
       "UpstreamHttpMethod": [ "Get" ],
@@ -28,8 +28,24 @@
       "DownstreamPathTemplate": "/api/user/login"
     },
     {
+      "UpstreamPathTemplate": "/api/user/signup",
+      "UpstreamHttpMethod": [ "Post" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7100
+        }
+      ],
+      "DownstreamPathTemplate": "/api/user/signup"
+    },
+    //#endregion
+
+    //#region User API
+    {
       "UpstreamPathTemplate": "/api/user/",
-      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "UpstreamHttpMethod": [ "Get", "Post", "Delete" ],
 
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -43,7 +59,25 @@
         "AuthenticationProviderKey": "Bearer"
       }
     },
-    // Wallet API
+    {
+      "UpstreamPathTemplate": "/api/user/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7100
+        }
+      ],
+      "DownstreamPathTemplate": "/api/user/{id}",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      }
+    },
+    //#endregion
+
+    // #region Wallet API
     {
       "UpstreamPathTemplate": "/api/wallet",
       "UpstreamHttpMethod": [ "Get", "Post" ],
@@ -56,6 +90,22 @@
         }
       ],
       "DownstreamPathTemplate": "/api/wallet",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/wallet/update",
+      "UpstreamHttpMethod": [ "Post" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7200
+        }
+      ],
+      "DownstreamPathTemplate": "/api/wallet/update",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }
@@ -76,8 +126,9 @@
         "AuthenticationProviderKey": "Bearer"
       }
     },
+    //#endregion
 
-    // Category API
+    //#region Category API
     {
       "UpstreamPathTemplate": "/api/category",
       "UpstreamHttpMethod": [ "Get", "Post" ],
@@ -90,6 +141,22 @@
         }
       ],
       "DownstreamPathTemplate": "/api/category",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/category/update",
+      "UpstreamHttpMethod": [ "Post" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7200
+        }
+      ],
+      "DownstreamPathTemplate": "/api/category/update",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }
@@ -110,8 +177,9 @@
         "AuthenticationProviderKey": "Bearer"
       }
     },
+    //#endregion
 
-    // Transaction API
+    //#region Transaction API
     {
       "UpstreamPathTemplate": "/api/transaction/",
       "UpstreamHttpMethod": [ "Post", "Delete" ],
@@ -129,8 +197,8 @@
       }
     },
     {
-      "UpstreamPathTemplate": "/api/transaction/all",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/api/transaction/update",
+      "UpstreamHttpMethod": [ "Post" ],
 
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -139,30 +207,14 @@
           "Port": 7200
         }
       ],
-      "DownstreamPathTemplate": "/api/transaction/all",
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer"
-      }
-    },
-    {
-      "UpstreamPathTemplate": "/api/transaction/{id}",
-      "UpstreamHttpMethod": [ "Get" ],
-
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 7200
-        }
-      ],
-      "DownstreamPathTemplate": "/api/transaction/{id}",
+      "DownstreamPathTemplate": "/api/transaction/update",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }
     },
     {
       "UpstreamPathTemplate": "/api/transaction/wallet/{walletId}",
-      "UpstreamHttpMethod": [ "Get", "Delete" ],
+      "UpstreamHttpMethod": [ "Get" ],
 
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -192,7 +244,9 @@
         "AuthenticationProviderKey": "Bearer"
       }
     },
-    // Transaction Template API
+    //#endregion
+
+    //#region Transaction Template API
     {
       "UpstreamPathTemplate": "/api/transactionTemplate/",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete" ],
@@ -208,7 +262,24 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer"
       }
+    },
+    {
+      "UpstreamPathTemplate": "/api/transactionTemplate/update",
+      "UpstreamHttpMethod": [ "Post" ],
+
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7200
+        }
+      ],
+      "DownstreamPathTemplate": "/api/transactionTemplate/update",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      }
     }
+    //#endregion
   ],
   "GlobalConfiguration": {
     "BaseUrl": "https://localhost:7000"

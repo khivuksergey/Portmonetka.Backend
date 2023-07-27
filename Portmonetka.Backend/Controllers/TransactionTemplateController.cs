@@ -2,19 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
+using Portmonetka.Backend.Repositories;
 
 namespace Portmonetka.Backend.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class TransactionTemplateController : BaseAuthorizableController
+    public class TransactionTemplateController : AuthorizableController
     {
-        private readonly PortmonetkaDbContext _context;
+        private readonly TransactionTemplateRepository _templates;
 
-        public TransactionTemplateController(PortmonetkaDbContext context)
+        public TransactionTemplateController(TransactionTemplateRepository templates)
         {
-            _context = context;
+            _templates = templates;
         }
 
         [HttpGet]
@@ -23,75 +24,101 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (_context.TransactionTemplates == null)
-                return NotFound();
+            var existingTemplates = await _templates.FindByUserId(userId);
 
-            return await _context.TransactionTemplates
-                .Where(t => t.UserId == userId && t.DateDeleted == null)
-                .ToListAsync();
+            if (existingTemplates == null)
+                return NotFound("No templates were found for the user");
+
+            return Ok(existingTemplates);
         }
 
         [HttpPost]
-        public async Task<ActionResult<TransactionTemplate>> PostTransactionTemplates(IEnumerable<TransactionTemplate> templates)
+        public async Task<ActionResult<IEnumerable<TransactionTemplate>>> PostTransactions(IEnumerable<TransactionTemplate> templates)
         {
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            var existingTemplateIds = templates.Where(t => t.Id != 0).Select(t => t.Id);
-
-            if (existingTemplateIds.Any())
+            try
             {
-                var existingTemplates = await _context.TransactionTemplates
-                    .Where(t => t.UserId == userId && existingTemplateIds.Contains(t.Id))
-                    .ToListAsync();
-
-                foreach (var existingTemplate in existingTemplates)
-                {
-                    var updatedTemplate = templates.First(t => t.Id == existingTemplate.Id);
-                    _context.Entry(existingTemplate).CurrentValues.SetValues(updatedTemplate);
-                }
+                await _templates.AddRange(templates);
+                return CreatedAtAction(nameof(GetTransactionTemplates), templates.Select(t => new { id = t.Id }), templates);
             }
-
-            var newTemplates = templates.Where(t => t.Id == 0);
-
-            await _context.TransactionTemplates.AddRangeAsync(newTemplates);
-
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetTransactionTemplates), templates.Select(t => new { id = t.Id }), templates);
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occured while adding transaction templates");
+            }
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteTransactionTemplates(IEnumerable<int> ids)
+        [HttpPost("update")]
+        public async Task<ActionResult<IEnumerable<TransactionTemplate>>> UpdateTransactionTemplates(IEnumerable<TransactionTemplate> templates)
         {
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (_context.TransactionTemplates == null)
+            bool templatesExist = (await _templates.FindByUserId(userId)).Any();
+
+            if (!templatesExist)
                 return NotFound();
 
-            var templatesToDelete = _context.TransactionTemplates.Where(t => t.UserId == userId && ids.Any(id => id == t.Id));
-
-            if (templatesToDelete == null)
-                return NotFound();
-
-            foreach (var template in templatesToDelete)
+            try
             {
-                if (typeof(Auditable).IsAssignableFrom(typeof(TransactionTemplate)))
+                var updatedTemplates = new List<TransactionTemplate>();
+                var notFoundTemplates = new List<int>();
+
+                foreach (var template in templates)
                 {
-                    template.DateDeleted = DateTimeOffset.UtcNow;
-                    _context.TransactionTemplates.Attach(template);
-                    _context.Entry(template).State = EntityState.Modified;
+                    var updatedTemplate = await _templates.Update(template);
+                    if (updatedTemplate != null)
+                    {
+                        updatedTemplates.Add(updatedTemplate);
+                    }
+                    else
+                    {
+                        notFoundTemplates.Add(template.Id);
+                    }
+                }
+
+                if (updatedTemplates.Count > 0)
+                {
+                    return Ok(new { UpdatedTemplates = updatedTemplates, NotFoundTemplateIds = notFoundTemplates });
                 }
                 else
                 {
-                    _context.TransactionTemplates.Remove(template);
+                    return NotFound("No transaction templates were found for update.");
                 }
             }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occured while updating transaction templates");
+            }
+            
+        }
 
-            await _context.SaveChangesAsync();
+        [HttpDelete]
+        public async Task<ActionResult> DeleteTransactionTemplates(IEnumerable<int> ids)
+        {
+            if (!CheckIdentity(out int userId))
+                return Forbid();
 
-            return NoContent();
+            bool templatesExist = (await _templates.FindByUserId(userId)).Any();
+
+            if (!templatesExist)
+                return NotFound("No transaction templates exist for the user.");
+
+            var templatesToDelete = await _templates.FindExistingById(userId, ids);
+
+            if (templatesToDelete == null)
+                return BadRequest("No transaction templates were found for the provided ids.");
+
+            try
+            {
+                await _templates.DeleteRange(templatesToDelete);
+                return NoContent();
+            }
+            catch
+            {
+                return StatusCode(500, "An error occured while deleting transaction templates");
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace Portmonetka.Backend.Controllers
 {
-    public class BaseAuthorizableController: ControllerBase
+    public class AuthorizableController: ControllerBase
     {
         public bool CheckIdentity(out int userId)
         {
