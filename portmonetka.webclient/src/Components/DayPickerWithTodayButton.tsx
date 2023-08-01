@@ -30,7 +30,7 @@ export default function DayPickerWithTodayButton({ selected, onSelect }: DayPick
     const footer = (
         <button
             type="submit"
-            className="button--dark button--submit full-width"
+            className="daypicker__submit-button full-width"
             disabled={isSameMonth(today, month ?? nextMonth)}
             onClick={handleTodayClick}
         >

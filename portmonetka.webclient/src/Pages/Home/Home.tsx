@@ -6,6 +6,7 @@ import { BalancePlaceholder, WalletsPlaceholder } from "./Placeholders";
 import { AddFirstWallet, Balance, Wallets, WalletsAnimation } from "./";
 import { AddWalletModal } from "./Modals";
 import { ErrorAlert } from "../../Components";
+import NoConnection from "../Layout/NoConnection";
 
 export default function Home() {
 
@@ -16,6 +17,7 @@ export default function Home() {
         handleDeleteWallet,
         handleAddWallet,
         handleChangeWallet,
+        walletsExist,
         dataFetched: walletsLoaded,
         error: walletsError
     } = useWallet();
@@ -30,15 +32,20 @@ export default function Home() {
 
     const [showError, setShowError] = useState(false);
 
+    const [showNoConnection, setShowNoConnection] = useState(false);
+
     useEffect(() => {
-        setShowError(!!walletsError && walletsError !== "Component unmounted");
+        setShowError(!!walletsError &&
+            walletsError !== "Component unmounted" &&
+            !walletsError.includes("Error occurred while trying to proxy"));
+        setShowNoConnection(walletsError.includes("Error occurred while trying to proxy"));
     }, [walletsError])
 
     useEffect(() => {
         if (walletsLoaded) {
             WalletsAnimation();
         }
-    }, [walletsLoaded])
+    }, [walletsLoaded, walletsExist])
 
     const handleAddWalletModalClose = () => {
         setShowAddWalletModal(false);
@@ -91,16 +98,19 @@ export default function Home() {
 
     return (
         <GlobalBalanceContext.Provider value={{ globalBalance, setGlobalBalance }}>
+            <ErrorAlert showError={showError} onClose={() => setShowError(false)} error={walletsError} />
+
             {!walletsLoaded ?
-                <>
-                    <BalancePlaceholder />
-                    <WalletsPlaceholder />
-                </>
+                showNoConnection ?
+                    <NoConnection />
+                    :
+                    <>
+                        <BalancePlaceholder />
+                        <WalletsPlaceholder />
+                    </>
                 :
                 <>
-                    <ErrorAlert showError={showError} onClose={() => setShowError(false)} error={walletsError} />
-
-                    {wallets && (wallets.length > 1) ?
+                    {walletsExist ?
                         <>
                             <Balance />
 

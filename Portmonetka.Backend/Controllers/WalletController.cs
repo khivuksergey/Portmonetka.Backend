@@ -23,10 +23,10 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (!_wallets.Exist())
-                return NotFound();
-
             var wallets = await _wallets.FindByUserId(userId);
+
+            if (wallets == null)
+                return NotFound("No wallets were found for the user");
 
             return Ok(wallets);
         }
@@ -37,13 +37,10 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (!_wallets.Exist())
-                return NotFound();
-
             var wallet = await _wallets.FindById(id, userId);
 
             if (wallet == null)
-                return NotFound();
+                return NotFound($"Wallet with id = {id} was not found");
 
             return wallet;
         }
@@ -55,9 +52,7 @@ namespace Portmonetka.Backend.Controllers
                 return Forbid();
 
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             //For testing
             if (wallet.Name!.ToLower() == "error")
@@ -119,9 +114,7 @@ namespace Portmonetka.Backend.Controllers
                 var hasTransactions = await _wallets.HasTransactions(id, userId);
 
                 if (hasTransactions)
-                {
                     return Ok(new { ConfirmationRequired = true });
-                }
             }
 
             try

@@ -11,12 +11,13 @@ export default function useTransactionTemplate() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [dataFetched, setDataFetched] = useState(false);
+    const [templatesExist, setTemplatesExist] = useState(false);
     let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
         if (!dataFetched) {
             const data = ReadFromLocalStorage(`transactionTemplates_${userId}`) as ITransactionTemplate[];
-            if (data) {
+            if (!!data) {
                 setTemplates(data);
                 setDataFetched(true);
             } else {
@@ -30,6 +31,10 @@ export default function useTransactionTemplate() {
             }
         }
     }, [dataFetched])
+
+    useEffect(() => {
+        setTemplatesExist(templates.length > 0 && !error.includes("No templates were found"));
+    }, [templates, error])
 
     const refreshTemplates = () => {
         ClearLocalStorage(`transactionTemplates_${userId}`);
@@ -63,7 +68,7 @@ export default function useTransactionTemplate() {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
-            setError(error.message);
+            setError(error.response?.data?.toString() ?? error.message);
         } finally {
             setLoading(false);
         }
@@ -89,8 +94,7 @@ export default function useTransactionTemplate() {
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.message);
-                    console.error(error);
+                    setError(error.response?.data?.toString() ?? error.message);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -118,7 +122,7 @@ export default function useTransactionTemplate() {
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.message);
+                    setError(error.response?.data?.toString() ?? error.message);
                     //console.error(error);
                 })
                 .finally(() => {
@@ -142,7 +146,7 @@ export default function useTransactionTemplate() {
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.message);
+                    setError(error.response?.data?.toString() ?? error.message);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -156,6 +160,7 @@ export default function useTransactionTemplate() {
         handleChangeTemplates,
         handleDeleteTemplates,
         refreshTemplates,
+        templatesExist,
         dataFetched,
         loading,
         error

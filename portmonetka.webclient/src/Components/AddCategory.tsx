@@ -49,7 +49,6 @@ export default function AddCategory({ onAddCategory }: AddCategoryProps) {
             <div className="d-grid">
                 <button
                     type="submit"
-                    className="button--dark"
                     aria-label="Post new category"
                     onClick={handleAddCategory}
                 >

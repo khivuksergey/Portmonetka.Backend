@@ -11,7 +11,8 @@ export default function useCategory(sorted?: boolean) {
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [dataFetched, setDataFetched] = useState<boolean>(false);
+    const [dataFetched, setDataFetched] = useState(false);
+    const [categoriesExist, setCategoriesExist] = useState(false);
     let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
@@ -31,6 +32,10 @@ export default function useCategory(sorted?: boolean) {
             }
         }
     }, [dataFetched])
+
+    useEffect(() => {
+        setCategoriesExist(categories.length > 0 && !error.includes("No categories were found"));
+    }, [categories, error])
 
     const refreshCategories = () => {
         ClearLocalStorage(`categories_${userId}`);
@@ -65,7 +70,7 @@ export default function useCategory(sorted?: boolean) {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
-            setError(error.message);
+            setError(error.response?.data?.toString() ?? error.message);
         } finally {
             setLoading(false);
         }
@@ -88,8 +93,7 @@ export default function useCategory(sorted?: boolean) {
                 });
         } catch (e: unknown) {
             const error = e as AxiosError;
-            setError(error.message);
-            console.error(error);
+            setError(error.response?.data?.toString() ?? error.message);
         } finally {
             setLoading(false);
         }
@@ -113,8 +117,7 @@ export default function useCategory(sorted?: boolean) {
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.message);
-                    console.error(error);
+                    setError(error.response?.data?.toString() ?? error.message);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -134,8 +137,7 @@ export default function useCategory(sorted?: boolean) {
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.message);
-                    console.error(error);
+                    setError(error.response?.data?.toString() ?? error.message);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -149,6 +151,7 @@ export default function useCategory(sorted?: boolean) {
         handleChangeCategory,
         handleDeleteCategory,
         refreshCategories,
+        categoriesExist,
         dataFetched,
         loading,
         error

@@ -102,7 +102,7 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                 />
 
                 <ModalFooter onReset={() => { onClose() }}>
-                    <button type="button" className="button--dark button--delete" style={{ marginRight: "auto" }} onClick={handleDeleteWallet}>
+                    <button type="button" className="button--delete" style={{ marginRight: "auto" }} onClick={handleDeleteWallet}>
                         <IconDelete size={20} />
                     </button>
                 </ModalFooter>

@@ -57,7 +57,7 @@ namespace Portmonetka.Backend.Controllers
             bool templatesExist = (await _templates.FindByUserId(userId)).Any();
 
             if (!templatesExist)
-                return NotFound();
+                return NotFound("No templates were found for the user");
 
             try
             {
@@ -83,7 +83,7 @@ namespace Portmonetka.Backend.Controllers
                 }
                 else
                 {
-                    return NotFound("No transaction templates were found for update.");
+                    return NotFound("No templates were found for update.");
                 }
             }
             catch (Exception)
@@ -102,7 +102,7 @@ namespace Portmonetka.Backend.Controllers
             bool templatesExist = (await _templates.FindByUserId(userId)).Any();
 
             if (!templatesExist)
-                return NotFound("No transaction templates exist for the user.");
+                return NotFound("No templates were found for the user.");
 
             var templatesToDelete = await _templates.FindExistingById(userId, ids);
 

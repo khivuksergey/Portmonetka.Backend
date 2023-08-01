@@ -11,6 +11,7 @@ export default function useWallet() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [dataFetched, setDataFetched] = useState(false);
+    const [walletsExist, setWalletsExist] = useState(false);
     let cancelTokenSource: CancelTokenSource | undefined;
 
     useEffect(() => {
@@ -30,6 +31,10 @@ export default function useWallet() {
             }
         }
     }, [dataFetched])
+
+    useEffect(() => {
+        setWalletsExist(wallets.length > 0 && !error.includes("No wallets were found"));
+    }, [wallets, error])
 
     const refreshWallets = () => {
         ClearLocalStorage(`wallets_${userId}`);
@@ -64,8 +69,7 @@ export default function useWallet() {
                 //console.log("Request canceled: ", e.message);
             }
             const error = e as AxiosError;
-            // setError(error.message);
-            setError(error.response?.statusText ?? error.message);
+            setError(error.response?.data?.toString() ?? error.message);
         }
     }
 
@@ -85,8 +89,7 @@ export default function useWallet() {
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.response?.data as string);
-                    console.error(error);
+                    setError(error.response?.data?.toString() ?? error.message);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -110,8 +113,7 @@ export default function useWallet() {
                 })
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
-                    setError(error.message);
-                    console.error(error);
+                    setError(error.response?.data?.toString() ?? error.message);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -137,9 +139,9 @@ export default function useWallet() {
             }
 
             return response.status >= 200 && response.status < 300;
-        } catch (error: unknown) {
-            setError((error as AxiosError).message);
-            console.error(error);
+        } catch (e: unknown) {
+            const error = e as AxiosError;
+            setError(error.response?.data?.toString() ?? error.message);
             return false;
         } finally {
             setLoading(false);
@@ -152,6 +154,7 @@ export default function useWallet() {
         handleChangeWallet,
         handleDeleteWallet,
         refreshWallets,
+        walletsExist,
         dataFetched,
         loading,
         error

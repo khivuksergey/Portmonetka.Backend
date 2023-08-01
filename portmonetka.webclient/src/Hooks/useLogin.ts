@@ -4,7 +4,7 @@ import { IAuthContext, IUserCredentials } from "../Common/DataTypes";
 import axios, { AxiosError } from "axios";
 
 export default function useLogin() {
-    const { setToken, setUserId, setExpireTimestamp } = useContext<IAuthContext>(AuthContext);
+    const { setToken, setUserId, setUserName, setExpireTimestamp } = useContext<IAuthContext>(AuthContext);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -23,8 +23,8 @@ export default function useLogin() {
             }
         } catch (e: unknown) {
             const error = e as AxiosError;
-            setError(error.message);
-            //console.error("handleCheckUserName: error", error);
+            // setError(error.message);
+            setError(error.response?.data?.toString() ?? error.message);
         }
 
         return null;
@@ -40,13 +40,15 @@ export default function useLogin() {
                 case "OK":
                     setToken(response.data.token);
                     setUserId(response.data.userId);
+                    setUserName(response.data.userName);
                     setExpireTimestamp(response.data.expireTime);
                     return true;
                 default: return false;
             }
         } catch (e: unknown) {
             const error = e as AxiosError;
-            setError(error.request.response);
+            //setError(error.request.response);
+            setError(error.response?.data?.toString() ?? error.message);
         } finally {
             setLoading(false);
         }
@@ -67,7 +69,8 @@ export default function useLogin() {
             }
         } catch (e: unknown) {
             const error = e as AxiosError;
-            setError(error.request.response);
+            //setError(error.request.response);
+            setError(error.response?.data?.toString() ?? error.message);
         } finally {
             setLoading(false);
         }
@@ -78,6 +81,7 @@ export default function useLogin() {
     const handleLogout = () => {
         setToken("");
         setUserId(0);
+        setUserName("");
     }
 
     return {

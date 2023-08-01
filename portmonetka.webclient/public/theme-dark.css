@@ -1,0 +1,120 @@
+:root {
+    /*Color*/
+    --primary: #fec36f;
+    /*rgb(254,195,111)*/
+    --primary-opaque: rgb(254, 195, 111, 0.9);
+    --page-background: #101010;
+    --grey-0: #090909;
+    --grey-1: #191919;
+    --grey-2: #292929;
+    --grey-3: #393939;
+    --grey-4: #494949;
+    --grey-5: #595959;
+    --grey-6: #696969;
+    --placeholder-grey: #9a9a9a;
+    --green: #599e73;
+    --red: #611313;
+    --red-light: #b2102f;
+    --trend-green: lightgreen;
+    --trend-red: red;
+    --trend-grey: grey;
+    --font-weight: 400;
+    --text-color: #e6e6e6;
+    --text-color-accent: #f6f6f6;
+    /* --logo-background: var(--page-background); */
+    --logo-text-color: var(--text-color);
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-color);
+    /*Box-shadow*/
+    --popper-box-shadow: 0 1px 20px 1px black;
+    --focus-box-shadow: 0 0 0 0.2rem rgba(254, 195, 111, 0.5);
+    /*Animation*/
+    --animation-duration: 300ms;
+    --animation-timing-curve: ease-in-out;
+    /*Swiper*/
+    --swiper-scrollbar-bg-color: transparent;
+    --swiper-scrollbar-drag-bg-color: rgba(255, 255, 255, 0.3);
+    --swiper-scrollbar-bottom: -10px;
+    --swiper-scrollbar-sides-offset: 0px;
+    /*Theme colors*/
+    --scrollbar-track: var(--grey-1);
+    --scrollbar-thumb: rgba(255,255,255,0.3);
+    --alert-close-button-filter: none;
+    --react-bootstrap-placeholder: var(--grey-2);
+    --kusya: #95634d;
+    --yasya: #d5854a;
+    /* --nav-link-active-background: var(--grey-1); */
+    --nav-link-active-color: var(--primary);
+    --nav-link-hover-background: rgba(255, 255, 255, 0.1);
+    --nav-link-hover-color: var(--primary);
+    --offcanvas-background: #080808;
+    --input-focus-background: var(--grey-2);
+    --input-focus-text: #fafafa;
+    --input-disabled-background: var(--grey-1);
+    --input-disabled-border: var(--grey-2);
+    --input-selection-text: var(--grey-1);
+    --check-input-background: var(--grey-2);
+    --button-background: var(--grey-2);
+    --button-hover-background: var(--grey-3);
+    --button-disabled-background: var(--grey-2);
+    --button-submit-hover-text: var(--grey-1);
+    --button-transaction-delete-color: var(--grey-4);
+    --input-group-button-icon-color: var(--grey-6);
+    --input-group-button-hover-icon-color: var(--text-color);
+    --form-control-background: var(--grey-2);
+    --form-control-border: var(--grey-2);
+    --form-control-hover-background: var(--grey-0);
+    --form-control-hover-border: var(--grey-3);
+    --form-check-checked: var(--grey-1);
+    --form-label-text: lightgrey;
+    --invalid-feedback-text: #ed5453;
+    /* --modal-border-color: var(--grey-2); */
+    --modal-background: var(--grey-1);
+    --alert-danger-background: linear-gradient(20deg, #6b2e2e 0%, var(--grey-2) 100%);
+    --popper-background: var(--grey-3);
+    --password-strength-background: var(--grey-2);
+    --password-strength-weak: #ed5453;
+    --password-strength-medium: var(--primary);
+    --password-strength-strong: #28bb63;
+    --balance-background: var(--grey-1);
+    --balance-currency-sign-color: var(--grey-1);
+    --balance-info-stats-color: #b5b5b5;
+    --button-add-wallet-icon: #606060;
+    --button-add-wallet-icon-hover: var(--text-color-accent);
+    --button-add-wallet-border-color: #606060;
+    --button-add-wallet-hover-background: rgb(40, 40, 40);
+    --button-add-wallet-hover-border-color: rgb(80, 80, 80);
+    --wallet-background: var(--grey-1);
+    --transactions-preview-blur-background: linear-gradient(to top, rgba(30, 30, 30, 1) 30%, rgba(30, 30, 30, 0) 100%);
+    --button-add-transactions-border-color: #606060;
+    --button-add-transactions-background-color: #303030;
+    --transaction-container-border-color: #303030;
+    --template-container-border-color: #303030;
+    --template-container-disabled-background: var(--grey-1);
+    --button-add-transaction-row-color: var(--placeholder-grey);
+    --button-add-transaction-row-border-color: var(--grey-3);
+    --button-add-transaction-row-hover-background: var(--grey-2);
+    --button-add-transaction-row-focus-background: rgb(40,40,40);
+    --button-add-transaction-row-focus-color: var(--placeholder-grey);
+    --rdp-day-today-background: var(--grey-4);
+    --rdp-day-selected-color: var(--grey-2);
+    --rdp-button-hover-background: var(--grey-5);
+}
+
+.alert > button[type="button"].btn-close {
+    filter: invert();
+}
+
+.wallet::before {
+    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.03), transparent 40%);
+    z-index: 3;
+}
+
+.wallet::after {
+    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.4), transparent 40%);
+    z-index: 1;
+}
+
+.form-select {
+    --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23696969%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
+}

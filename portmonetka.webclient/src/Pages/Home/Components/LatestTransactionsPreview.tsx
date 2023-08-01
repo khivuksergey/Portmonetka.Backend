@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle } from "react";
+import React, { useEffect, useImperativeHandle, useState } from "react";
 import { LatestTransactionsPreviewPlaceholder } from "../Placeholders";
 import { useTransaction } from "../../../Hooks";
 import { MoneyToLocaleString } from "../../../Utilities";
@@ -21,7 +21,9 @@ const LatestTransactionsPreview = React.forwardRef<
     const {
         transactions,
         refreshTransactions,
-        dataFetched: transactionsLoaded
+        transactionsExist,
+        loading: transactionsLoading,
+        error
     } = useTransaction(walletId, 6);
 
     const { transactionsSum, refreshTransactions: refreshAllTransactions } = useTransaction(walletId);
@@ -53,12 +55,12 @@ const LatestTransactionsPreview = React.forwardRef<
     return (
         <>
             {
-                !transactionsLoaded ?
+                (transactionsLoading && !error) ?
                     <LatestTransactionsPreviewPlaceholder />
                     :
                     (<>
                         {
-                            transactions.length === 0 ?
+                            !transactionsExist ?
                                 <div className="mt-3 d-flex justify-content-center">
                                     <h6 style={{ textAlign: "center" }}>Your transactions will be displayed here</h6>
                                 </div>

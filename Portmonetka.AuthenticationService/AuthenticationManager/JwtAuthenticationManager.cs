@@ -54,7 +54,7 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
             var token = tokenHandler.CreateToken(tokenDesctiptor);
 
 
-            return new AuthenticationToken(user.Id, tokenHandler.WriteToken(token), expires);
+            return new AuthenticationToken(user.Id, userName, tokenHandler.WriteToken(token), expires);
         }
     }
 }
