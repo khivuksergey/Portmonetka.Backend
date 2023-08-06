@@ -27,56 +27,65 @@ import {
     MdTrendingFlat,
     MdTrendingUp,
 } from "react-icons/md";
+import { BsCircleHalf } from "react-icons/bs";
+import { TTheme } from "./DataTypes";
 
 interface IIconProps {
     size?: number
     className?: string
-    isDarkMode?: boolean
+    isDarkTheme?: boolean
 }
 
-const IconOverview = ({ size, className, isDarkMode }: IIconProps) => {
+const IconOverview = ({ size, className, isDarkTheme }: IIconProps) => {
     return (
-        isDarkMode ?
+        isDarkTheme ?
             <HiPresentationChartLine size={size} className={className} />
             :
             <HiOutlinePresentationChartLine size={size} className={className} />
     )
 }
 
-const IconWallets = ({ size, className, isDarkMode }: IIconProps) => {
+const IconWallets = ({ size, className, isDarkTheme }: IIconProps) => {
     return (
-        isDarkMode ?
+        isDarkTheme ?
             <HiWallet size={size} className={className} />
             :
             <HiOutlineWallet size={size} className={className} />
     )
 }
 
-const IconTransactions = ({ size, className, isDarkMode }: IIconProps) => {
+const IconTransactions = ({ size, className, isDarkTheme }: IIconProps) => {
     return (
-        isDarkMode ?
+        isDarkTheme ?
             <HiMiniBanknotes size={size} className={className} />
             :
             <HiOutlineBanknotes size={size} className={className} />
     )
 }
 
-const IconCategories = ({ size, className, isDarkMode }: IIconProps) => {
+const IconCategories = ({ size, className, isDarkTheme }: IIconProps) => {
     return (
-        isDarkMode ?
+        isDarkTheme ?
             <HiRectangleGroup size={size} className={className} />
             :
             <HiOutlineRectangleGroup size={size} className={className} />
     )
 }
 
-const IconTheme = ({ size, className, isDarkMode }: IIconProps) => {
-    return (
-        isDarkMode ?
-            <HiOutlineMoon size={size} className={className} style={{ transform: "scale(0.9)" }} />
-            :
-            <HiOutlineSun size={size} className={className} />
-    )
+interface IIconThemeProps {
+    size: number
+    theme: TTheme
+}
+
+const IconTheme = ({ size, theme }: IIconThemeProps) => {
+    switch (theme) {
+        case "system":
+            return <BsCircleHalf size={size * 0.75} />;
+        case "dark":
+            return <HiOutlineMoon size={size * 0.9} />;
+        case "light":
+            return <HiOutlineSun size={size} />;
+    };
 }
 
 // const IconSystem = ({ size }: IIconProps) => {
@@ -93,7 +102,7 @@ const IconTheme = ({ size, className, isDarkMode }: IIconProps) => {
 //     }
 // }
 
-const IconLogout = ({ size, className, isDarkMode }: IIconProps) => {
+const IconLogout = ({ size }: IIconProps) => {
     return (
         <HiOutlineLogout size={size} style={{ strokeWidth: "1.5px" }} />
     )

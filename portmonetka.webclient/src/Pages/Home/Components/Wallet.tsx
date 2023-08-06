@@ -88,7 +88,7 @@ export default function Wallet({ wallet, onDeleteWallet, onChangeWallet }: Walle
                         <button type="button" className="add-transactions__button" key={"button-" + wallet.id}
                             onClick={(e) => handleTransactionsModalShow(e)}
                         >
-                            <IconTransactions size={24} isDarkMode={isDarkTheme} />
+                            <IconTransactions size={24} isDarkTheme={isDarkTheme} />
                         </button>
                     </div>
 

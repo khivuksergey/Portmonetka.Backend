@@ -3,8 +3,7 @@ body[data-theme=dark],
     --font-weight-body: 300;
     --font-weight-rdp-today: bold;
     /*Color*/
-    --primary: #fec36f;
-    /*rgb(254,195,111)*/
+    --primary: #fec36f; /*rgb(254,195,111)*/
     --primary-opaque: rgb(254, 195, 111, 0.9);
     --page-background: #101010;
     --grey-0: #090909;
@@ -24,7 +23,6 @@ body[data-theme=dark],
     --font-weight: 400;
     --text-color: #e6e6e6;
     --text-color-accent: #f6f6f6;
-    /* --logo-background: var(--page-background); */
     --logo-text-color: var(--text-color);
     --bs-table-bg: transparent;
     --bs-table-color: var(--text-color);
@@ -46,7 +44,6 @@ body[data-theme=dark],
     --react-bootstrap-placeholder: var(--grey-2);
     --kusya: #95634d;
     --yasya: #d5854a;
-    /* --nav-link-active-background: var(--grey-1); */
     --nav-link-active-color: var(--primary);
     --nav-link-hover-background: rgba(255, 255, 255, 0.1);
     --nav-link-hover-color: var(--primary);
@@ -74,7 +71,6 @@ body[data-theme=dark],
     --form-label-text: lightgrey;
     --form-select-arrow-icon: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23696969%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
     --invalid-feedback-text: #ed5453;
-    /* --modal-border-color: var(--grey-2); */
     --modal-background: var(--grey-1);
     --alert-danger-background: linear-gradient(20deg, #6b2e2e 0%, var(--grey-2) 100%);
     --alert-button-close-filter: invert();
@@ -109,21 +105,3 @@ body[data-theme=dark],
     --rdp-day-selected-color: var(--grey-2);
     --rdp-button-hover-background: var(--grey-5);
 }
-
-/* .alert > button[type="button"].btn-close {
-    filter: invert();
-} */
-
-/* .wallet::before {
-    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.03), transparent 40%);
-    z-index: 3;
-}
-
-.wallet::after {
-    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.4), transparent 40%);
-    z-index: 1;
-} */
-
-/* .form-select {
-    --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23696969%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
-} */

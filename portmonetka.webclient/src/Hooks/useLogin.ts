@@ -23,7 +23,6 @@ export default function useLogin() {
             }
         } catch (e: unknown) {
             const error = e as AxiosError;
-            // setError(error.message);
             setError(error.response?.data?.toString() ?? error.message);
         }
 
@@ -47,7 +46,6 @@ export default function useLogin() {
             }
         } catch (e: unknown) {
             const error = e as AxiosError;
-            //setError(error.request.response);
             setError(error.response?.data?.toString() ?? error.message);
         } finally {
             setLoading(false);
@@ -69,7 +67,6 @@ export default function useLogin() {
             }
         } catch (e: unknown) {
             const error = e as AxiosError;
-            //setError(error.request.response);
             setError(error.response?.data?.toString() ?? error.message);
         } finally {
             setLoading(false);

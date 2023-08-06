@@ -178,7 +178,6 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 .catch((e: unknown) => {
                     const error = e as AxiosError;
                     setError(error.response?.data?.toString() ?? error.message);
-                    //console.error(error);
                 })
                 .finally(() => {
                     setLoading(false);

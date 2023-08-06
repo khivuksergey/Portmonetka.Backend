@@ -1,4 +1,4 @@
-type TTheme = "light" | "dark";
+import { TTheme } from "../Common/DataTypes";
 
 export function GetSystemThemePreference(): TTheme {
     return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ?

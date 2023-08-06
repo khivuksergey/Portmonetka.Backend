@@ -398,11 +398,6 @@ export default function TransactionTemplates({ onError }: ITransactionTemplatesP
                             </FieldArray>
 
                             <div className="mt-3 d-flex flex-row gap-3 justify-content-end">
-                                {/* <button type="reset"
-                                        onClick={() => { handleReset(); applyEnabledStylesOnReset(); }}
-                                    >
-                                        Cancel
-                                    </button> */}
                                 <button type="submit" disabled={loading}>
                                     Save
                                 </button>

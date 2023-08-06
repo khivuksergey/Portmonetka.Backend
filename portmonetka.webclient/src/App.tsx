@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./Context/AuthContext";
 import { ThemeContext } from "./Context/ThemeContext";
 import { IThemeContext } from "./Common/DataTypes";
+import { GetSystemThemePreference } from "./Utilities";
 import ProtectedRoute from "./ProtectedRoute";
 import AppRoutes from "./AppRoutes";
 import Login from "./Pages/Login/Login";
@@ -12,16 +13,17 @@ import "./theme-dark.css";
 import "./theme-light.css";
 
 function App(): JSX.Element {
-    const { isDarkTheme } = useContext<IThemeContext>(ThemeContext);
+    const { theme } = useContext<IThemeContext>(ThemeContext);
 
     useEffect(() => {
         const applyTheme = () => {
+            const currentTheme = theme === "system" ? GetSystemThemePreference() : theme;
             const body = document.body;
-            body.setAttribute("data-theme", isDarkTheme ? "dark" : "light");
+            body.setAttribute("data-theme", currentTheme);
         };
 
         applyTheme();
-    }, [isDarkTheme]);
+    }, [theme]);
 
     return (
         <AuthProvider>

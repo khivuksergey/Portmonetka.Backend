@@ -205,6 +205,7 @@ button.logo__button:hover {
 
 button.button--options{
     color: var(--logo-text-color);
+    width: 40px;
     padding: 0.25rem;
 }
 
@@ -490,13 +491,6 @@ input[type="checkbox"] {
     transition: all 0.15s ease-in-out;
 }
 
-/* button.button--delete:hover > svg,
-button.button--restore:hover > svg,
-.input-group > button.button--delete:hover > svg,
-.input-group > button.button--restore:hover > svg {
-    fill: var(--button-delete-restore-svg-color);
-} */
-
 .form-check-input {
     background-color: var(--check-input-background);
     border: 1px solid var(--check-input-background);
@@ -558,12 +552,7 @@ button[type=reset] {
 
 button[type=submit] {
     font-weight: bold;
-    /* background-color: var(--button-submit-background); */
 }
-
-/* button[type="submit"]:disabled {
-    background-color: var(--button-submit-disabled-background);
-} */
 
 button:hover,
 button:focus-visible,
@@ -578,14 +567,6 @@ button[type=submit]:focus-visible:not(:disabled) {
     background-color: var(--button-submit-hover-background);
     color: var(--button-submit-hover-text);
 }
-
-/* .input-group > button:not(:disabled) {
-    background-color: var(--input-group-button-background);
-} */
-
-/* .input-group > button:hover:not(:disabled) {
-    background-color: var(--input-group-button-enabled-hover-background);
-} */
 
 /*delete wallet*/
 button[type="button"].button--delete:hover,
@@ -713,10 +694,6 @@ button[type="button"].button--delete:focus-visible {
     border-bottom: none;
     border-top: none;
 }
-
-/* .modal-footer > button.button--delete > svg {
-    fill: var(--button-wallet-delete-svg-color);
-} */
 
 .modal-title {
     display: flex;
@@ -1282,71 +1259,5 @@ span {
 }
 
 /*#endregion*/
-
-/*#endregion*/
-
-/*#region Cards*/
-#cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    max-width: 1100px;
-    width: calc(100% - 40px);
-}
-
-#cards:hover>.card::after {
-    opacity: 1;
-}
-
-.card {
-    background-color: rgba(255, 255, 255, 0);
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    flex-shrink: 1;
-    height: 260px;
-    min-width: 340px;
-    flex-direction: column;
-    position: relative;
-}
-
-.card:hover::before {
-    opacity: 1;
-}
-
-.card::before,
-.card::after {
-    border-radius: inherit;
-    content: "";
-    height: 100%;
-    left: 0px;
-    opacity: 0;
-    position: absolute;
-    top: 0px;
-    transition: opacity 500ms;
-    width: 100%;
-}
-
-.card::before {
-    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.06), transparent 40%);
-    z-index: 3;
-}
-
-.card::after {
-    background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.4), transparent 40%);
-    z-index: 1;
-}
-
-.card>.card-content {
-    background-color: rgb(23, 23, 23);
-    border-radius: inherit;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    inset: 1px;
-    padding: 10px;
-    position: absolute;
-    z-index: 2;
-}
 
 /*#endregion*/
