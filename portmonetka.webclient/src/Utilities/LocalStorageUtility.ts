@@ -6,7 +6,6 @@ export function WriteToLocalStorage(key: string, value: any) {
 }
 
 export function ReadFromLocalStorage(key: string) {
-    debugger;
     const cachedData = localStorage.getItem(key);
     if (!cachedData) {
         return null;

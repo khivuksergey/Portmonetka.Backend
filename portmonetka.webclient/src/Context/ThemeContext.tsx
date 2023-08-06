@@ -17,7 +17,7 @@ export const ThemeProvider = ({ children }: any) => {
     const setIsDarkTheme = (isDark: boolean) => {
         setIsDarkThemeState(isDark);
         const theme = isDark ? "dark" : "light";
-        WriteToLocalStorage("theme", theme);
+        localStorage.setItem("theme", theme);
     }
     return (
         <ThemeContext.Provider value={{ isDarkTheme, setIsDarkTheme }} >

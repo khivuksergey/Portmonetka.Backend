@@ -9,22 +9,24 @@
 html {
     min-height: 100%;
     min-width: 240px;
-    background: var(--page-background);
 }
 
 body {
     overflow-x: hidden;
     font-size: 16px;
-    font-weight: 300;
     font-family: "JetBrains Mono", monospace;
     line-height: 1.5;
+    background: var(--page-background);
     color: var(--text-color);
-    background: none;
+    font-weight: var(--font-weight-body);
 }
 
 #root {
     display: flex;
     flex-direction: column;
+    background: var(--page-background);
+    color: var(--text-color);
+    font-weight: var(--font-weight-body);
 }
 
 /*#region Scrollbar*/
@@ -337,6 +339,10 @@ button.button--options{
     fill: var(--primary);
 }
 
+.nav-link.active > .nav-link__text {
+    font-weight: var(--font-weight-nav-link-active);
+}
+
 /*.sidebar */
 .nav-link__text {
     width: 100%;
@@ -392,6 +398,11 @@ button.button--options{
     --bs-btn-close-hover-opacity: 0.9;
     background-color: transparent;
 }
+
+.alert > button[type="button"].btn-close {
+    filter: var(--alert-button-close-filter);
+}
+
 /*#endregion*/
 
 /*#region Inputs*/
@@ -469,7 +480,8 @@ input[type="checkbox"] {
     flex-wrap: nowrap;
 }
 
-.input-group > button[type="button"] > svg {
+.input-group > button[type="button"] > svg,
+.input-group > button[type="button"]:disabled:hover > svg {
     fill: var(--input-group-button-icon-color);
 }
 
@@ -477,6 +489,13 @@ input[type="checkbox"] {
     fill: var(--input-group-button-hover-icon-color);
     transition: all 0.15s ease-in-out;
 }
+
+/* button.button--delete:hover > svg,
+button.button--restore:hover > svg,
+.input-group > button.button--delete:hover > svg,
+.input-group > button.button--restore:hover > svg {
+    fill: var(--button-delete-restore-svg-color);
+} */
 
 .form-check-input {
     background-color: var(--check-input-background);
@@ -493,6 +512,10 @@ input[type="checkbox"] {
 
 .form-check-input:active {
     filter: none;
+}
+
+.form-select {
+    --bs-form-select-bg-img: var(--form-select-arrow-icon);
 }
 
 /*#endregion*/
@@ -524,7 +547,7 @@ button:disabled:hover,
 button.disabled:hover {
     color: var(--placeholder-grey);
     background-color: var(--button-disabled-background);
-    border-color: var(--button-disabled-border-color);
+    /* border-color: var(--button-disabled-border-color); */
     cursor: auto;
 }
 
@@ -535,7 +558,12 @@ button[type=reset] {
 
 button[type=submit] {
     font-weight: bold;
+    /* background-color: var(--button-submit-background); */
 }
+
+/* button[type="submit"]:disabled {
+    background-color: var(--button-submit-disabled-background);
+} */
 
 button:hover,
 button:focus-visible,
@@ -547,9 +575,17 @@ button[type=reset]:focus-visible {
 
 button[type=submit]:hover:not(:disabled),
 button[type=submit]:focus-visible:not(:disabled) {
-    background: var(--primary);
+    background-color: var(--button-submit-hover-background);
     color: var(--button-submit-hover-text);
 }
+
+/* .input-group > button:not(:disabled) {
+    background-color: var(--input-group-button-background);
+} */
+
+/* .input-group > button:hover:not(:disabled) {
+    background-color: var(--input-group-button-enabled-hover-background);
+} */
 
 /*delete wallet*/
 button[type="button"].button--delete:hover,
@@ -590,7 +626,7 @@ button[type="button"].button--delete:focus-visible {
     color: var(--green);
 }
 
-.input-group>button {
+.input-group > button {
     width: 40px;
     z-index: 1;
 }
@@ -598,6 +634,11 @@ button[type="button"].button--delete:focus-visible {
 /*#endregion*/
 
 /*#region Form Controls*/
+
+.form-label,
+.form-control {
+    font-weight: var(--font-weight-form);
+}
 
 .form-control--dark {
     color: var(--text-color);
@@ -663,7 +704,7 @@ button[type="button"].button--delete:focus-visible {
     gap: 1rem;
 }
 
-.modal-footer>* {
+.modal-footer > * {
     margin: 0;
 }
 
@@ -672,6 +713,10 @@ button[type="button"].button--delete:focus-visible {
     border-bottom: none;
     border-top: none;
 }
+
+/* .modal-footer > button.button--delete > svg {
+    fill: var(--button-wallet-delete-svg-color);
+} */
 
 .modal-title {
     display: flex;
@@ -794,6 +839,9 @@ button[type="button"].button--delete:focus-visible {
     border-radius: 10px;
     padding: 15px 20px;
     background-color: var(--balance-background);
+    -webkit-box-shadow: var(--balance-box-shadow);
+    -moz-box-shadow: var(--balance-box-shadow);
+    box-shadow: var(--balance-box-shadow);
 }
 
 .balance__currency-sign {
@@ -909,6 +957,9 @@ span {
     aspect-ratio: 19 / 12;
     border-radius: 2.6316% / 4.5454%;
     position: relative;
+    -webkit-box-shadow: var(--wallet-box-shadow);
+    -moz-box-shadow:  var(--wallet-box-shadow);
+    box-shadow:  var(--wallet-box-shadow);
 }
 
 .wallet:hover::before {
@@ -927,6 +978,16 @@ span {
     opacity: 0;
     transition: opacity 500ms;
     pointer-events: none;
+}
+
+.wallet::before {
+    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), var(--wallet-hover-glow-color), transparent 40%);
+    z-index: 3;
+}
+
+.wallet::after {
+    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), var(--wallet-hover-border-color), transparent 40%);
+    z-index: 1;
 }
 
 .wallet>.wallet-content {
@@ -973,6 +1034,10 @@ span {
 .add-transactions__button:hover>svg,
 .add-transactions__button:focus-visible>svg {
     fill: var(--primary);
+}
+
+.add-transactions__button > svg {
+    stroke-width: var(--button-add-transactions-svg-stroke);
 }
 
 .transactions-preview-blur {
@@ -1042,12 +1107,13 @@ span {
     color: var(--text-color);
 }
 
-.rdp-day_today
-
-/*:not(.rdp-day_outside)*/
-    {
-    font-weight: bold;
+.rdp-day_today /*:not(.rdp-day_outside)*/ {
+    /* font-weight: bold; */
     background: var(--rdp-day-today-background);
+}
+
+.rdp-day_today:not(.rdp-day_outside) {
+    font-weight: var(--font-weight-rdp-today);
 }
 
 .rdp-day_selected,

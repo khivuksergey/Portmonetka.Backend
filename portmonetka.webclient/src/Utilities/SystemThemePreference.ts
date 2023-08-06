@@ -1,5 +1,3 @@
-import { ReadFromLocalStorage } from "./LocalStorageUtility";
-
 type TTheme = "light" | "dark";
 
 export function GetSystemThemePreference(): TTheme {
@@ -10,7 +8,7 @@ export function GetSystemThemePreference(): TTheme {
 };
 
 export function GetInitialTheme(): TTheme {
-    const userTheme = ReadFromLocalStorage("theme");
-    const initialTheme = userTheme ?? GetSystemThemePreference();
+    const userTheme = localStorage.getItem("theme");
+    const initialTheme = userTheme as TTheme ?? GetSystemThemePreference();
     return initialTheme;
 }

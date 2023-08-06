@@ -171,6 +171,33 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
 
         //#region AgGridReact
 
+        const [forceRefresh, setForceRefresh] = useState(false);
+
+        useEffect(() => {
+            // Delay toggling the floatingFilter property, otherwise filters are not rendered
+            const timeoutId = setTimeout(() => {
+                setForceRefresh(true);
+            }, 1);
+
+            return () => {
+                clearTimeout(timeoutId);
+            };
+        }, []);
+
+        const defaultColDef = useMemo<ColDef>(() => {
+            return {
+                suppressMenu: true,
+                resizable: true,
+                editable: true,
+                sortable: true,
+                floatingFilter: forceRefresh,
+                filterParams: {
+                    maxNumConditions: 1,
+                    filterOptions: ["contains", "notContains", "equals", "notEqual"],
+                }
+            };
+        }, [forceRefresh]);
+
         interface ITransactionDeletedCellRendererProps {
             value: boolean;
             onToggle: () => void;
@@ -208,20 +235,6 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
             },
             maxNumConditions: 1
         };
-
-        const defaultColDef = useMemo<ColDef>(() => {
-            return {
-                suppressMenu: true,
-                resizable: true,
-                editable: true,
-                sortable: true,
-                floatingFilter: true,
-                filterParams: {
-                    maxNumConditions: 1,
-                    filterOptions: ["contains", "notContains", "equals", "notEqual"],
-                }
-            };
-        }, []);
 
         const columnDefs: ColDef[] = useMemo(() => [
             {

@@ -8,22 +8,16 @@ import AppRoutes from "./AppRoutes";
 import Login from "./Pages/Login/Login";
 import Layout from "./Pages/Layout/Layout";
 import "./common.css";
+import "./theme-dark.css";
+import "./theme-light.css";
 
 function App(): JSX.Element {
     const { isDarkTheme } = useContext<IThemeContext>(ThemeContext);
 
     useEffect(() => {
         const applyTheme = () => {
-            const themeLink = document.createElement("link");
-            themeLink.rel = "stylesheet";
-            themeLink.href = isDarkTheme ? "theme-dark.css" : "theme-light.css";
-
-            const existingThemeLink = document.querySelector('link[rel="stylesheet"][href^="theme-dark.css"], link[rel="stylesheet"][href^="theme-light.css"]');
-            if (existingThemeLink) {
-                document.head.removeChild(existingThemeLink);
-            }
-
-            document.head.appendChild(themeLink);
+            const body = document.body;
+            body.setAttribute("data-theme", isDarkTheme ? "dark" : "light");
         };
 
         applyTheme();
