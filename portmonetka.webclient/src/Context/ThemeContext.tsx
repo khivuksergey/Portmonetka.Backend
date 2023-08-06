@@ -1,26 +1,35 @@
-import { createContext, useState } from "react";
-import { GetInitialTheme, GetSystemThemePreference, WriteToLocalStorage } from "../Utilities";
-import { IThemeContext } from "../Common/DataTypes";
+import { createContext, useEffect, useState } from "react";
+import { GetInitialTheme, GetSystemThemePreference } from "../Utilities";
+import { IThemeContext, TTheme } from "../Common/DataTypes";
 
 export const ThemeContext = createContext<IThemeContext>(
     {
-        isDarkTheme: GetSystemThemePreference() === "dark",
-        setIsDarkTheme: () => { }
+        theme: GetSystemThemePreference(),
+        setTheme: () => { },
+        isDarkTheme: GetSystemThemePreference() === "dark"
     }
 );
 
 export const ThemeProvider = ({ children }: any) => {
     const initialTheme = GetInitialTheme();
 
-    const [isDarkTheme, setIsDarkThemeState] = useState<boolean>(initialTheme === "dark");
+    const [theme, setThemeState] = useState<TTheme>(initialTheme);
 
-    const setIsDarkTheme = (isDark: boolean) => {
-        setIsDarkThemeState(isDark);
-        const theme = isDark ? "dark" : "light";
-        WriteToLocalStorage("theme", theme);
+    const [isDarkTheme, setIsDarkTheme] = useState<boolean>(initialTheme === "dark");
+
+    useEffect(() => {
+        if (theme !== "system")
+            setIsDarkTheme(theme === "dark");
+        else
+            setIsDarkTheme(GetSystemThemePreference() === "dark");
+    }, [theme])
+
+    const setTheme = (theme: TTheme) => {
+        setThemeState(theme);
+        localStorage.setItem("theme", theme);
     }
     return (
-        <ThemeContext.Provider value={{ isDarkTheme, setIsDarkTheme }} >
+        <ThemeContext.Provider value={{ theme, setTheme, isDarkTheme }} >
             {children}
         </ThemeContext.Provider>
     )

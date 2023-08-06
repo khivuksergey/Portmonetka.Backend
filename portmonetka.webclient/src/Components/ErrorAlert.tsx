@@ -13,7 +13,6 @@ export default function ErrorAlert({ showError, onClose, error }: IErrorAlertPro
                 <div style={{ position: "fixed", right: "1rem", zIndex: 5 }}>
                     <Alert
                         variant="danger"
-                        // closeVariant="white"
                         onClose={onClose}
                         transition={true}
                         dismissible

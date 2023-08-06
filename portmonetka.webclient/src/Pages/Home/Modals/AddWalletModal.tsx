@@ -27,8 +27,7 @@ const AddWalletModal = ({ show, onClose, onAddWallet }: AddWalletModalProps) => 
             id: 0,
             name: wallet.name.trim(),
             currency: wallet.currency.toUpperCase(),
-            initialAmount: Number(wallet.initialAmount),
-            /*iconFileName: wallet.iconFileName*/
+            initialAmount: Number(wallet.initialAmount)
         };
         onAddWallet(newWallet);
         onClose();

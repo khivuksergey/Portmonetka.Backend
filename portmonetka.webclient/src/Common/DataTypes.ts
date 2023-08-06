@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from "react"
-
 interface IAuditable {
     dateCreated?: Date
     dateUpdated?: Date
@@ -91,7 +89,10 @@ export enum PasswordStrength {
     STRONG = "Strong",
 }
 
+export type TTheme = "system" | "dark" | "light";
+
 export interface IThemeContext {
+    theme: TTheme
+    setTheme: (theme: TTheme) => void
     isDarkTheme: boolean
-    setIsDarkTheme: (isDark: boolean) => void
 }
