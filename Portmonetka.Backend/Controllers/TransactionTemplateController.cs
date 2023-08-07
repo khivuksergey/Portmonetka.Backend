@@ -39,8 +39,28 @@ namespace Portmonetka.Backend.Controllers
 
             try
             {
-                await _templates.AddRange(templates);
-                return CreatedAtAction(nameof(GetTransactionTemplates), templates.Select(t => new { id = t.Id }), templates);
+                var duplicates = _templates.CheckDuplicateDescriptions(templates, userId);
+
+                if (!duplicates.Any())
+                {
+                    await _templates.AddRange(templates);
+                    return CreatedAtAction(nameof(GetTransactionTemplates), templates.Select(t => new { id = t.Id }), templates);
+                }
+                else
+                {
+                    var templatesToAdd = templates.Except(duplicates);
+
+                    if (templatesToAdd.Any())
+                    {
+                        await _templates.AddRange(templatesToAdd);
+                        return Ok(new { AddedTemplates = templatesToAdd, DuplicateTemplatesNotAdded = duplicates });
+                    }
+                    else
+                    {
+                        return BadRequest("Template descriptions must be unique");
+                    }
+
+                }
             }
             catch (Exception)
             {
@@ -90,7 +110,7 @@ namespace Portmonetka.Backend.Controllers
             {
                 return StatusCode(500, "An error occured while updating transaction templates");
             }
-            
+
         }
 
         [HttpDelete]

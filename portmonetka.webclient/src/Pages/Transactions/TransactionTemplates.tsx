@@ -48,7 +48,23 @@ export default function TransactionTemplates({ onError }: ITransactionTemplatesP
             .array()
             .of(
                 yup.object().shape({
-                    description: yup.string().max(255, "Maximum length is 255 characters").required("Description is required"),
+                    description: yup
+                        .string()
+                        .max(255, "Maximum length is 255 characters").required("Description is required")
+                        .test("unique-description", "Description must be unique", function (value) {
+                            const templateIndex = this.options?.context?.path as number;
+                            if (templateIndex === undefined) {
+                                return true; // Validation will fail if templateIndex is not provided
+                            }
+
+                            // Check if any other templates have the same description
+                            const otherTemplates = this.parent as Array<{ description: string }>;
+                            const hasDuplicate = otherTemplates.some(
+                                (template, index) => index !== templateIndex && template.description === value
+                            );
+
+                            return !hasDuplicate;
+                        }),
                     categoryId: yup.number().positive().required("Category is required"),
                     amount: yup.number()
                 })
@@ -238,7 +254,7 @@ export default function TransactionTemplates({ onError }: ITransactionTemplatesP
             });
 
         const templatesToAdd: ITransactionTemplate[] = values.templates
-            .filter(t => !t.isDeleted && t.isNew)
+            .filter(t => t.isNew)
             .map((t) => {
                 return {
                     id: t.id,
