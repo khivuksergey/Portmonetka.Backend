@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portmonetka.Backend.Models;
-using Portmonetka.Backend.Repositories;
+using Portmonetka.Backend.Services;
 
 namespace Portmonetka.Backend.Controllers
 {
@@ -10,10 +10,10 @@ namespace Portmonetka.Backend.Controllers
     [ApiController]
     public class CategoryController : AuthorizableController
     {
-        private readonly CategoryRepository _categories;
-        public CategoryController(CategoryRepository categories)
+        private readonly ICategoryService _categoryService;
+        public CategoryController(ICategoryService categoryService)
         {
-            _categories = categories;
+            _categoryService = categoryService;
         }
 
         [HttpGet]
@@ -22,11 +22,10 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (!_categories.Exist())
-                return NotFound();
+            var categories = await _categoryService.GetUserCategoriesSorted(userId, sorted ?? false);
 
-            //TO-DO: Find a way to optimize order by transactions count
-            var categories = await _categories.FindByUserIdSorted(userId, sorted ?? false);
+            if (!categories.Any())
+                return NotFound("No categories were found for the user");
 
             return Ok(categories);
         }
@@ -37,7 +36,7 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            var category = await _categories.FindById(id, userId);
+            var category = await _categoryService.GetCategory(id, userId);
 
             if (category == null)
                 return NotFound($"Category with id = {id} was not found");
@@ -59,7 +58,7 @@ namespace Portmonetka.Backend.Controllers
 
             try
             {
-                await _categories.Add(category);
+                await _categoryService.Add(category);
                 return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
             }
             catch (Exception)
@@ -79,7 +78,7 @@ namespace Portmonetka.Backend.Controllers
 
             try
             {
-                var updatedCategory = await _categories.Update(category);
+                var updatedCategory = await _categoryService.Update(category);
 
                 if (updatedCategory == null)
                     return NotFound("Category was not found");
@@ -98,22 +97,22 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            var category = await _categories.FindById(id, userId);
+            var category = await _categoryService.GetCategory(id, userId);
 
             if (category == null)
                 return NotFound("Category was not found");
 
             if (!force)
             {
-                var hasTransactions = await _categories.HasTransactions(id, userId);
+                var isEmpty = await _categoryService.IsEmpty(id, userId);
 
-                if (hasTransactions)
+                if (!isEmpty)
                     return Ok(new { ConfirmationRequired = true });
             }
 
             try
             {
-                await _categories.Delete(category);
+                await _categoryService.Delete(category);
                 return NoContent();
             }
             catch (Exception)

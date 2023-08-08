@@ -1,4 +1,4 @@
-﻿using Portmonetka.Backend.Models;
+﻿using Portmonetka.Backend.Repositories.Interfaces;
 
 namespace Portmonetka.Backend.Repositories
 {
@@ -6,10 +6,10 @@ namespace Portmonetka.Backend.Repositories
     {
         public static void AddRepositories(this IServiceCollection services)
         {
-            services.AddScoped<WalletRepository>();
-            services.AddScoped<CategoryRepository>();
-            services.AddScoped<TransactionRepository>();
-            services.AddScoped<TransactionTemplateRepository>();
+            services.AddScoped<IWalletRepository, WalletRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<ITransactionTemplateRepository, TransactionTemplateRepository>();
         }
     }
 }

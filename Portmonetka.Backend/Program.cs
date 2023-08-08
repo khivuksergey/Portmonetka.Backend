@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Portmonetka.Backend.Models;
 using Portmonetka.Backend.Repositories;
+using Portmonetka.Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ builder.Services.AddCors(c =>
 builder.Services.AddDbContext<PortmonetkaDbContext>();
 
 builder.Services.AddRepositories();
+
+builder.Services.AddServices();
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
