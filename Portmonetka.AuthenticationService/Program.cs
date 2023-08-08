@@ -1,7 +1,7 @@
 using JwtTokenAuthentication;
-using Portmonetka.AuthenticationService.AuthenticationManager;
-using Portmonetka.AuthenticationService.Models;
-using Portmonetka.AuthenticationService.Repositories;
+using Portmonetka.Authentication.Models;
+using Portmonetka.Authentication.Repositories;
+using Portmonetka.Authentication.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +10,11 @@ builder.Services.AddDbContext<UserDbContext>();
 
 builder.Services.AddScoped<UserRepository>();
 
+builder.Services.AddServices();
+
 builder.Services.AddControllers();
 
 builder.Services.AddJwtAuthentication();
-
-builder.Services.AddScoped<IJwtAuthenticationManager, JwtAuthenticationManager>();
 
 var app = builder.Build();
 

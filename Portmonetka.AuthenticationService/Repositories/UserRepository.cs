@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Portmonetka.AuthenticationService.Models;
-using Portmonetka.AuthenticationService.Repositories;
+using Portmonetka.Authentication.Models;
+using Portmonetka.Authentication.Repositories;
 
-namespace Portmonetka.AuthenticationService.Repositories
+namespace Portmonetka.Authentication.Repositories
 {
     public class UserRepository : IRepository<User>
     {
@@ -18,19 +18,19 @@ namespace Portmonetka.AuthenticationService.Repositories
             return _context.Users.Any();
         }
 
-        public bool UserNameExists(string username)
+        public async Task<bool> UserNameExistsAsync(string username)
         {
-            return _context.Users.Any(u => u.Name == username);
+            return await _context.Users.AnyAsync(u => u.Name == username);
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<User>> GetUsersAsync()
         {
             return await _context.Users
                 .Where(w => w.DateDeleted == null)
                 .ToListAsync();
         }
 
-        public async Task<User> FindById(int id)
+        public async Task<User> FindByIdAsync(int id)
         {
             return await _context.Users
                 .Where(w =>
@@ -39,13 +39,13 @@ namespace Portmonetka.AuthenticationService.Repositories
                 .FirstAsync();
         }
 
-        public async Task Add(User user)
+        public async Task AddAsync(User user)
         {
             _context.Add(user);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<User?> Update(User user)
+        public async Task<User?> UpdateAsync(User user)
         {
             var existingUser = await _context.Users.FindAsync(user.Id);
 
@@ -59,7 +59,7 @@ namespace Portmonetka.AuthenticationService.Repositories
             return null;
         }
 
-        public async Task Delete(User user)
+        public async Task DeleteAsync(User user)
         {
             if (typeof(Auditable).IsAssignableFrom(typeof(User)))
             {

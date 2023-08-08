@@ -1,15 +1,15 @@
-﻿namespace Portmonetka.AuthenticationService.Repositories
+﻿namespace Portmonetka.Authentication.Repositories
 {
     public interface IRepository<T> where T : class
     {
         public bool Exist();
 
-        public Task<T> FindById(int id);
+        public Task<T> FindByIdAsync(int id);
 
-        public Task Add(T entity);
+        public Task AddAsync(T entity);
 
-        public Task<T?> Update(T entity);
+        public Task<T?> UpdateAsync(T entity);
 
-        public Task Delete(T entity);
+        public Task DeleteAsync(T entity);
     }
 }
