@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Formik, FieldArray, FormikErrors } from "formik";
 import * as yup from "yup";
+import { addDays } from "date-fns";
 import { ICategory, ITransaction, IWallet } from "../../../Common/DataTypes";
 import { AddCategory, DayPickerWithTodayButton, Modal, ModalFooter, Popper } from "../../../Components";
 import { useCategory, useTransaction, useTransactionTemplate, usePopper } from "../../../Hooks";
 import { Form, Row, Col, InputGroup } from "react-bootstrap";
-import { IconRemoveRow, IconCalendar, IconAdd } from "../../../Common/Icons";
+import { IconRemoveRow, IconCalendar, IconAdd, IconNext } from "../../../Common/Icons";
 import "react-day-picker/dist/style.css";
 
 interface IAddTransactionModalProps {
@@ -118,6 +119,11 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
         remove(index);
     }
 
+    const handleNextDayButtonClick = (index: number, setFieldValue: Function, currentDate: Date) => {
+        const nextDay = addDays(currentDate, 1);
+        setFieldValue(`transactions[${index}].date`, nextDay);
+    }
+
     const handleDateButtonClick = (e: any, i: number) => {
         setCurrentIndex(i);
         setButtonDate(e.target);
@@ -134,7 +140,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
 
     // #region Data change handlers
 
-    const handleDescriptionChange = (index: number, value: string, setFieldValue: Function, transactions: IAddTransaction[]) => {
+    const handleDescriptionChange = (index: number, value: string, setFieldValue: Function) => {
         const description = value;
         const template = templates.find(t => t.description.toLowerCase() === description.toLowerCase())
         if (template) {
@@ -238,7 +244,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                             (transaction, i) => {
                                                 return (
                                                     <Row key={i} className={values.transactions.length > 1 && isTransactionContainerVisible ? "transaction-container" : ""}>
-                                                        <Col sm={12} lg={4}>
+                                                        <Col sm={7} lg={4}>
                                                             <InputGroup className="mb-3">
                                                                 {
                                                                     values.transactions.length > 1 ?
@@ -252,7 +258,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                                     name={`transactions[${i}].description`}
                                                                     placeholder="Description"
                                                                     value={transaction.description}
-                                                                    onChange={(e) => handleDescriptionChange(i, e.target.value, setFieldValue, values.transactions)}
+                                                                    onChange={(e) => handleDescriptionChange(i, e.target.value, setFieldValue)}
                                                                     className="form-control--dark"
                                                                     isInvalid={touched.transactions?.[i]?.description &&
                                                                         !!(errors.transactions?.[i] as FormikErrors<IAddTransaction>)?.description}
@@ -260,7 +266,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                                 />
                                                             </InputGroup>
                                                         </Col>
-                                                        <Col sm={4} lg={2}>
+                                                        <Col sm={5} lg={2}>
                                                             <InputGroup className="mb-3">
                                                                 <Form.Control
                                                                     type="number"
@@ -275,7 +281,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                                 />
                                                             </InputGroup>
                                                         </Col>
-                                                        <Col sm={4} lg={3}>
+                                                        <Col sm={7} lg={3}>
                                                             <InputGroup className="mb-3" >
                                                                 <button type="button" onClick={(e) => handleCategoryButtonClick(e, i)} >
                                                                     <IconAdd fill="var(--text-color)" />
@@ -302,7 +308,7 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                                 </Form.Select>
                                                             </InputGroup>
                                                         </Col>
-                                                        <Col sm={4} lg={3}>
+                                                        <Col sm={5} lg={3}>
                                                             <InputGroup key={i} className="mb-3" >
                                                                 <Form.Control
                                                                     name={`transactions[${i}].date`}
@@ -312,6 +318,11 @@ export default function AddTransactionModal({ show, onClose, wallet }: IAddTrans
                                                                         !!(errors.transactions?.[i] as FormikErrors<IAddTransaction>)?.date}
                                                                     className="form-control--dark"
                                                                 />
+                                                                <button key={`nextday-${i}`} type="button"
+                                                                    onClick={(e) => handleNextDayButtonClick(i, setFieldValue, transaction.date)}
+                                                                >
+                                                                    <IconNext fill="var(--text-color)" />
+                                                                </button>
                                                                 <button key={i} type="button"
                                                                     onClick={(e) => handleDateButtonClick(e, i)}
                                                                 >

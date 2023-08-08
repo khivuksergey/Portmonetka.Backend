@@ -145,6 +145,9 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 { headers: { Authorization: `Bearer ${token}` } }
             )
                 .then((response) => {
+                    //add logic for 201 with no duplicates,
+                    //200 Ok for unique and create info message for skipped duplicates,
+                    //400 Bad Request if only duplicates
                     resolve(response.status >= 200 && response.status < 300);
                 })
                 .catch((e: unknown) => {

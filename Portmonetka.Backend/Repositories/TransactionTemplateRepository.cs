@@ -17,6 +17,22 @@ namespace Portmonetka.Backend.Repositories
             return _context.TransactionTemplates.Any();
         }
 
+        public IEnumerable<TransactionTemplate> CheckDuplicateDescriptions(IEnumerable<TransactionTemplate> templatesToCheck, int userId)
+        {
+            var userTemplates = _context.TransactionTemplates.Where(w => w.UserId == userId);
+            var duplicates = new List<TransactionTemplate>();
+
+            foreach (var template in templatesToCheck)
+            {
+                if (userTemplates.Any(t => t.Description == template.Description))
+                {
+                    duplicates.Add(template);
+                }
+            }
+
+            return duplicates;
+        }
+
         public async Task<TransactionTemplate> FindById(int id, int userId)
         {
             return await _context.TransactionTemplates
