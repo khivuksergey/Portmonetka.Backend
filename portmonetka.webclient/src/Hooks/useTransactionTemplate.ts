@@ -49,7 +49,7 @@ export default function useTransactionTemplate() {
             if (!loading) {
                 setLoading(true);
             }
-
+            
             cancelTokenSource = axios.CancelToken.source();
 
             await axios.get<ITransactionTemplate[]>(url, {
