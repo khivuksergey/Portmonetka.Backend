@@ -26,6 +26,7 @@ import {
     MdTrendingDown,
     MdTrendingFlat,
     MdTrendingUp,
+    MdNavigateNext
 } from "react-icons/md";
 import { BsCircleHalf } from "react-icons/bs";
 import { TTheme } from "./DataTypes";
@@ -120,9 +121,10 @@ export {
     IconLogout,
     HiMiniBanknotes as IconCash,
     HiPlus as IconAdd,
+    LuServerOff as IconServerOff,
     MdConstruction as IconUnderConstruction,
     MdDelete as IconDelete,
-    LuServerOff as IconServerOff,
+    MdNavigateNext as IconNext,
     MdPlaylistAddCheck as IconRestoreRow,
     MdPlaylistRemove as IconRemoveRow,
     MdRefresh as IconRefresh,
