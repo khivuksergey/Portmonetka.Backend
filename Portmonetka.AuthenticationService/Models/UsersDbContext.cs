@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Portmonetka.AuthenticationService.Models
+namespace Portmonetka.Authentication.Models
 {
     public partial class UserDbContext: DbContext
     {

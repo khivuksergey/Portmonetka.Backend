@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portmonetka.Backend.Models;
-using Portmonetka.Backend.Repositories;
+using Portmonetka.Backend.Services;
 
 namespace Portmonetka.Backend.Controllers
 {
@@ -10,11 +10,11 @@ namespace Portmonetka.Backend.Controllers
     [ApiController]
     public class WalletController : AuthorizableController
     {
-        private readonly WalletRepository _wallets;
+        private readonly IWalletService _walletService;
 
-        public WalletController(WalletRepository wallets)
+        public WalletController(IWalletService walletService)
         {
-            _wallets = wallets;
+            _walletService = walletService;
         }
 
         [HttpGet]
@@ -23,7 +23,7 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            var wallets = await _wallets.FindByUserId(userId);
+            var wallets = await _walletService.GetUserWallets(userId);
 
             if (wallets == null)
                 return NotFound("No wallets were found for the user");
@@ -37,7 +37,7 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            var wallet = await _wallets.FindById(id, userId);
+            var wallet = await _walletService.GetWallet(id, userId);
 
             if (wallet == null)
                 return NotFound($"Wallet with id = {id} was not found");
@@ -65,7 +65,7 @@ namespace Portmonetka.Backend.Controllers
 
             try
             {
-                await _wallets.Add(wallet);
+                await _walletService.Add(wallet);
                 return CreatedAtAction(nameof(GetWallet), new { id = wallet.Id }, wallet);
             }
             catch (Exception)
@@ -85,7 +85,7 @@ namespace Portmonetka.Backend.Controllers
 
             try
             {
-                var updatedWallet = await _wallets.Update(wallet);
+                var updatedWallet = await _walletService.Update(wallet);
 
                 if (updatedWallet == null)
                     return NotFound("Wallet was not found");
@@ -104,22 +104,22 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            var wallet = await _wallets.FindById(id, userId);
+            var wallet = await _walletService.GetWallet(id, userId);
 
             if (wallet == null)
                 return NotFound($"Wallet with id {id} was not found");
 
             if (!force)
             {
-                var hasTransactions = await _wallets.HasTransactions(id, userId);
+                var isEmpty = await _walletService.IsEmpty(id, userId);
 
-                if (hasTransactions)
+                if (!isEmpty)
                     return Ok(new { ConfirmationRequired = true });
             }
 
             try
             {
-                await _wallets.Delete(wallet);
+                await _walletService.Delete(wallet);
                 return NoContent();
             }
             catch (Exception)

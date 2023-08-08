@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
+using Portmonetka.Backend.Repositories.Interfaces;
 
 namespace Portmonetka.Backend.Repositories
 {
-    public class TransactionTemplateRepository : IRepository<TransactionTemplate>
+    public class TransactionTemplateRepository : ITransactionTemplateRepository
     {
         private readonly PortmonetkaDbContext _context;
 
@@ -33,7 +34,7 @@ namespace Portmonetka.Backend.Repositories
             return duplicates;
         }
 
-        public async Task<TransactionTemplate> FindById(int id, int userId)
+        public async Task<TransactionTemplate> FindByIdAsync(int id, int userId)
         {
             return await _context.TransactionTemplates
                 .Where(w =>
@@ -43,14 +44,14 @@ namespace Portmonetka.Backend.Repositories
                 .FirstAsync();
         }
 
-        public async Task<IEnumerable<TransactionTemplate>> FindExistingById(int userId, IEnumerable<int> ids)
+        public async Task<IEnumerable<TransactionTemplate>> FindExistingByIdAsync(int userId, IEnumerable<int> ids)
         {
             return await _context.TransactionTemplates
                     .Where(t => t.UserId == userId && ids.Contains(t.Id))
                     .ToListAsync();
         }
 
-        public async Task<IEnumerable<TransactionTemplate>> FindByUserId(int userId)
+        public async Task<IEnumerable<TransactionTemplate>> FindByUserIdAsync(int userId)
         {
             return await _context.TransactionTemplates
                 .Where(w =>
@@ -59,19 +60,19 @@ namespace Portmonetka.Backend.Repositories
                 .ToListAsync();
         }
 
-        public async Task Add(TransactionTemplate template)
+        public async Task AddAsync(TransactionTemplate template)
         {
             _context.TransactionTemplates.Add(template);
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddRange(IEnumerable<TransactionTemplate> templates)
+        public async Task AddAsync(IEnumerable<TransactionTemplate> templates)
         {
             _context.TransactionTemplates.AddRange(templates);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<TransactionTemplate?> Update(TransactionTemplate template)
+        public async Task<TransactionTemplate?> UpdateAsync(TransactionTemplate template)
         {
             var existingTemplate = await _context.TransactionTemplates.FindAsync(template.Id);
 
@@ -85,7 +86,7 @@ namespace Portmonetka.Backend.Repositories
             return null;
         }
 
-        public async Task Delete(TransactionTemplate template)
+        public async Task DeleteAsync(TransactionTemplate template)
         {
             if (typeof(Auditable).IsAssignableFrom(typeof(TransactionTemplate)))
             {
@@ -101,7 +102,7 @@ namespace Portmonetka.Backend.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteRange(IEnumerable<TransactionTemplate> templates)
+        public async Task DeleteAsync(IEnumerable<TransactionTemplate> templates)
         {
 
             if (typeof(Auditable).IsAssignableFrom(typeof(TransactionTemplate)))

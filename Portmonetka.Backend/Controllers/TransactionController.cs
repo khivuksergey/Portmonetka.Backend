@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portmonetka.Backend.Models;
-using Portmonetka.Backend.Repositories;
+using Portmonetka.Backend.Services;
 
 namespace Portmonetka.Backend.Controllers
 {
@@ -10,10 +10,10 @@ namespace Portmonetka.Backend.Controllers
     [ApiController]
     public class TransactionController : AuthorizableController
     {
-        private readonly TransactionRepository _transactions;
-        public TransactionController(TransactionRepository transactions)
+        private readonly ITransactionService _transactionService;
+        public TransactionController(ITransactionService transactionService)
         {
-            _transactions = transactions;
+            _transactionService = transactionService;
         }
 
         #region GET
@@ -24,10 +24,10 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (!_transactions.Exist())
-                return NotFound();
+            var transactions = await _transactionService.GetUserTransactions(userId);
 
-            var transactions = await _transactions.FindByUserId(userId);
+            if (!transactions.Any())
+                return NotFound("No transactions were found for the user");
 
             return Ok(transactions);
         }
@@ -38,21 +38,10 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            bool transactionsExist = (await _transactions.FindByUserId(userId)).Any();
+            var transactions = await _transactionService.GetUserTransactionsByWallet(walletId, userId, count);
 
-            if (!transactionsExist)
-                return NotFound("No transactions were found for the user");
-
-            IEnumerable<Transaction> transactions;
-
-            if (count.HasValue)
-            {
-                transactions = await _transactions.FindByWalletLast(walletId, userId, count.Value);
-            }
-            else
-            {
-                transactions = await _transactions.FindByWallet(walletId, userId);
-            }
+            if (!transactions.Any())
+                return NotFound("No transactions were found int the wallet");
 
             return Ok(transactions);
         }
@@ -63,10 +52,10 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            if (String.IsNullOrEmpty(currency) || currency.Length != 3)
+            if (string.IsNullOrEmpty(currency) || currency.Length != 3)
                 return BadRequest("Invalid currency");
 
-            var transactions = await _transactions.FindByCurrency(userId, currency);
+            var transactions = await _transactionService.GetUserTransactionsByCurrency(userId, currency);
 
             if (transactions == null)
                 return NotFound($"No transactions were found with currency {currency}");
@@ -86,7 +75,7 @@ namespace Portmonetka.Backend.Controllers
 
             try
             {
-                await _transactions.AddRange(transactions);
+                await _transactionService.Add(transactions);
                 return CreatedAtAction(nameof(GetTransactions), transactions.Select(t => new { id = t.Id }), transactions);
             }
             catch (Exception)
@@ -101,32 +90,18 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            bool transactionsExist = (await _transactions.FindByUserId(userId)).Any();
+            bool transactionsExist = (await _transactionService.GetUserTransactions(userId)).Any();
 
             if (!transactionsExist)
                 return NotFound("No transactions were found for the user");
 
             try
             {
-                var updatedTransactions = new List<Transaction>();
-                var notFoundTransactions = new List<int>();
+                var (updatedTransactions, notFoundTransactions) = await _transactionService.Update(transactions);
 
-                foreach (var transaction in transactions)
+                if (updatedTransactions.Any())
                 {
-                    var updatedTransaction = await _transactions.Update(transaction);
-                    if (updatedTransaction != null)
-                    {
-                        updatedTransactions.Add(updatedTransaction);
-                    }
-                    else
-                    {
-                        notFoundTransactions.Add(transaction.Id);
-                    }
-                }
-
-                if (updatedTransactions.Count > 0)
-                {
-                    return Ok(new { UpdatedTransactions = updatedTransactions, NotFoundTransactionIds = notFoundTransactions });
+                    return Ok(new { UpdatedTransactions = updatedTransactions, NotFoundTransactions = notFoundTransactions });
                 }
                 else
                 {
@@ -149,19 +124,14 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            bool transactionsExist = (await _transactions.FindByUserId(userId)).Any();
-
-            if (!transactionsExist)
-                return NotFound("No transactions were found for the user");
-
-            var transactionsToDelete = await _transactions.FindExistingById(userId, ids);
+            var transactionsToDelete = await _transactionService.GetExistingTransactionsById(userId, ids);
 
             if (transactionsToDelete == null)
                 return BadRequest("No transactions were found for the provided ids");
 
             try
             {
-                await _transactions.DeleteRange(transactionsToDelete);
+                await _transactionService.Delete(transactionsToDelete);
                 return NoContent();
             }
             catch (Exception)

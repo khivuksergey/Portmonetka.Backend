@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portmonetka.Backend.Models;
-using Portmonetka.Backend.Repositories;
+using Portmonetka.Backend.Services;
 
 namespace Portmonetka.Backend.Controllers
 {
@@ -10,11 +10,11 @@ namespace Portmonetka.Backend.Controllers
     [ApiController]
     public class TransactionTemplateController : AuthorizableController
     {
-        private readonly TransactionTemplateRepository _templates;
+        private readonly ITransactionTemplateService _templateService;
 
-        public TransactionTemplateController(TransactionTemplateRepository templates)
+        public TransactionTemplateController(ITransactionTemplateService templateService)
         {
-            _templates = templates;
+            _templateService = templateService;
         }
 
         [HttpGet]
@@ -23,7 +23,7 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            var existingTemplates = await _templates.FindByUserId(userId);
+            var existingTemplates = await _templateService.GetUserTransactionTemplates(userId);
 
             if (existingTemplates == null)
                 return NotFound("No templates were found for the user");
@@ -39,27 +39,18 @@ namespace Portmonetka.Backend.Controllers
 
             try
             {
-                var duplicates = _templates.CheckDuplicateDescriptions(templates, userId);
+                var (addedTransactionTemplates, duplicateTransactionTemplates) = await _templateService.Add(userId, templates);
 
-                if (!duplicates.Any())
-                {
-                    await _templates.AddRange(templates);
+                if (!duplicateTransactionTemplates.Any())
                     return CreatedAtAction(nameof(GetTransactionTemplates), templates.Select(t => new { id = t.Id }), templates);
+
+                if (addedTransactionTemplates.Any())
+                {
+                    return Ok(new { AddedTemplates = addedTransactionTemplates, DuplicateTemplatesNotAdded = duplicateTransactionTemplates });
                 }
                 else
                 {
-                    var templatesToAdd = templates.Except(duplicates);
-
-                    if (templatesToAdd.Any())
-                    {
-                        await _templates.AddRange(templatesToAdd);
-                        return Ok(new { AddedTemplates = templatesToAdd, DuplicateTemplatesNotAdded = duplicates });
-                    }
-                    else
-                    {
-                        return BadRequest("Template descriptions must be unique");
-                    }
-
+                    return BadRequest("Template descriptions must be unique");
                 }
             }
             catch (Exception)
@@ -74,36 +65,22 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            bool templatesExist = (await _templates.FindByUserId(userId)).Any();
+            bool templatesExist = (await _templateService.GetUserTransactionTemplates(userId)).Any();
 
             if (!templatesExist)
                 return NotFound("No templates were found for the user");
 
             try
             {
-                var updatedTemplates = new List<TransactionTemplate>();
-                var notFoundTemplates = new List<int>();
+                var (updatedTransactionTemplates, notFoundTransactionTemplates) = await _templateService.Update(userId, templates);
 
-                foreach (var template in templates)
+                if (updatedTransactionTemplates.Any())
                 {
-                    var updatedTemplate = await _templates.Update(template);
-                    if (updatedTemplate != null)
-                    {
-                        updatedTemplates.Add(updatedTemplate);
-                    }
-                    else
-                    {
-                        notFoundTemplates.Add(template.Id);
-                    }
-                }
-
-                if (updatedTemplates.Count > 0)
-                {
-                    return Ok(new { UpdatedTemplates = updatedTemplates, NotFoundTemplateIds = notFoundTemplates });
+                    return Ok(new { UpdatedTransactionTemplates = updatedTransactionTemplates, NotFoundTransactionTemplates = notFoundTransactionTemplates });
                 }
                 else
                 {
-                    return NotFound("No templates were found for update.");
+                    return NotFound("No templates were found for update");
                 }
             }
             catch (Exception)
@@ -119,22 +96,17 @@ namespace Portmonetka.Backend.Controllers
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            bool templatesExist = (await _templates.FindByUserId(userId)).Any();
-
-            if (!templatesExist)
-                return NotFound("No templates were found for the user.");
-
-            var templatesToDelete = await _templates.FindExistingById(userId, ids);
+            var templatesToDelete = await _templateService.GetExistingTransactionTemplatesById(userId, ids);
 
             if (templatesToDelete == null)
-                return BadRequest("No transaction templates were found for the provided ids.");
+                return BadRequest("No templates were found for the provided ids");
 
             try
             {
-                await _templates.DeleteRange(templatesToDelete);
+                await _templateService.Delete(templatesToDelete);
                 return NoContent();
             }
-            catch
+            catch (Exception)
             {
                 return StatusCode(500, "An error occured while deleting transaction templates");
             }

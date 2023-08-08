@@ -1,4 +1,4 @@
-﻿namespace Portmonetka.AuthenticationService.Models
+﻿namespace Portmonetka.Authentication.Models
 {
     public class UserCredentials
     {

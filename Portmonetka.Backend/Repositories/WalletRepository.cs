@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
+using Portmonetka.Backend.Repositories.Interfaces;
 
 namespace Portmonetka.Backend.Repositories
 {
-    public class WalletRepository : IRepository<Wallet>
+    public class WalletRepository : IWalletRepository
     {
         private readonly PortmonetkaDbContext _context;
 
@@ -17,7 +18,7 @@ namespace Portmonetka.Backend.Repositories
             return _context.Wallets.Any();
         }
 
-        public async Task<Wallet> FindById(int id, int userId)
+        public async Task<Wallet> FindByIdAsync(int id, int userId)
         {
             return await _context.Wallets
                 .Where(w =>
@@ -27,7 +28,7 @@ namespace Portmonetka.Backend.Repositories
                 .FirstAsync();
         }
 
-        public async Task<IEnumerable<Wallet>> FindByUserId(int userId)
+        public async Task<IEnumerable<Wallet>> FindByUserIdAsync(int userId)
         {
             return await _context.Wallets
                 .Where(w =>
@@ -36,13 +37,13 @@ namespace Portmonetka.Backend.Repositories
                 .ToListAsync();
         }
 
-        public async Task Add(Wallet wallet)
+        public async Task AddAsync(Wallet wallet)
         {
             _context.Add(wallet);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Wallet?> Update(Wallet wallet)
+        public async Task<Wallet?> UpdateAsync(Wallet wallet)
         {
             var existingWallet = await _context.Wallets.FindAsync(wallet.Id);
 
@@ -56,7 +57,7 @@ namespace Portmonetka.Backend.Repositories
             return null;
         }
 
-        public async Task Delete(Wallet wallet)
+        public async Task DeleteAsync(Wallet wallet)
         {
             if (typeof(Auditable).IsAssignableFrom(typeof(Wallet)))
             {
@@ -72,7 +73,7 @@ namespace Portmonetka.Backend.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> HasTransactions(int id, int userId)
+        public async Task<bool> HasTransactionsAsync(int id, int userId)
         {
             return await _context.Transactions
                     .AnyAsync(t => t.UserId == userId && t.WalletId == id);

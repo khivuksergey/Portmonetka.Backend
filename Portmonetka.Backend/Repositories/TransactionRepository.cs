@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Portmonetka.Backend.Models;
+using Portmonetka.Backend.Repositories.Interfaces;
 
 namespace Portmonetka.Backend.Repositories
 {
-    public class TransactionRepository : IRepository<Transaction>
+    public class TransactionRepository : ITransactionRepository
     {
         private readonly PortmonetkaDbContext _context;
 
@@ -17,7 +18,7 @@ namespace Portmonetka.Backend.Repositories
             return _context.Transactions.Any();
         }
 
-        public async Task<Transaction> FindById(int id, int userId)
+        public async Task<Transaction> FindByIdAsync(int id, int userId)
         {
             return await _context.Transactions
                 .Where(w =>
@@ -27,7 +28,7 @@ namespace Portmonetka.Backend.Repositories
                 .FirstAsync();
         }
 
-        public async Task<IEnumerable<Transaction>> FindByUserId(int userId)
+        public async Task<IEnumerable<Transaction>> FindByUserIdAsync(int userId)
         {
             return await _context.Transactions
                 .Where(w =>
@@ -37,7 +38,7 @@ namespace Portmonetka.Backend.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Transaction>> FindByWallet(int walletId, int userId)
+        public async Task<IEnumerable<Transaction>> FindByWalletAsync(int walletId, int userId)
         {
             return await _context.Transactions
                     .Where(t =>
@@ -49,7 +50,7 @@ namespace Portmonetka.Backend.Repositories
                     .ToListAsync();
         }
 
-        public async Task<IEnumerable<Transaction>> FindByWalletLast(int walletId, int userId, int count)
+        public async Task<IEnumerable<Transaction>> FindByWalletLastAsync(int walletId, int userId, int count)
         {
             return await _context.Transactions
                     .Where(t =>
@@ -62,7 +63,7 @@ namespace Portmonetka.Backend.Repositories
                     .ToListAsync();
         }
 
-        public async Task<IEnumerable<Transaction>> FindByCurrency(int userId, string currency)
+        public async Task<IEnumerable<Transaction>> FindByCurrencyAsync(int userId, string currency)
         {
             currency = currency.ToUpper();
 
@@ -90,19 +91,19 @@ namespace Portmonetka.Backend.Repositories
             return transactionsResult;
         }
 
-        public async Task Add(Transaction transaction)
+        public async Task AddAsync(Transaction transaction)
         {
             _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddRange(IEnumerable<Transaction> transactions)
+        public async Task AddAsync(IEnumerable<Transaction> transactions)
         {
             _context.Transactions.AddRange(transactions);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Transaction?> Update(Transaction transaction)
+        public async Task<Transaction?> UpdateAsync(Transaction transaction)
         {
             var existingTransaction = await _context.Transactions.FindAsync(transaction.Id);
 
@@ -116,7 +117,7 @@ namespace Portmonetka.Backend.Repositories
             return null;
         }
 
-        public async Task Delete(Transaction transaction)
+        public async Task DeleteAsync(Transaction transaction)
         {
             if (typeof(Auditable).IsAssignableFrom(typeof(Transaction)))
             {
@@ -132,7 +133,7 @@ namespace Portmonetka.Backend.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteRange(IEnumerable<Transaction> transactions)
+        public async Task DeleteAsync(IEnumerable<Transaction> transactions)
         {
 
             if (typeof(Auditable).IsAssignableFrom(typeof(Transaction)))
@@ -152,7 +153,7 @@ namespace Portmonetka.Backend.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Transaction>> FindExistingById(int userId, IEnumerable<int> ids)
+        public async Task<IEnumerable<Transaction>> FindExistingByIdAsync(int userId, IEnumerable<int> ids)
         {
             return await _context.Transactions
                     .Where(t => t.UserId == userId && ids.Contains(t.Id))

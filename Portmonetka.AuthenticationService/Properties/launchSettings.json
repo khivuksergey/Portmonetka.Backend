@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Portmonetka.AuthenticationService": {
+    "Portmonetka.Authentication": {
       "commandName": "Project",
       "launchUrl": "weatherforecast",
       "environmentVariables": {

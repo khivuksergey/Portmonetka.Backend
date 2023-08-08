@@ -1,24 +1,23 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Portmonetka.AuthenticationService.AuthenticationManager;
-using Portmonetka.AuthenticationService.Models;
-using Portmonetka.AuthenticationService.Repositories;
+using Portmonetka.Authentication.Models;
+using Portmonetka.Authentication.Services;
 using System.Security.Claims;
 
-namespace Portmonetka.AuthenticationService.Controllers
+namespace Portmonetka.Authentication.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserRepository _users;
-        private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
+        private readonly IAuthenticationService _authenticationService;
+        private readonly IUserService _userService;
 
-        public UserController(UserRepository users, IJwtAuthenticationManager jwtAuthenticationManager)
+        public UserController(IUserService userService, IAuthenticationService authenticationService)
         {
-            _users = users;
-            _jwtAuthenticationManager = jwtAuthenticationManager;
+            _userService = userService;
+            _authenticationService = authenticationService;
         }
 
         #region Test Methods
@@ -29,10 +28,10 @@ namespace Portmonetka.AuthenticationService.Controllers
             if (!CheckIdentity(out int _))
                 return Forbid();
 
-            if (!_users.Exist())
-                return NotFound();
+            var users = await _userService.GetUsers();
 
-            var users = await _users.GetUsers();
+            if (!users.Any())
+                return NotFound("No users were found");
 
             return Ok(users);
         }
@@ -45,7 +44,7 @@ namespace Portmonetka.AuthenticationService.Controllers
         [HttpPost("login")]
         public IActionResult Authenticate([FromBody] UserCredentials userCredentials)
         {
-            var token = _jwtAuthenticationManager.Authenticate(userCredentials.Name, userCredentials.Password, userCredentials.KeepLoggedIn);
+            var token = _authenticationService.Authenticate(userCredentials);
 
             if (token is null)
                 return Unauthorized("Invalid user name or password");
@@ -63,13 +62,14 @@ namespace Portmonetka.AuthenticationService.Controllers
             if (user.Id != 0)
                 return BadRequest("User id must be 0");
 
-            if (_users.UserNameExists(user.Name!))
+            bool alreadyExists = await _userService.UserExists(user.Name);
+
+            if (alreadyExists)
                 return BadRequest("User with this name already exists");
 
             try
             {
-                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-                await _users.Add(user);
+                await _userService.Add(user);
                 return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, user);
             }
             catch (Exception)
@@ -81,12 +81,12 @@ namespace Portmonetka.AuthenticationService.Controllers
 
         [AllowAnonymous]
         [HttpGet("checkusername/{userName}")]
-        public ActionResult CheckUserNameExists(string userName)
+        public async Task<ActionResult> CheckUserNameExists(string userName)
         {
             if (userName is null)
                 return BadRequest("User name is empty");
 
-            bool userNameExists = _users.UserNameExists(userName);
+            bool userNameExists = await _userService.UserExists(userName);
 
             return userNameExists ? Ok() : NotFound("User doesn't exist");
         }
@@ -101,7 +101,7 @@ namespace Portmonetka.AuthenticationService.Controllers
             if (!CheckIdentity(out int _))
                 return Forbid();
 
-            var user = await _users.FindById(id);
+            var user = await _userService.GetUserById(id);
 
             if (user == null)
                 return NotFound($"User with id = {id} was not found");
@@ -120,7 +120,7 @@ namespace Portmonetka.AuthenticationService.Controllers
 
             try
             {
-                var updatedUser = await _users.Update(user);
+                var updatedUser = await _userService.Update(user);
 
                 if (updatedUser == null)
                     return NotFound("User was not found");
@@ -139,14 +139,14 @@ namespace Portmonetka.AuthenticationService.Controllers
             if (!CheckIdentity(out int userId) || id != userId)
                 return Forbid();
 
-            var user = await _users.FindById(id);
+            var user = await _userService.GetUserById(id);
 
             if (user == null)
                 return NotFound($"User with id {id} was not found");
 
             try
             {
-                await _users.Delete(user);
+                await _userService.Delete(user);
                 return NoContent();
             }
             catch (Exception)
