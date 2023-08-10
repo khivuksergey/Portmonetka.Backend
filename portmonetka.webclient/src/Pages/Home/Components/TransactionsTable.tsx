@@ -37,6 +37,7 @@ interface ITransactionsData {
 export interface TransactionsTableRef {
     updateTransactions: () => Promise<boolean>;
     getTransactionsCount: () => number;
+    cancelRequest: () => void;
 }
 
 const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, TransactionsTableProps> =
@@ -50,6 +51,7 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
             transactionsSum,
             handleChangeTransactions,
             handleDeleteTransactions,
+            handleCancelRequest,
             transactionsExist,
             loading: transactionsLoading,
             dataFetched: transactionsLoaded,
@@ -141,6 +143,10 @@ const TransactionsTable: React.ForwardRefRenderFunction<TransactionsTableRef, Tr
 
             getTransactionsCount(): number {
                 return transactions.length
+            },
+
+            cancelRequest() {
+                handleCancelRequest();
             }
         }));
 

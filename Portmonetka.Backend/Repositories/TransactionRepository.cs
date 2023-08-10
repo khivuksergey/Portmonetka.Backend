@@ -38,7 +38,7 @@ namespace Portmonetka.Backend.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Transaction>> FindByWalletAsync(int walletId, int userId)
+        public async Task<IEnumerable<Transaction>> FindByWalletAsync(int walletId, int userId, CancellationToken cancellationToken)
         {
             return await _context.Transactions
                     .Where(t =>
@@ -47,10 +47,10 @@ namespace Portmonetka.Backend.Repositories
                         t.DateDeleted == null)
                     .OrderByDescending(t => t.Date)
                     .ThenByDescending(t => t.DateCreated)
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Transaction>> FindByWalletLastAsync(int walletId, int userId, int count)
+        public async Task<IEnumerable<Transaction>> FindByWalletLastAsync(int walletId, int userId, int count, CancellationToken cancellationToken)
         {
             return await _context.Transactions
                     .Where(t =>
@@ -60,10 +60,10 @@ namespace Portmonetka.Backend.Repositories
                     .OrderByDescending(t => t.Date)
                     .ThenByDescending(t => t.DateCreated)
                     .Take(count)
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Transaction>> FindByCurrencyAsync(int userId, string currency)
+        public async Task<IEnumerable<Transaction>> FindByCurrencyAsync(int userId, string currency, CancellationToken cancellationToken)
         {
             currency = currency.ToUpper();
 
@@ -72,7 +72,7 @@ namespace Portmonetka.Backend.Repositories
                     w.UserId == userId &&
                     w.DateDeleted == null &&
                     w.Currency == currency)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             List<Transaction> transactionsResult = new();
 
@@ -83,7 +83,7 @@ namespace Portmonetka.Backend.Repositories
                         t.UserId == userId &&
                         t.WalletId == wallet.Id &&
                         t.DateDeleted == null)
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken);
 
                 transactionsResult.AddRange(transactions);
             }

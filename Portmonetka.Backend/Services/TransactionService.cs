@@ -7,9 +7,9 @@ namespace Portmonetka.Backend.Services
     {
         public Task<IEnumerable<Transaction>> GetUserTransactions(int userId);
 
-        public Task<IEnumerable<Transaction>> GetUserTransactionsByWallet(int walletId, int userId, int? count);
+        public Task<IEnumerable<Transaction>> GetUserTransactionsByWallet(int walletId, int userId, int? count, CancellationToken cancellationToken);
 
-        public Task<IEnumerable<Transaction>> GetUserTransactionsByCurrency(int userId, string currency);
+        public Task<IEnumerable<Transaction>> GetUserTransactionsByCurrency(int userId, string currency, CancellationToken cancellationToken);
 
         public Task<IEnumerable<Transaction>> GetExistingTransactionsById(int userId, IEnumerable<int> ids);
         
@@ -42,16 +42,16 @@ namespace Portmonetka.Backend.Services
             return await _transactions.FindByUserIdAsync(userId);
         }
 
-        public async Task<IEnumerable<Transaction>> GetUserTransactionsByWallet(int walletId, int userId, int? count)
+        public async Task<IEnumerable<Transaction>> GetUserTransactionsByWallet(int walletId, int userId, int? count, CancellationToken cancellationToken)
         {
             return count.HasValue ?
-                await _transactions.FindByWalletLastAsync(walletId, userId, count.Value) :
-                await _transactions.FindByWalletAsync(walletId, userId);
+                await _transactions.FindByWalletLastAsync(walletId, userId, count.Value, cancellationToken) :
+                await _transactions.FindByWalletAsync(walletId, userId, cancellationToken);
         }
 
-        public async Task<IEnumerable<Transaction>> GetUserTransactionsByCurrency(int userId, string currency)
+        public async Task<IEnumerable<Transaction>> GetUserTransactionsByCurrency(int userId, string currency, CancellationToken cancellationToken)
         {
-            return await _transactions.FindByCurrencyAsync(userId, currency);
+            return await _transactions.FindByCurrencyAsync(userId, currency, cancellationToken);
         }
 
         public async Task<IEnumerable<Transaction>> GetExistingTransactionsById(int userId, IEnumerable<int> ids)

@@ -58,7 +58,7 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
             onChangeWallet(changedWallet);
         }
 
-        onClose(transactionsUpdated);
+        handleModalClose(transactionsUpdated);
     }
 
     const handleDeleteWallet = async () => {
@@ -71,8 +71,15 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
         
         const deleted = await onDeleteWallet(wallet.id!);
         if (deleted) {
-            onClose();
+            handleModalClose();
         }
+    }
+
+    const handleModalClose = (dataChanged?: boolean) => {
+        if (transactionsTableRef.current) {
+            transactionsTableRef.current.cancelRequest();
+        }
+        onClose(dataChanged);
     }
 
     const modalTitle =
@@ -90,7 +97,7 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
     if (!show) return null;
 
     return (
-        <Modal title={modalTitle} show={show} onClose={onClose} size="lg" contentClassName="modal-container">
+        <Modal title={modalTitle} show={show} onClose={handleModalClose} size="lg" contentClassName="modal-container">
             <WalletPropertiesForm
                 initialValues={walletObject}
                 handleSubmit={(wallet) => handleSubmit(wallet)}
@@ -101,7 +108,7 @@ export default function WalletModal({ wallet, show, onClose, onDeleteWallet, onC
                     getTransactionsSum={getTransactionsSum}
                 />
 
-                <ModalFooter onReset={() => { onClose() }}>
+                <ModalFooter onReset={() => { handleModalClose() }}>
                     <button type="button" className="button--delete" style={{ marginRight: "auto" }} onClick={handleDeleteWallet}>
                         <IconDelete size={20} />
                     </button>
