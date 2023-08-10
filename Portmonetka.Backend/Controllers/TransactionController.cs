@@ -33,21 +33,32 @@ namespace Portmonetka.Backend.Controllers
         }
 
         [HttpGet("wallet/{walletId}")]
-        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByWallet(int walletId, [FromQuery(Name = "latest")] int? count)
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByWallet(int walletId, [FromQuery(Name = "latest")] int? count, CancellationToken cancellationToken)
         {
             if (!CheckIdentity(out int userId))
                 return Forbid();
 
-            var transactions = await _transactionService.GetUserTransactionsByWallet(walletId, userId, count);
+            try
+            {
+                var transactions = await _transactionService.GetUserTransactionsByWallet(walletId, userId, count, cancellationToken);
 
-            if (!transactions.Any())
-                return NotFound("No transactions were found int the wallet");
+                if (!transactions.Any())
+                    return NotFound("No transactions were found int the wallet");
 
-            return Ok(transactions);
+                return Ok(transactions);
+            }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(499, "Operation was canceled");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occured while getting transactions");
+            }
         }
 
         [HttpGet("currency/{currency}")]
-        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByCurrency(string currency)
+        public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByCurrency(string currency, CancellationToken cancellationToken)
         {
             if (!CheckIdentity(out int userId))
                 return Forbid();
@@ -55,12 +66,23 @@ namespace Portmonetka.Backend.Controllers
             if (string.IsNullOrEmpty(currency) || currency.Length != 3)
                 return BadRequest("Invalid currency");
 
-            var transactions = await _transactionService.GetUserTransactionsByCurrency(userId, currency);
+            try
+            {
+                var transactions = await _transactionService.GetUserTransactionsByCurrency(userId, currency, cancellationToken);
 
-            if (transactions == null)
-                return NotFound($"No transactions were found with currency {currency}");
+                if (transactions == null)
+                    return NotFound($"No transactions were found with currency {currency}");
 
-            return Ok(transactions);
+                return Ok(transactions);
+            }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(499, "Operation was canceled");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occured while getting transactions");
+            }
         }
 
         #endregion

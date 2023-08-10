@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { ITransaction } from "../Common/DataTypes";
 import { ClearLocalStorage, ReadFromLocalStorage, WriteToLocalStorage } from "../Utilities";
@@ -13,10 +13,10 @@ export default function useTransaction(walletId: number, latestCount?: number) {
     const [error, setError] = useState("");
     const [dataFetched, setDataFetched] = useState(false);
     const [transactionsExist, setTransactionsExist] = useState(false);
-    let cancelTokenSource: CancelTokenSource | undefined;
+    const abortControllerRef = useRef(new AbortController());
 
     useEffect(() => {
-        if (!dataFetched) {
+        const fetchData = async () => {
             if (!!latestCount) {
                 const dataLatest = ReadFromLocalStorage(`transactionsLatest_${walletId}`) as ITransaction[];
                 if (dataLatest) {
@@ -35,10 +35,9 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 }
             }
         }
-        return () => {
-            if (cancelTokenSource) {
-                cancelTokenSource.cancel("Component unmounted");
-            }
+
+        if (!dataFetched) {
+            fetchData();
         }
     }, [dataFetched, latestCount])
 
@@ -62,6 +61,10 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         setDataFetched(false);
     };
 
+    const handleCancelRequest = () => {
+        abortControllerRef.current.abort();
+    }
+
     const fetchTransactions = async () => {
         const url = `api/transaction/wallet/${walletId}`;
         try {
@@ -71,10 +74,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 setLoading(true);
             }
 
-            cancelTokenSource = axios.CancelToken.source();
-
             await axios.get<ITransaction[]>(url, {
-                cancelToken: cancelTokenSource.token,
+                signal: abortControllerRef.current.signal,
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => {
@@ -87,7 +88,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 });
         } catch (e: unknown) {
             if (axios.isCancel(e)) {
-                //console.log("Request canceled: ", e.message);
+                console.log("запрос отменяется: ", e.message);
             }
             const error = e as AxiosError;
             setError(error.response?.data?.toString() ?? error.message);
@@ -105,9 +106,8 @@ export default function useTransaction(walletId: number, latestCount?: number) {
                 setLoading(true);
             }
 
-            cancelTokenSource = axios.CancelToken.source();
             await axios.get<ITransaction[]>(url, {
-                cancelToken: cancelTokenSource.token,
+                signal: abortControllerRef.current.signal,
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(response => {
@@ -218,6 +218,7 @@ export default function useTransaction(walletId: number, latestCount?: number) {
         handleChangeTransactions,
         handleDeleteTransactions,
         refreshTransactions,
+        handleCancelRequest,
         transactionsExist,
         dataFetched,
         loading,
