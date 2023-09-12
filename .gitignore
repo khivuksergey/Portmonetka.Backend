@@ -364,3 +364,7 @@ FodyWeavers.xsd
 
 .vscode/
 .idea/
+
+.DS_Store
+Portmonetka.AuthenticationService/.DS_Store
+Portmonetka.Backend/.DS_Store
