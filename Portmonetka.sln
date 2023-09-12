@@ -4,8 +4,6 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Portmonetka.Backend", "Portmonetka.Backend\Portmonetka.Backend.csproj", "{8E1667E0-D326-48B9-B3FA-F1468F2F943B}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "portmonetka.webclient", "Portmonetka.WebClient\portmonetka.webclient.esproj", "{974E549B-A9B8-4634-A6A2-36995920CBD8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Portmonetka.ApiGateway", "Portmonetka.ApiGateway\Portmonetka.ApiGateway.csproj", "{F1739688-F349-443D-BB17-2B3874A8FF1F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Portmonetka.Authentication", "Portmonetka.AuthenticationService\Portmonetka.Authentication.csproj", "{C840A815-DC6C-4D16-AF29-65CD2F7C6ECB}"
@@ -22,12 +20,6 @@ Global
 		{8E1667E0-D326-48B9-B3FA-F1468F2F943B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E1667E0-D326-48B9-B3FA-F1468F2F943B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E1667E0-D326-48B9-B3FA-F1468F2F943B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{974E549B-A9B8-4634-A6A2-36995920CBD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{974E549B-A9B8-4634-A6A2-36995920CBD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{974E549B-A9B8-4634-A6A2-36995920CBD8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{974E549B-A9B8-4634-A6A2-36995920CBD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{974E549B-A9B8-4634-A6A2-36995920CBD8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{974E549B-A9B8-4634-A6A2-36995920CBD8}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1739688-F349-443D-BB17-2B3874A8FF1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
