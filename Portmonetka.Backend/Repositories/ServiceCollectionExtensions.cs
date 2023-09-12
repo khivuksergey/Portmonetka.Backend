@@ -1,6 +1,4 @@
-﻿using Portmonetka.Backend.Models;
-
-namespace Portmonetka.Backend.Repositories
+﻿namespace Portmonetka.Backend.Repositories
 {
     public static class ServiceCollectionExtensions
     {

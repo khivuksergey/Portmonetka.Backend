@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Portmonetka" type="CompoundRunConfigurationType">
+    <toRun name="Portmonetka.ApiGateway" type="LaunchSettings" />
+    <toRun name="Portmonetka.AuthenticationService" type="LaunchSettings" />
+    <toRun name="Portmonetka.Backend: Portmonetka" type="LaunchSettings" />
+    <method v="2" />
+  </configuration>
+</component>

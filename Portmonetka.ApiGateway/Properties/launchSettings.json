@@ -1,7 +1,16 @@
 {
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:29430",
+      "sslPort": 44308
+    }
+  },
   "profiles": {
     "Portmonetka.ApiGateway": {
       "commandName": "Project",
+      "applicationUrl": "https://localhost:7000;http://localhost:5199",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "API_GATEWAY": "https://localhost:7000",
@@ -9,8 +18,7 @@
         "BACKEND_SERVICE": "https://localhost:7200",
         "JWT_SECRET": "UkH4*JdAxt@qSdp%@heCXSm!Il7E7Zpv"
       },
-      "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7000;http://localhost:5199"
+      "dotnetRunMessages": true
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -18,14 +26,6 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    }
-  },
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:29430",
-      "sslPort": 44308
     }
   }
 }

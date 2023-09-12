@@ -8,7 +8,7 @@ namespace Portmonetka.AuthenticationService.AuthenticationManager
 {
     public class JwtAuthenticationManager : IJwtAuthenticationManager
     {
-        private UserDbContext _context;
+        private readonly UserDbContext _context;
         private readonly string _key = Environment.GetEnvironmentVariable("JWT_SECRET")!;
         private readonly string _iss = Environment.GetEnvironmentVariable("AUTH_SERVICE")!;
 

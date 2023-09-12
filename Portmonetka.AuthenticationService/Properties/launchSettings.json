@@ -1,8 +1,17 @@
 {
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:31118",
+      "sslPort": 44335
+    }
+  },
   "profiles": {
     "Portmonetka.AuthenticationService": {
       "commandName": "Project",
-      "launchUrl": "weatherforecast",
+      "applicationUrl": "https://localhost:7100;http://localhost:5218",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JWT_SECRET": "UkH4*JdAxt@qSdp%@heCXSm!Il7E7Zpv",
@@ -10,8 +19,7 @@
         "AUTH_SERVICE": "https://localhost:7100",
         "BACKEND_SERVICE": "https://localhost:7200"
       },
-      "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7100;http://localhost:5218"
+      "dotnetRunMessages": true
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -20,15 +28,6 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    }
-  },
-  "$schema": "https://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:31118",
-      "sslPort": 44335
     }
   }
 }

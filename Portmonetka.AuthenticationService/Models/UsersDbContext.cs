@@ -2,14 +2,19 @@
 
 namespace Portmonetka.AuthenticationService.Models
 {
-    public partial class UserDbContext: DbContext
+    public class UserDbContext: DbContext
     {
         public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)
         {
         }
 
         public virtual DbSet<User> Users { get; set; }
-
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasDefaultSchema("dbo");
+        }
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
@@ -17,7 +22,8 @@ namespace Portmonetka.AuthenticationService.Models
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("Portmonetka.Users"));
+            // optionsBuilder.UseSqlServer(configuration.GetConnectionString("Portmonetka.Users"));
+            optionsBuilder.UseNpgsql(configuration.GetConnectionString("Portmonetka.Users"));
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -28,8 +34,7 @@ namespace Portmonetka.AuthenticationService.Models
 
             foreach (var insertedEntry in insertedEntries)
             {
-                var auditableEntity = insertedEntry as Auditable;
-                if (auditableEntity != null)
+                if (insertedEntry is Auditable auditableEntity)
                 {
                     auditableEntity.DateCreated = DateTimeOffset.UtcNow;
                 }
@@ -41,8 +46,7 @@ namespace Portmonetka.AuthenticationService.Models
 
             foreach (var modifiedEntry in modifiedEntries)
             {
-                var auditableEntity = modifiedEntry as Auditable;
-                if (auditableEntity != null)
+                if (modifiedEntry is Auditable auditableEntity)
                 {
                     auditableEntity.DateUpdated = DateTimeOffset.UtcNow;
                 }
