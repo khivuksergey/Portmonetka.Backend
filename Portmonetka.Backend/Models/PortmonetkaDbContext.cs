@@ -34,7 +34,7 @@ public partial class PortmonetkaDbContext : DbContext
             .AddJsonFile("appsettings.json")
             .Build();
 
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("PortmonetkaDbCS"));
+        optionsBuilder.UseNpgsql(configuration.GetConnectionString("PortmonetkaDb"));
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -77,6 +77,8 @@ public partial class PortmonetkaDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema("dbo");
+        
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Categori__3214EC07F1BAEAE7");

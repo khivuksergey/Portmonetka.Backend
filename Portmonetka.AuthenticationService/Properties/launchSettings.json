@@ -2,7 +2,6 @@
   "profiles": {
     "Portmonetka.Authentication": {
       "commandName": "Project",
-      "launchUrl": "weatherforecast",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JWT_SECRET": "UkH4*JdAxt@qSdp%@heCXSm!Il7E7Zpv",
