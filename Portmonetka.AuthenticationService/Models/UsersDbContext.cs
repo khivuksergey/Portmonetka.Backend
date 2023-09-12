@@ -10,6 +10,11 @@ namespace Portmonetka.Authentication.Models
 
         public virtual DbSet<User> Users { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasDefaultSchema("dbo");
+        }
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
@@ -17,7 +22,7 @@ namespace Portmonetka.Authentication.Models
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("Portmonetka.Users"));
+            optionsBuilder.UseNpgsql(configuration.GetConnectionString("Portmonetka.Users"));
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
